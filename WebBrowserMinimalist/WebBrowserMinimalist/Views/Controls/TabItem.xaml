@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="WebBrowserMinimalist.Views.Controls.TabItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WebBrowserMinimalist.Views.Controls"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:context="clr-namespace:WebBrowserMinimalist.ViewModels"
+             xmlns:helpers="clr-namespace:WebBrowserMinimalist.Helpers"
+             xmlns:web="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="484" Background="{x:Null}">
+    <UserControl.DataContext>
+        <context:TabItemVM ></context:TabItemVM>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="convertToVisibility"></BooleanToVisibilityConverter>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="38"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Rectangle Fill="{ui:ThemeResource}" Opacity="0.3"></Rectangle>
+        <Grid ClipToBounds="True">
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Margin="4">
+                <ui:Button  WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding BackCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding CanGoBack,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                    <ui:FontIcon Name="symbol" Glyph="&#xE00E;" FontSize="14"></ui:FontIcon>
+                </ui:Button>
+                <Grid Width="36">
+                    <ui:Button  WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Visibility="{Binding Refreshvisibility}" Command="{Binding RefreshCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
+                        <ui:FontIcon Glyph="&#xE117;" FontSize="14"></ui:FontIcon>
+                    </ui:Button>
+                    <ui:ProgressRing IsIndeterminate="True" Visibility="{Binding ProgressVisibility}" Height="18" Width="18"></ui:ProgressRing>
+                </Grid>
+                <ui:Button  WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" Command="{Binding LeftCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding  CanGoForward,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                    <ui:FontIcon Glyph="&#xE00F;" FontSize="14"></ui:FontIcon>
+                </ui:Button>
+            </StackPanel>
+            <Rectangle Fill="{Binding Foreground,ElementName=symbol}" Opacity="0.4" Width="2" HorizontalAlignment="Right" RadiusX="1" RadiusY="1" Margin="0,15,0,15"></Rectangle>
+            <Grid Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"  Margin="4,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid HorizontalAlignment="Center" Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:SymbolIcon Symbol="{Binding ShieldIcon}" Margin="0,0,6,0" FontSize="18" Filled="True"></ui:SymbolIcon>
+                        <ui:SymbolIcon Visibility="{Binding SoundVisibility,Mode=OneWay}" Symbol="Speaker224" Margin="2,0,6,0" FontSize="16"></ui:SymbolIcon>
+                    </StackPanel>
+                    <Image Name="img" Source="{Binding Image}" Grid.Column="1" Height="18" Width="18" Stretch="Uniform"></Image>
+                    <TextBlock VerticalAlignment="Center"  Grid.Column="2" Foreground="{Binding Foreground, ElementName=symbol}" HorizontalAlignment="Stretch" Opacity="0.7" FontStretch="ExtraExpanded" Text="{Binding TitleDocument}" Margin="7,0,0,0" Padding="0" TextTrimming="CharacterEllipsis" FontFamily="Segoe UI Semibold" />
+                    <!--TextBox Name="txtSearch" WindowChrome.IsHitTestVisibleInChrome="True" KeyDown="txtSearch_KeyDown"></TextBox-->
+                    <!--Label Content="{Binding Source, ElementName=webview, Mode=OneWay}" Margin="7,0,0,0" VerticalContentAlignment="Center" FontFamily="Segoe UI Semibold" Padding="0"></Label-->
+                   
+                    <ui:Button Grid.Column="3" Margin="4,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                        <ui:SymbolIcon Symbol="Search12" FontSize="12"></ui:SymbolIcon>
+                    </ui:Button>
+                </Grid>               
+                <ui:Button Name="menubtn" Click="menubtn_Click" Grid.Column="0" Margin="0,0,4,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                    <ui:FontIcon Glyph="&#xE700;" FontSize="12"></ui:FontIcon>
+                </ui:Button>
+            </Grid>
+        </Grid>
+        <web:WebView2 Name="webview" Grid.Row="1" Source="{Binding UrL}" DefaultBackgroundColor="transparent">
+
+        </web:WebView2>
+        
+      
+    </Grid>
+</UserControl>
