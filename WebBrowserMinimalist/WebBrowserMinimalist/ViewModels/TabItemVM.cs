@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -98,7 +99,7 @@ namespace WebBrowserMinimalist.ViewModels
                 }
                 else
                 {
-                    Url = new Uri(_operacionesService.GetURlEngine() + texto.Replace(" ", "+"));
+                    Url = new Uri(_operacionesService.GetURlEngine() + WebUtility.UrlEncode(texto));
                     UrlSource = Url.ToString();
                 }
             }
