@@ -13,7 +13,7 @@
     d:DesignHeight="650"  
     mc:Ignorable="d"
     WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged"
-     WindowState="Maximized" Icon="/Views/Windows/icons8-internet-48.png">
+     WindowState="Maximized" Icon="/Views/Windows/icons8-internet-48.png" Background="{ui:ThemeResource}">
     <Window.DataContext>
         <VM:MainWindowViewModel></VM:MainWindowViewModel>
     </Window.DataContext>

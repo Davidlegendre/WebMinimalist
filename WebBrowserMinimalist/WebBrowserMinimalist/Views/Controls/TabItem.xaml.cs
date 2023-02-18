@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -29,14 +30,12 @@ namespace WebBrowserMinimalist.Views.Controls
     public partial class TabItem : UserControl
     {
         public readonly TabItemVM? _tabItemVM;
-        readonly MainWindow? mainWindow;
+        readonly MainWindow? mainWindow;        
 
-        private readonly OperacionesService _operacionesService;
         readonly ItemModel ModelP;
         public TabItem(ItemModel modelP)
         {
             InitializeComponent();
-            _operacionesService = App.GetService<OperacionesService>();
             mainWindow = App.Current.MainWindow as MainWindow;
             _tabItemVM = DataContext as TabItemVM;
             ModelP = modelP;
@@ -105,7 +104,8 @@ namespace WebBrowserMinimalist.Views.Controls
         private async void CoreWebView2_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
         {
             if (_tabItemVM != null)
-            {                
+            {
+               
                 await Task.Run(async () => await _tabItemVM.geticon(sender));
                 _tabItemVM.Refreshvisibility = Visibility.Visible;
                 _tabItemVM.ProgressVisibility = Visibility.Collapsed;
@@ -135,6 +135,19 @@ namespace WebBrowserMinimalist.Views.Controls
         {
             if (_tabItemVM != null)
             {
+                //var ruta = "C:/Users/" + Environment.UserName + "/AppData/Local/Microsoft/Edge/User Data/Default/Extensions";
+                //var exist = Directory.Exists(ruta);
+                //if (exist)
+                //{
+                //    //adblock
+                //    var archivo = ruta + "/gmgoamodcdcjnbaobigkjelfplakmdhh/3.16.1_0/vendor/webext-sdk/content.js";
+                //    if (File.Exists(archivo))
+                //    {
+                //        var js = await File.ReadAllTextAsync(archivo);
+                //        await webview.ExecuteScriptAsync(js);
+                //    }
+                //    //adblock youtube
+                //}
                 _tabItemVM.Refreshvisibility = Visibility.Collapsed;
                 _tabItemVM.ProgressVisibility = Visibility.Visible;
                 img.Visibility = Visibility.Collapsed;

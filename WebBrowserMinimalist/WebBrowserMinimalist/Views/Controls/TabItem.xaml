@@ -31,16 +31,16 @@
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Margin="4">
                 <ui:Button  WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding BackCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding CanGoBack,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
-                    <ui:FontIcon Name="symbol" Glyph="&#xE00E;" FontSize="14"></ui:FontIcon>
+                    <ui:SymbolIcon Symbol="ArrowLeft12"></ui:SymbolIcon>
                 </ui:Button>
                 <Grid Width="36">
-                    <ui:Button  WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Visibility="{Binding Refreshvisibility}" Command="{Binding RefreshCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
-                        <ui:FontIcon Glyph="&#xE117;" FontSize="14"></ui:FontIcon>
+                    <ui:Button Name="btnRefresh" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Visibility="{Binding Refreshvisibility}" Command="{Binding RefreshCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
+                        <ui:SymbolIcon Symbol="ArrowReset24"></ui:SymbolIcon>
                     </ui:Button>
-                    <ui:ProgressRing Name="progressring" IsIndeterminate="True" Visibility="{Binding ProgressVisibility}" Height="18" Width="18"></ui:ProgressRing>
+                    <ui:ProgressRing Name="progressring" IsIndeterminate="True" Visibility="{Binding ProgressVisibility}" Height="16" Width="16"></ui:ProgressRing>
                 </Grid>
                 <ui:Button  WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" Command="{Binding LeftCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding  CanGoForward,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderBrush="Transparent" VerticalAlignment="Stretch" >
-                    <ui:FontIcon Glyph="&#xE00F;" FontSize="14"></ui:FontIcon>
+                    <ui:SymbolIcon Symbol="ArrowRight12"></ui:SymbolIcon>
                 </ui:Button>
             </StackPanel>
             <Rectangle Fill="{Binding Foreground,ElementName=symbol}" Width="1" HorizontalAlignment="Right" RadiusX="1" RadiusY="1" Margin="0,15,0,15"></Rectangle>
@@ -56,16 +56,15 @@
 
                         <Grid>
                             <Rectangle Grid.ColumnSpan="10" Fill="{Binding Foreground,ElementName=symbol}" Opacity="0.1" RadiusX="3.563" RadiusY="3.563"></Rectangle>
-                            
-                            <ui:AutoSuggestBox ClipToBounds="True" Icon="Empty" Name="TxtSearch"  Text="{Binding UrlSource,Mode=OneWay}" MouseDoubleClick="TxtSearch_MouseDoubleClick" KeyDown="txtSearch_KeyDown" VerticalAlignment="Stretch" ClearButtonEnabled="False" WindowChrome.IsHitTestVisibleInChrome="True"  BorderThickness="0" Background="Transparent"  PlaceholderText="Search" TextAlignment="Center"  Padding="58,2,10,0" BorderBrush="{x:Null}"/>
-                            <StackPanel Orientation="Horizontal">                                
-                                <ui:Button Name="btnSettingEngines" Click="btnSettingEngines_Click" WindowChrome.IsHitTestVisibleInChrome="True" Padding="5,2,5,5" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
-                                    <ui:SymbolIcon Symbol="SearchSettings20" FontSize="16"></ui:SymbolIcon>
-                                </ui:Button>
-                                <ui:Button Name="ReturnToIndicator" Click="ReturnToIndicator_Click" Padding="5,2,5,5" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
-                                    <ui:SymbolIcon Symbol="ArrowRight12" Filled="True" FontSize="16"></ui:SymbolIcon>
-                                </ui:Button>
-                            </StackPanel>
+                            <ui:TextBox ClipToBounds="True" Icon="Empty" Name="TxtSearch"  Text="{Binding UrlSource}" MouseDoubleClick="TxtSearch_MouseDoubleClick" KeyDown="txtSearch_KeyDown" VerticalAlignment="Stretch" ClearButtonEnabled="False" WindowChrome.IsHitTestVisibleInChrome="True"  BorderThickness="0" Background="Transparent"  PlaceholderText="url or Search" TextAlignment="Center"  Padding="30,2,30,0" BorderBrush="{x:Null}"/>
+                            <ui:Button Name="ReturnToIndicator" ToolTip="Cerrar Barra de Busqueda" Click="ReturnToIndicator_Click" Padding="5,2,5,5" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                                <ui:SymbolIcon Symbol="ArrowRight12" Filled="True" FontSize="16"></ui:SymbolIcon>
+                            </ui:Button>
+                            <ui:Button Name="btnSettingEngines" ToolTip="Configuracion de Motor de Busqueda" HorizontalAlignment="Right" Click="btnSettingEngines_Click" WindowChrome.IsHitTestVisibleInChrome="True" Padding="5,2,5,5" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                                <ui:SymbolIcon Symbol="Settings20" FontSize="16"></ui:SymbolIcon>
+                            </ui:Button>
+
+
                         </Grid>
                     </ui:Badge>
 
@@ -79,7 +78,7 @@
                         </Grid.ColumnDefinitions>
                         <Rectangle Grid.ColumnSpan="10" Fill="{Binding Foreground,ElementName=symbol}" Opacity="0.1" RadiusX="3.563" RadiusY="3.563"></Rectangle>
                         <StackPanel Orientation="Horizontal" Margin="4,0,0,0">
-                            <ui:SymbolIcon Symbol="{Binding ShieldIcon}" Margin="4,0,6,0" FontSize="18"></ui:SymbolIcon>
+                            <ui:SymbolIcon Name="symbol" Symbol="{Binding ShieldIcon}" Margin="4,0,6,0" FontSize="18"></ui:SymbolIcon>
                             <ui:SymbolIcon Visibility="{Binding SoundVisibility,Mode=OneWay}" Symbol="Speaker224" Margin="2,0,6,0" FontSize="16"></ui:SymbolIcon>
                         </StackPanel>
                         <ui:Button  Name="btnChangeToSearch" Click="btnChangeToSearch_Click" Padding="7,2,7,5" Grid.Column="3" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
@@ -102,13 +101,11 @@
                 </ui:Badge>
 
                 <StackPanel Orientation="Horizontal">
-                    <ui:Button Name="menubtn" Click="menubtn_Click"  Grid.Column="0" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
-                        <ui:FontIcon Glyph="&#xE700;" FontSize="14"></ui:FontIcon>
+                    <ui:Button Name="menubtn" Click="menubtn_Click" Height="{Binding ActualHeight,ElementName=btnRefresh}" Grid.Column="0" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                        <ui:SymbolIcon Symbol="Tabs24" Filled="False"></ui:SymbolIcon>
                     </ui:Button>
-                    <Border Height="22"  Visibility="Collapsed" Margin="4,0,0,0" CornerRadius="7" Background="{Binding Foreground,ElementName=progressring}" Width="22">
-
-                        <Label Name="countitem" FontWeight="Bold" Content="{Binding Items.Count, Mode=OneWay}" FontFamily="Segoe UI" HorizontalAlignment="Center" FontSize="14" Margin="0,-1,0,0" Padding="0" VerticalAlignment="Center" ></Label>
-                    </Border>
+                    <Button  Name="countitem" Margin="4,0,0,0" Height="22" Padding="7,0" FontSize="12" VerticalAlignment="Stretch" Content="{Binding Items.Count, Mode=OneWay}" >
+                    </Button>
                 </StackPanel>
             </Grid>
         </Grid>

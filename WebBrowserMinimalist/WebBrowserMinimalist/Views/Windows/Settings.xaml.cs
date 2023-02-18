@@ -13,13 +13,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WebBrowserMinimalist.ViewModels;
 using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls.Interfaces;
+using Wpf.Ui.Mvvm.Contracts;
 
 namespace WebBrowserMinimalist.Views.Windows
 {
     /// <summary>
     /// Lógica de interacción para Settings.xaml
     /// </summary>
-    public partial class Settings : Window
+    public partial class Settings : INavigationWindow
     {
 
         readonly SettingsVM? _viewmodel;
@@ -27,8 +29,38 @@ namespace WebBrowserMinimalist.Views.Windows
         public Settings()
         {
             InitializeComponent();
-            Watcher.Watch(this, BackgroundType.Mica, true, true);
+
             _viewmodel = DataContext as SettingsVM;
+        }
+
+        public void CloseWindow()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Frame GetFrame()
+        {
+            throw new NotImplementedException();
+        }
+
+        public INavigation GetNavigation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Navigate(Type pageType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetPageService(IPageService pageService)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ShowWindow()
+        {
+            throw new NotImplementedException();
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)

@@ -24,7 +24,6 @@ namespace WebBrowserMinimalist.ViewModels
     {
 
         static Uri _DefaultUriImg => new Uri("/Assets/applicationIcon-256.png", UriKind.RelativeOrAbsolute);
-
         private readonly OperacionesService _operacionesService;
         public TabItemVM()
         {
@@ -63,7 +62,8 @@ namespace WebBrowserMinimalist.ViewModels
         void Refresh(WebView2? webView2) {
             if (webView2 != null)
             {
-                webView2.CoreWebView2.Reload();               
+                webView2.CoreWebView2.Reload();
+                UrlSource = webView2.CoreWebView2.Source;
             }        
         }
 
@@ -88,7 +88,7 @@ namespace WebBrowserMinimalist.ViewModels
         
         public void Search(string? texto) {
             if (texto != null) {
-                if (Uri.IsWellFormedUriString(texto, UriKind.Absolute) || texto.Replace(" ", "").Contains("."))
+                if (Uri.IsWellFormedUriString(texto, UriKind.Absolute))
                 {
                     if (!texto.Contains("http:") && !texto.Contains("https:") 
                         && !texto.Contains("edge:") && !texto.Contains("file:"))

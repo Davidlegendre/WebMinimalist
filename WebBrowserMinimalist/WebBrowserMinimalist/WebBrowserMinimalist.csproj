@@ -28,6 +28,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="OSVersionInfo">
+      <HintPath>..\..\..\..\..\Downloads\OSVersionInfoDLL\OSVersionInfo.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Assets\applicationIcon-1024.png" />
     <Resource Include="Assets\applicationIcon-256.png" />
     <Resource Include="Views\Windows\icons8-internet-48.png" />

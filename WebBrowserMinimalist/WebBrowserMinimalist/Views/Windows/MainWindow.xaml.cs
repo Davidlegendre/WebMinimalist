@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using JCS;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -25,7 +26,11 @@ namespace WebBrowserMinimalist.Views.Windows
         {       
             InitializeComponent();
             _viewmodel = this.DataContext as MainWindowViewModel;
+            var build = OSVersionInfo.Version.Build;
+            if(build > 19045)
             Watcher.Watch(this, BackgroundType.Mica, true, true);
+            else
+                Watcher.Watch(this, BackgroundType.Acrylic, true, true);
 
             changeThicknes();
             var item = new ItemModel();
@@ -114,6 +119,7 @@ namespace WebBrowserMinimalist.Views.Windows
                     content.Children.Clear();
                 }
                 content.Children.Add(selectItem.Tab);
+                selectItem.Tab.webview.Visibility = Visibility.Visible;
             }
         }
 
@@ -135,7 +141,6 @@ namespace WebBrowserMinimalist.Views.Windows
                     _viewmodel.DeleteItemCommand.Execute(ctx.UID);
                     
                 }
-
             }    
            
         }
@@ -163,7 +168,6 @@ namespace WebBrowserMinimalist.Views.Windows
             newItem.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(newItem);
             lista.SelectedItem = newItem;
-
         }
 
         //private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
