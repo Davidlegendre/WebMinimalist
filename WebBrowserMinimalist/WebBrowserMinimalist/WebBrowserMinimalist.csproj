@@ -8,6 +8,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>appIcon.ico</ApplicationIcon>
+    <PackageIcon>icons8-internet-48.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,6 +38,13 @@
     <Resource Include="Assets\applicationIcon-1024.png" />
     <Resource Include="Assets\applicationIcon-256.png" />
     <Resource Include="Views\Windows\icons8-internet-48.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="icons8-internet-48.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
