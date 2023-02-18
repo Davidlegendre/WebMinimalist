@@ -29,6 +29,7 @@ namespace WebBrowserMinimalist.ViewModels
         public TabItemVM()
         {
             _operacionesService = App.GetService<OperacionesService>();
+            Url = new Uri(_operacionesService.GetURlEngine().Replace("/search?q=", "").Replace("?q=", ""));
         }
 
         [ObservableProperty]
@@ -39,6 +40,9 @@ namespace WebBrowserMinimalist.ViewModels
 
         [ObservableProperty]
         string _UrlSource = "Navigating";
+
+        [ObservableProperty]
+        Uri? _Url;
 
         [ObservableProperty]
         Visibility _refreshvisibility = Visibility.Visible;
@@ -82,18 +86,20 @@ namespace WebBrowserMinimalist.ViewModels
         }
 
         
-        public void Search(string? texto, WebView2? webView2) {
+        public void Search(string? texto) {
             if (texto != null) {
                 if (Uri.IsWellFormedUriString(texto, UriKind.Absolute) || texto.Replace(" ", "").Contains("."))
                 {
                     if (!texto.Contains("http:") && !texto.Contains("https:") 
                         && !texto.Contains("edge:") && !texto.Contains("file:"))
                         texto = "https://" + texto;
-                    webView2.CoreWebView2.Navigate(texto);
+                    UrlSource = texto;
+                    Url = new Uri(texto);
                 }
                 else
                 {
-                    webView2.CoreWebView2.Navigate(_operacionesService.GetURlEngine() + texto.Replace(" ", "+"));
+                    Url = new Uri(_operacionesService.GetURlEngine() + texto.Replace(" ", "+"));
+                    UrlSource = Url.ToString();
                 }
             }
         }

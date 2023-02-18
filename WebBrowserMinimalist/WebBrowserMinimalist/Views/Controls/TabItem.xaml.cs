@@ -51,8 +51,6 @@ namespace WebBrowserMinimalist.Views.Controls
             webview.CoreWebView2.IsDocumentPlayingAudioChanged += CoreWebView2_IsDocumentPlayingAudioChanged;
             webview.CoreWebView2.ServerCertificateErrorDetected += CoreWebView2_ServerCertificateErrorDetected;
             webview.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
-            _tabItemVM.Search(_operacionesService.GetURlEngine().Replace("/search?q=", "").Replace("?q=", ""), webview);
-
         }
 
         private void CoreWebView2_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
@@ -63,7 +61,7 @@ namespace WebBrowserMinimalist.Views.Controls
                 e.Handled = true;
                 var uri = e.Uri;
                 var newItem = new ItemModel();
-                //newItem.Tab._tabItemVM.se
+                newItem.Tab._tabItemVM.Search(uri);
                 mainWindow._viewmodel.Items.Add(newItem);
                 mainWindow.lista.SelectedItem = newItem;
             }
@@ -153,19 +151,16 @@ namespace WebBrowserMinimalist.Views.Controls
             {
                 if (_tabItemVM != null)
                 {
-                    _tabItemVM.Search("https://www." + TxtSearch.Text + ".com", webview);
+                    _tabItemVM.Search("https://www." + TxtSearch.Text + ".com");
                     webview.Focus();
                 }
             }
             else if (e.Key == Key.Enter)
                 if (_tabItemVM != null)
                 {
-                    _tabItemVM.Search(TxtSearch.Text, webview);
+                    _tabItemVM.Search(TxtSearch.Text);
                     webview.Focus();
                 }
-
-            
-
         }
 
         

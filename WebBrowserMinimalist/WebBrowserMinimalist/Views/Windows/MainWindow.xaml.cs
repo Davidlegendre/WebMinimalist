@@ -150,7 +150,7 @@ namespace WebBrowserMinimalist.Views.Windows
         private void btnDescargasOpen_Click(object sender, RoutedEventArgs e)
         {
             var newItem = new ItemModel();
-            newItem.Tab._tabItemVM.Search("edge://downloads/all", newItem.Tab.webview);
+            newItem.Tab._tabItemVM.Search("edge://downloads/all");
             newItem.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(newItem);
             lista.SelectedItem = newItem;
@@ -159,7 +159,7 @@ namespace WebBrowserMinimalist.Views.Windows
         private void btnHistorialOpen_Click(object sender, RoutedEventArgs e)
         {
             var newItem = new ItemModel();
-            newItem.Tab._tabItemVM.Search("edge://history/all", newItem.Tab.webview);
+            newItem.Tab._tabItemVM.Search("edge://history/all");
             newItem.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(newItem);
             lista.SelectedItem = newItem;

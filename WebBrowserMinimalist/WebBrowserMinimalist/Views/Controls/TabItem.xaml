@@ -112,7 +112,7 @@
                 </StackPanel>
             </Grid>
         </Grid>
-        <web:WebView2 Name="webview" Grid.Row="1" Source="{Binding UrL}" DefaultBackgroundColor="Black">
+        <web:WebView2 Name="webview" Grid.Row="1" Source="{Binding Url, Mode=OneWay}" DefaultBackgroundColor="Black">
 
         </web:WebView2>
 
