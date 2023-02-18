@@ -25,8 +25,12 @@ namespace WebBrowserMinimalist.Views.Windows
         {       
             InitializeComponent();
             _viewmodel = this.DataContext as MainWindowViewModel;
-            Watcher.Watch(this, BackgroundType.Acrylic, true, true);
+            Watcher.Watch(this, BackgroundType.Mica, true, true);
+
             changeThicknes();
+            var item = new ItemModel();
+            item.Tab.countitem.DataContext = lista;
+            _viewmodel.Items.Add(item);
             //SetPageService(pageService);
 
             //navigationService.SetNavigationControl(RootNavigation);
@@ -127,7 +131,9 @@ namespace WebBrowserMinimalist.Views.Windows
                         lista.SelectedIndex += 1;
                 }
                 if (ctx != null) {
+                    
                     _viewmodel.DeleteItemCommand.Execute(ctx.UID);
+                    
                 }
 
             }    
@@ -136,8 +142,28 @@ namespace WebBrowserMinimalist.Views.Windows
         private void addbutton_Click(object sender, RoutedEventArgs e)
         {
             var newItem = new ItemModel();
+            newItem.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(newItem);
             lista.SelectedItem = newItem;
+        }
+
+        private void btnDescargasOpen_Click(object sender, RoutedEventArgs e)
+        {
+            var newItem = new ItemModel();
+            newItem.Tab._tabItemVM.Search("edge://downloads/all", newItem.Tab.webview);
+            newItem.Tab.countitem.DataContext = lista;
+            _viewmodel.Items.Add(newItem);
+            lista.SelectedItem = newItem;
+        }
+
+        private void btnHistorialOpen_Click(object sender, RoutedEventArgs e)
+        {
+            var newItem = new ItemModel();
+            newItem.Tab._tabItemVM.Search("edge://history/all", newItem.Tab.webview);
+            newItem.Tab.countitem.DataContext = lista;
+            _viewmodel.Items.Add(newItem);
+            lista.SelectedItem = newItem;
+
         }
 
         //private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)

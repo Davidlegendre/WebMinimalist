@@ -56,7 +56,9 @@ namespace WebBrowserMinimalist.ViewModels
        
         [RelayCommand]
         void DeleteItem(Guid id) {
-            _items.Remove(_items.FirstOrDefault(x => x.UID == id));
+            var item = _items.FirstOrDefault(x => x.UID == id);
+            item.Tab.webview.Dispose();
+            _items.Remove(item);
         }
 
         
@@ -71,7 +73,7 @@ namespace WebBrowserMinimalist.ViewModels
         private void InitializeViewModel()
         {
             ApplicationTitle = "WPF UI - WebBrowserMinimalist";
-            _items.Add(new ItemModel());
+           
             _isInitialized = true;
            
         }

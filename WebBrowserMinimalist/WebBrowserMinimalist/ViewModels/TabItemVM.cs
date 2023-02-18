@@ -49,8 +49,6 @@ namespace WebBrowserMinimalist.ViewModels
         [ObservableProperty]
         SymbolRegular _ShieldIcon = SymbolRegular.Shield24;
 
-        [ObservableProperty]
-        Uri _UrL = new Uri("https://www.google.com");
 
         [ObservableProperty]
         Visibility _progressVisibility = Visibility.Collapsed;
@@ -83,13 +81,20 @@ namespace WebBrowserMinimalist.ViewModels
             }
         }
 
-        [RelayCommand]
-        void Search(string texto) {
+        
+        public void Search(string? texto, WebView2? webView2) {
             if (texto != null) {
-                texto = !Uri.IsWellFormedUriString(texto, UriKind.RelativeOrAbsolute) ? 
-                    texto : "https://www.bing.com/search?q=" + texto.Replace(" ", "+");
-
-                UrL = new Uri(texto);
+                if (Uri.IsWellFormedUriString(texto, UriKind.Absolute) || texto.Replace(" ", "").Contains("."))
+                {
+                    if (!texto.Contains("http:") && !texto.Contains("https:") 
+                        && !texto.Contains("edge:") && !texto.Contains("file:"))
+                        texto = "https://" + texto;
+                    webView2.CoreWebView2.Navigate(texto);
+                }
+                else
+                {
+                    webView2.CoreWebView2.Navigate(_operacionesService.GetURlEngine() + texto.Replace(" ", "+"));
+                }
             }
         }
 
@@ -97,7 +102,6 @@ namespace WebBrowserMinimalist.ViewModels
 
        public async Task geticon(object sender)
         {
-
             var browser = (Microsoft.Web.WebView2.Core.CoreWebView2)sender;
             Thread.Sleep(1000);
             await Application.Current.Dispatcher.Invoke(async () =>

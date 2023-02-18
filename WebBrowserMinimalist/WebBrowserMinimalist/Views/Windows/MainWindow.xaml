@@ -13,7 +13,7 @@
     d:DesignHeight="650"  
     mc:Ignorable="d"
     WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged"
-     WindowState="Maximized">
+     WindowState="Maximized" Icon="/Views/Windows/icons8-internet-48.png">
     <Window.DataContext>
         <VM:MainWindowViewModel></VM:MainWindowViewModel>
     </Window.DataContext>
@@ -79,19 +79,24 @@
         </ui:TitleBar>--><!--
     </Grid>-->
     <Grid Margin="{Binding MarginWindowState, Mode=OneWay}">
-        <Rectangle Fill="{ui:ThemeResource}" Opacity="0.4"></Rectangle>
         <Grid Name="content"></Grid>
-        <Grid Margin="0,48,0,0">
+        <Grid Margin="0,38,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal" Margin="7">
-                <ui:Button Name="addbutton" Click="addbutton_Click" Grid.Column="0" Margin="0,0,4,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+            <StackPanel Orientation="Horizontal" Margin="7,10,0,3">
+                <ui:Button Name="addbutton" Click="addbutton_Click" Grid.Column="0" Margin="0,0,4,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Secondary" VerticalAlignment="Stretch" >
                     <StackPanel Orientation="Horizontal">
-                        <ui:SymbolIcon Symbol="Add16"></ui:SymbolIcon>
-                        <Label Content="Agregar Pestaña" Margin="7,0,0,0"></Label>
+                        <ui:SymbolIcon Symbol="Add20" FontSize="18"></ui:SymbolIcon>
+                        <Label Content="Agregar Pestaña" Padding="2,2,2,3" Margin="7,0,0,0"></Label>
                     </StackPanel>
+                </ui:Button>
+                <ui:Button Name="btnDescargasOpen" Click="btnDescargasOpen_Click" Grid.Column="0" ToolTip="Pagina de Descargas de Edge" Margin="0,0,4,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Secondary" VerticalAlignment="Stretch" >
+                    <ui:SymbolIcon Symbol="ArrowDownload24" FontSize="18"></ui:SymbolIcon>
+                </ui:Button>
+                <ui:Button Name="btnHistorialOpen" Click="btnHistorialOpen_Click" Grid.Column="0" ToolTip="Pagina de Historial de Edge" Margin="0,0,4,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Secondary" VerticalAlignment="Stretch" >
+                    <ui:SymbolIcon Symbol="History24" FontSize="18"></ui:SymbolIcon>
                 </ui:Button>
             </StackPanel>
             <ListView Name="lista" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled"  Grid.Column="1" ItemsSource="{Binding Items, Mode=OneWay}" SelectedIndex="0" SelectionChanged="ListBox_SelectionChanged">
@@ -102,45 +107,43 @@
                 </ListView.ItemsPanel>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <ui:Card Name="card" VerticalContentAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch" Height="270" Width="170">
+                        <ui:Card Name="card" VerticalContentAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch" Width="214">
                             <Grid >
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="auto"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <StackPanel Orientation="Vertical" >
-                                        <Image Source="{Binding IMg}" Margin="2,2,2,10" HorizontalAlignment="Left" Height="22" Stretch="Uniform"></Image>
+                                    <StackPanel Orientation="Horizontal" >
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="auto"></ColumnDefinition>
                                                 <ColumnDefinition Width="auto"></ColumnDefinition>
                                             </Grid.ColumnDefinitions>
                                             <ui:SymbolIcon Grid.Column="1" HorizontalAlignment="Left" Visibility="{Binding SoundVisibility,Mode=OneWay}" Symbol="Speaker224" Margin="2,0,6,7" FontSize="16"></ui:SymbolIcon>
-                                            <ui:SymbolIcon Symbol="Shield24" HorizontalAlignment="Left" Margin="2,0,6,7" FontSize="16" Filled="True"></ui:SymbolIcon>
+                                            <ui:SymbolIcon Symbol="{Binding ShieldIcon}" HorizontalAlignment="Left" Margin="2,0,6,7" FontSize="18" ></ui:SymbolIcon>
 
                                         </Grid>
+                                        <Image Source="{Binding IMg}" Margin="2,2,2,10" HorizontalAlignment="Left" Height="22" Stretch="Uniform"></Image>
+
                                     </StackPanel>
                                     <Grid Grid.Row="1">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"></RowDefinition>
-                                            <RowDefinition Height="auto"></RowDefinition>
+                                            <RowDefinition Height="*"></RowDefinition>
+                                            <RowDefinition Height="*"></RowDefinition>
                                         </Grid.RowDefinitions>
-                                        <TextBlock Text="{Binding TitleDoc}" Margin="2" MaxHeight="60" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" FontFamily="Segoe UI Semibold" FontSize="14" ></TextBlock>
+                                        <TextBlock Text="{Binding TitleDoc}" Margin="2" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" FontFamily="Segoe UI Semibold" FontSize="14" ></TextBlock>
 
-                                        <TextBlock Grid.Row="1" Text="{Binding Source}" MaxHeight="60"  Margin="2" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" Opacity="0.5" FontFamily="Segoe UI Semibold" FontSize="12" ></TextBlock>
+                                        <TextBlock ToolTip="{Binding Source}" Grid.Row="1" Text="{Binding Source}" MaxWidth="141" Margin="2" TextTrimming="CharacterEllipsis" Opacity="0.5" FontFamily="Segoe UI Semibold" FontSize="12" ></TextBlock>
 
                                     </Grid>
                                 </Grid>
-                                <ui:Button Name="btnClose" Grid.Row="1" Margin="2" HorizontalAlignment="Stretch" Appearance="Secondary" Click="btnClose_Click" >
-                                    <StackPanel Orientation="Horizontal">
-                                        <ui:FontIcon Glyph="&#xE106;" FontSize="14"></ui:FontIcon>
-                                        <Label Content="Eliminar" FontFamily="Segoe UI Semibold" Margin="7,0,0,0" FontSize="14"></Label>
-                                    </StackPanel>
+                                <ui:Button Name="btnClose" Grid.Column="1" VerticalAlignment="Top" Margin="2" HorizontalAlignment="Stretch" Appearance="Secondary" Click="btnClose_Click" >
+                                    <ui:FontIcon Glyph="&#xE106;" FontSize="14"></ui:FontIcon>
                                 </ui:Button>
                             </Grid>
                         </ui:Card>

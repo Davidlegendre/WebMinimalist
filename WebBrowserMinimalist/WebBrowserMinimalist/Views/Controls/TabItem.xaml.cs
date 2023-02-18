@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WebBrowserMinimalist.Models;
+using WebBrowserMinimalist.Services;
 using WebBrowserMinimalist.ViewModels;
 using WebBrowserMinimalist.Views.Windows;
 using Wpf.Ui.Mvvm.Interfaces;
@@ -28,11 +29,15 @@ namespace WebBrowserMinimalist.Views.Controls
     public partial class TabItem : UserControl
     {
         public readonly TabItemVM? _tabItemVM;
-        static readonly MainWindow mainWindow = App.Current.MainWindow as MainWindow;
+        readonly MainWindow? mainWindow;
+
+        private readonly OperacionesService _operacionesService;
         readonly ItemModel ModelP;
         public TabItem(ItemModel modelP)
         {
             InitializeComponent();
+            _operacionesService = App.GetService<OperacionesService>();
+            mainWindow = App.Current.MainWindow as MainWindow;
             _tabItemVM = DataContext as TabItemVM;
             ModelP = modelP;
             InitialWebView2();
@@ -46,6 +51,8 @@ namespace WebBrowserMinimalist.Views.Controls
             webview.CoreWebView2.IsDocumentPlayingAudioChanged += CoreWebView2_IsDocumentPlayingAudioChanged;
             webview.CoreWebView2.ServerCertificateErrorDetected += CoreWebView2_ServerCertificateErrorDetected;
             webview.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
+            _tabItemVM.Search(_operacionesService.GetURlEngine().Replace("/search?q=", "").Replace("?q=", ""), webview);
+
         }
 
         private void CoreWebView2_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
@@ -56,7 +63,7 @@ namespace WebBrowserMinimalist.Views.Controls
                 e.Handled = true;
                 var uri = e.Uri;
                 var newItem = new ItemModel();
-                newItem.Tab._tabItemVM.UrL = new Uri(uri);
+                //newItem.Tab._tabItemVM.se
                 mainWindow._viewmodel.Items.Add(newItem);
                 mainWindow.lista.SelectedItem = newItem;
             }
@@ -91,6 +98,9 @@ namespace WebBrowserMinimalist.Views.Controls
                 _tabItemVM.TitleDocument = webview.CoreWebView2.DocumentTitle;
 
                 ModelP.TitleDoc = _tabItemVM.TitleDocument;
+
+                URLSearchBar.Visibility = Visibility.Collapsed;
+                IndicatorDocumentPage.Visibility = Visibility.Visible;
             }
         }
 
@@ -107,6 +117,13 @@ namespace WebBrowserMinimalist.Views.Controls
                     _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
                 else
                     _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldDismiss24;
+
+                if (webview.CoreWebView2.Source.Contains("file:"))
+                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Archive24;
+                if (webview.CoreWebView2.Source == "edge://downloads/all")
+                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ArrowDownload24;
+                if (webview.CoreWebView2.Source == "edge://history/all")
+                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.History24;
 
                 ModelP.IMg = _tabItemVM.Image;
                 ModelP.Source = _tabItemVM.UrlSource;
@@ -132,12 +149,23 @@ namespace WebBrowserMinimalist.Views.Controls
         }
         private void txtSearch_KeyDown(object sender, KeyEventArgs e)
         {
-            //if (e.Key == Key.Enter)
-            //    if (_tabItemVM != null)
-            //    {
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Enter)
+            {
+                if (_tabItemVM != null)
+                {
+                    _tabItemVM.Search("https://www." + TxtSearch.Text + ".com", webview);
+                    webview.Focus();
+                }
+            }
+            else if (e.Key == Key.Enter)
+                if (_tabItemVM != null)
+                {
+                    _tabItemVM.Search(TxtSearch.Text, webview);
+                    webview.Focus();
+                }
 
-            //        _tabItemVM.SearchCommand.Execute(txtSearch.Text);
-            //    }
+            
+
         }
 
         
@@ -148,6 +176,30 @@ namespace WebBrowserMinimalist.Views.Controls
                 webview.Visibility = Visibility.Collapsed;
             else
                 webview.Visibility = Visibility.Visible;
+        }
+
+        private void btnChangeToSearch_Click(object sender, RoutedEventArgs e)
+        {
+            IndicatorDocumentPage.Visibility = Visibility.Collapsed;
+            URLSearchBar.Visibility= Visibility.Visible;
+        }
+
+        private void ReturnToIndicator_Click(object sender, RoutedEventArgs e)
+        {
+            URLSearchBar.Visibility = Visibility.Collapsed;
+            IndicatorDocumentPage.Visibility = Visibility.Visible;
+        }
+
+        private void TxtSearch_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            TxtSearch.SelectAll();
+        }
+
+        private void btnSettingEngines_Click(object sender, RoutedEventArgs e)
+        {
+            Settings settingsWindow = new Settings();
+            settingsWindow.Owner = mainWindow;
+            settingsWindow.ShowDialog();
         }
     }
 }
