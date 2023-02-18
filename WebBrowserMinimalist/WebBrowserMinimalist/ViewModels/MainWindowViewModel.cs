@@ -72,7 +72,7 @@ namespace WebBrowserMinimalist.ViewModels
 
         private void InitializeViewModel()
         {
-            ApplicationTitle = "WPF UI - WebBrowserMinimalist";
+            ApplicationTitle = "UI - WebBrowserMinimalist";
            
             _isInitialized = true;
            
