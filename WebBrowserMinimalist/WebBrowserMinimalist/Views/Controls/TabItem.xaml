@@ -9,7 +9,7 @@
              xmlns:helpers="clr-namespace:WebBrowserMinimalist.Helpers"
              xmlns:web="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="484" Background="{x:Null}">
+             d:DesignHeight="450" d:DesignWidth="484">
     <UserControl.DataContext>
         <context:TabItemVM ></context:TabItemVM>
     </UserControl.DataContext>
@@ -21,16 +21,15 @@
             <RowDefinition Height="38"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border BorderThickness="0,0,0,1">
+        <Border  VerticalAlignment="Stretch" BorderThickness="0,0,0,1" >
             <Border.BorderBrush>
-                <SolidColorBrush Color="White" Opacity="0.2"></SolidColorBrush>
+                <SolidColorBrush Color="white" Opacity="0.2"/>
             </Border.BorderBrush>
             <Grid ClipToBounds="True">
-
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="140"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" Margin="4">
                     <ui:Button  WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding BackCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding CanGoBack,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
@@ -49,15 +48,15 @@
                     </ui:Button>
                 </StackPanel>
                 <Rectangle Fill="{Binding Foreground,ElementName=symbol}" Width="1" HorizontalAlignment="Right" RadiusX="1" RadiusY="1" Margin="0,15,0,15"></Rectangle>
-                <Grid Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"  Margin="4,0,0,0">
+                <Grid Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"  Margin="0,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Grid Name="URLSearchBar" MaxWidth="370" Margin="10,0,10,0" Visibility="Collapsed" Grid.Column="1" >
+                    <Grid Name="URLSearchBar" MaxWidth="400" Margin="10,0,10,0" Visibility="Collapsed" Grid.Column="1" >
 
-                        <ui:Badge ClipToBounds="True" BorderThickness="0" HorizontalAlignment="Center" Background="Transparent" MaxWidth="370" Padding="0" Width="{Binding ActualWidth,ElementName=URLSearchBar}" Height="28" HorizontalContentAlignment="Center" >
+                        <ui:Badge ClipToBounds="True" BorderThickness="0" HorizontalAlignment="Center" Background="Transparent" MaxWidth="400" Padding="0" Width="{Binding ActualWidth,ElementName=URLSearchBar}" Height="28" HorizontalContentAlignment="Center" >
 
                             <Grid>
                                 <Rectangle Grid.ColumnSpan="10" Fill="{Binding Foreground,ElementName=symbol}" Opacity="0.1" RadiusX="3.563" RadiusY="3.563"></Rectangle>
@@ -69,12 +68,11 @@
                                     <ui:SymbolIcon Symbol="Settings20" FontSize="16"></ui:SymbolIcon>
                                 </ui:Button>
 
-
                             </Grid>
                         </ui:Badge>
 
                     </Grid>
-                    <ui:Badge x:Name="IndicatorDocumentPage" Margin="10,0,10,0"  Background="Transparent" Grid.Column="1" MaxWidth="370" Padding="0" Height="28" >
+                    <ui:Badge x:Name="IndicatorDocumentPage" Margin="5,0,10,0"  Background="Transparent" Grid.Column="1" MaxWidth="400" Padding="0" Height="28" >
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
@@ -105,17 +103,23 @@
                             </Grid>
                         </Grid>
                     </ui:Badge>
-
-                    <StackPanel Orientation="Horizontal">
+                    <ui:Flyout Name="FlyoutSettingPanel" Grid.Column="1" HorizontalAlignment="Center" Background="{ui:ThemeResource}"  Margin="5"  >
+                        <local:SettingsControls ></local:SettingsControls>
+                    </ui:Flyout>
+                    <StackPanel Orientation="Horizontal" Margin="4,0,0,0">
                         <ui:Button Name="menubtn" Click="menubtn_Click" Height="{Binding ActualHeight,ElementName=btnRefresh}" Grid.Column="0" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                             <ui:SymbolIcon Symbol="Tabs24" Filled="False"></ui:SymbolIcon>
                         </ui:Button>
-                        <Button  Name="countitem" Margin="4,0,0,0" Height="22" Padding="7,0" FontSize="12" VerticalAlignment="Stretch" Content="{Binding Items.Count, Mode=OneWay}" >
+                        <Button  Name="countitem" Visibility="Visible" Margin="4,0,0,0" Height="22" Padding="7,0" FontSize="12" VerticalAlignment="Stretch" Content="{Binding Items.Count, Mode=OneWay}" >
                         </Button>
                     </StackPanel>
                 </Grid>
             </Grid>
+        
         </Border>
+
+        
+        
         <web:WebView2 Name="webview" Grid.Row="1" Source="{Binding Url, Mode=OneWay}" DefaultBackgroundColor="transparent">
 
         </web:WebView2>

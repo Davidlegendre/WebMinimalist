@@ -13,156 +13,96 @@
     d:DesignHeight="650"  
     mc:Ignorable="d"
     WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged"
-     WindowState="Maximized" Background="{ui:ThemeResource}" Icon="/Views/Windows/icons8-internet-48.png">
+     WindowState="Maximized" Icon="/Views/Windows/icons8-internet-48.png" Background="{ui:ThemeResource}">
     <Window.DataContext>
         <VM:MainWindowViewModel></VM:MainWindowViewModel>
     </Window.DataContext>
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" CaptionHeight="38"></WindowChrome>
     </WindowChrome.WindowChrome>
-    <!--<Grid Margin="{Binding MarginWindowState}" Background="{ui:ThemeResource}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <controls:SearchBar></controls:SearchBar>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="70*"></ColumnDefinition>
-                <ColumnDefinition Width="270"/>
-            </Grid.ColumnDefinitions>
-            <Grid Name="ContentBrowser" ClipToBounds="True"></Grid>
-            <ListView Name="list" Grid.Column="1" ItemsSource="{Binding TabItems, Mode=OneWay}" SelectedIndex="0" SelectionChanged="ListView_SelectionChanged">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel></StackPanel>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="48"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid>
-                                <Image Name="img" Source="{Binding ImagenUrl}" Stretch="Uniform" Height="14" Width="14" Margin="7,0"></Image>
-                                <ui:ProgressRing Name="progress" Margin="5,0" IsVisibleChanged="ProgressRing_IsVisibleChanged" HorizontalAlignment="Center" IsIndeterminate="True" Visibility="{Binding ProgressVisible}" VerticalAlignment="Center" Height="17" Width="17"></ui:ProgressRing>
-                            </Grid>
-                            <Grid Grid.Column="1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"></RowDefinition>
-                                    <RowDefinition Height="*"></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="{Binding TitleDocument}"></TextBlock>
-                                <Label Grid.Row="1" Content="{Binding URLNavigated}"></Label>
-                            </Grid>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-                
-            </ListView>
-        </Grid>
-        --><!--  The title bar contains window navigation elements and some Tray related extras.  -->
-        <!--  You can put additional controls in the header, such as a search bar.  -->
-        <!--  <ui:TitleBar.Header />  -->
-        <!--<ui:TitleBar
-            Title="{Binding ApplicationTitle, Mode=OneWay}"
-            Grid.Row="0"
-            Height="34"
-            Padding="5"
-            WindowChrome.IsHitTestVisibleInChrome="False"
-            Icon="pack://application:,,,/Assets/applicationIcon-256.png"
-            ShowMaximize="False"
-            ShowClose="False"
-            ShowMinimize="False">
-        </ui:TitleBar>--><!--
-    </Grid>-->
-    <Grid Margin="{Binding MarginWindowState, Mode=OneWay}">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"></ColumnDefinition>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid Name="content" Grid.Column="1"></Grid>
-        <Rectangle Fill="{ui:ThemeResource}" Opacity="0.2" StrokeThickness="1" Stroke="white"></Rectangle>
-
-        <Border x:Name="optionsBrowser" Width="233" Visibility="Collapsed">
-            <Grid Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <UniformGrid Columns="3" Margin="0">
-                    <ui:Button Name="addbutton" ToolTip="Agregar Pestaña" Click="addbutton_Click" Height="28" Padding="0" HorizontalAlignment="Stretch" Grid.Column="0" Margin="5" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Secondary" VerticalAlignment="Stretch" >
-                        <ui:SymbolIcon Symbol="Add12"></ui:SymbolIcon>
-                    </ui:Button>
-                    <ui:Button Name="btnDescargasOpen" Click="btnDescargasOpen_Click" Padding="0" Height="28" HorizontalAlignment="Stretch" Grid.Column="0" ToolTip="Pagina de Descargas de Edge" Margin="2,0,2,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Secondary" VerticalAlignment="Stretch" >
-                        <ui:SymbolIcon Symbol="ArrowDownload16"></ui:SymbolIcon>
-                    </ui:Button>
-                    <ui:Button Name="btnHistorialOpen" Click="btnHistorialOpen_Click" Padding="0" Height="28" HorizontalAlignment="Stretch" Grid.Column="0" ToolTip="Pagina de Historial de Edge" Margin="5" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Secondary" VerticalAlignment="Stretch" >
-                        <ui:SymbolIcon Symbol="History16"></ui:SymbolIcon>
-                    </ui:Button>
-                </UniformGrid>
-                <ListView Name="lista" SelectionMode="Single" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled"  Grid.Column="1" ItemsSource="{Binding Items, Mode=OneWay}" SelectedIndex="0" SelectionChanged="ListBox_SelectionChanged">
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Margin="0"></StackPanel>
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ui:Card Name="card" Margin="0" Padding="7" VerticalContentAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch">
-                                <ui:Card.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Name="menuItemCerrarMenosEste" Click="menuItemCerrarMenosEste_Click" Header="Cerrar todos menos este">
-                                        </MenuItem>
-                                        <MenuItem Name="menuItemCerrarTodosAbajo" Click="menuItemCerrarTodosAbajo_Click" Header="Cerrar todos hacia abajo"></MenuItem>
-                                    </ContextMenu>
-                                </ui:Card.ContextMenu>
-                                <Grid >
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
-                                        <StackPanel Orientation="Horizontal" >
+    <Grid Margin="{Binding MarginWindowState, Mode=OneWay}" >
+        <Grid Margin="0">
+            <ui:Flyout Name="flyoutPanel" Background="{ui:ThemeResource}" BorderThickness="0" VerticalAlignment="Top" >
+                <Border x:Name="optionsBrowser">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="38"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <UniformGrid Rows="1" Columns="3" Margin="0">
+                            <ui:Button Name="addBtn" Appearance="Secondary" Margin="5,0,0,0"  Click="addbutton_Click" WindowChrome.IsHitTestVisibleInChrome="True" HorizontalAlignment="Stretch" >
+                                <ui:SymbolIcon Name="symbol" Symbol="Add12"></ui:SymbolIcon>
+                            </ui:Button>
+                            <ui:Button Name="btnDescargasOpen" Appearance="Secondary"  Margin="5,0,5,0" HorizontalAlignment="Stretch" Click="btnDescargasOpen_Click" ToolTip="Pagina de Descargas de Edge" WindowChrome.IsHitTestVisibleInChrome="True" >
+                                <ui:SymbolIcon Symbol="ArrowDownload16"></ui:SymbolIcon>
+                            </ui:Button>
+                            <ui:Button Name="btnHistorialOpen" Appearance="Secondary" Margin="0,0,5,0" HorizontalAlignment="Stretch" Click="btnHistorialOpen_Click" ToolTip="Pagina de Historial de Edge" WindowChrome.IsHitTestVisibleInChrome="True" >
+                                <ui:SymbolIcon Symbol="History16"></ui:SymbolIcon>
+                            </ui:Button>
+                        </UniformGrid>
+                        <ui:VirtualizingGridView Name="lista" SelectionMode="Single" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Column="1" ItemsSource="{Binding Items, Mode=OneWay}" SelectedIndex="0" SelectionChanged="ListBox_SelectionChanged">
+                            <ui:VirtualizingGridView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="1" Margin="0"></UniformGrid>
+                                </ItemsPanelTemplate>
+                            </ui:VirtualizingGridView.ItemsPanel>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ui:Card Name="card" Margin="0" Padding="5" Width="270" VerticalContentAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch">
+                                        <ui:Card.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Name="menuItemCerrarMenosEste" Click="menuItemCerrarMenosEste_Click" Header="Cerrar todos menos este">
+                                                </MenuItem>
+                                                <MenuItem Name="menuItemCerrarTodosAbajo" Click="menuItemCerrarTodosAbajo_Click" Header="Cerrar todos a la derecha"></MenuItem>
+                                            </ContextMenu>
+                                        </ui:Card.ContextMenu>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="auto"/>
+                                            </Grid.ColumnDefinitions>
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                    <ColumnDefinition Width="auto"/>
+                                                    <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <ui:SymbolIcon Grid.Column="1" HorizontalAlignment="Left" Visibility="{Binding SoundVisibility,Mode=OneWay}" Symbol="Speaker224" Margin="2,0,6,7" FontSize="16"></ui:SymbolIcon>
-                                                <ui:SymbolIcon Symbol="{Binding ShieldIcon}" HorizontalAlignment="Left" Margin="2,0,6,7" FontSize="18" ></ui:SymbolIcon>
+                                                <StackPanel Orientation="Horizontal" Margin="5" >
+                                                    <Grid Margin="0,0,5,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                        </Grid.ColumnDefinitions>
+                                                        <ui:SymbolIcon Grid.Column="1" HorizontalAlignment="Left" Visibility="{Binding SoundVisibility,Mode=OneWay}" Symbol="Speaker224" FontSize="16"></ui:SymbolIcon>
+                                                        <ui:SymbolIcon Symbol="{Binding ShieldIcon}" HorizontalAlignment="Left"  FontSize="18" ></ui:SymbolIcon>
 
+                                                    </Grid>
+                                                    <Image Source="{Binding IMg}" Margin="0,0,5,0" Stretch="None"></Image>
+
+                                                </StackPanel>
+                                                <Grid Grid.Column="1">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"></RowDefinition>
+                                                        <RowDefinition Height="*"></RowDefinition>
+                                                    </Grid.RowDefinitions>
+                                                    <TextBlock Text="{Binding TitleDoc}" TextTrimming="CharacterEllipsis" FontFamily="Segoe UI Semibold" FontSize="14" Opacity="0.8"></TextBlock>
+
+                                                    <TextBlock ToolTip="{Binding Source}" Grid.Row="1" Text="{Binding Source}" Margin="0,0,0,0" TextTrimming="CharacterEllipsis" Opacity="0.5" FontFamily="Segoe UI Semibold" FontSize="12" ></TextBlock>
+
+                                                </Grid>
                                             </Grid>
-                                            <Image Source="{Binding IMg}" Margin="2,2,2,10" HorizontalAlignment="Left" Stretch="None"></Image>
-
-                                        </StackPanel>
-                                        <Grid Grid.Row="1">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="*"></RowDefinition>
-                                                <RowDefinition Height="*"></RowDefinition>
-                                            </Grid.RowDefinitions>
-                                            <TextBlock Text="{Binding TitleDoc}" Margin="2" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" FontFamily="Segoe UI Semibold" FontSize="14" Opacity="0.8"></TextBlock>
-
-                                            <TextBlock ToolTip="{Binding Source}" Grid.Row="1" Text="{Binding Source}" Margin="0,0,0,0" TextTrimming="CharacterEllipsis" Opacity="0.5" FontFamily="Segoe UI Semibold" FontSize="12" ></TextBlock>
-
+                                            <ui:Button Name="btnClose" Grid.Column="1" VerticalAlignment="Center" BorderThickness="0" HorizontalAlignment="Stretch" Appearance="Transparent" Click="btnClose_Click" >
+                                                <ui:SymbolIcon Symbol="Delete12"></ui:SymbolIcon>
+                                            </ui:Button>
                                         </Grid>
-                                    </Grid>
-                                    <ui:Button Name="btnClose" Grid.Column="1" VerticalAlignment="Top" BorderThickness="0" HorizontalAlignment="Stretch" Appearance="Transparent" Click="btnClose_Click" >
-                                        <ui:FontIcon Glyph="&#xE106;" FontSize="14"></ui:FontIcon>
-                                    </ui:Button>
-                                </Grid>
-                            </ui:Card>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </Grid>
-        </Border>
+                                    </ui:Card>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ui:VirtualizingGridView>
+                    </Grid>
+                </Border>
+            </ui:Flyout>
+        </Grid>
+        <Grid Name="content" Grid.Column="1"></Grid>
     </Grid>
-      
+
 </Window>

@@ -190,15 +190,17 @@ namespace WebBrowserMinimalist.Views.Controls
 
         private void menubtn_Click(object sender, RoutedEventArgs e)
         {
-            if (mainWindow.optionsBrowser.Visibility == Visibility.Collapsed)
+            if (!mainWindow.flyoutPanel.IsOpen)
             {
-                mainWindow.optionsBrowser.Visibility = Visibility.Visible;
-                Wpf.Ui.Animations.Transitions.ApplyTransition(mainWindow.optionsBrowser,
-                Wpf.Ui.Animations.TransitionType.SlideRight, 300);
+                //mainWindow.optionsBrowser.Visibility = Visibility.Visible;
+                mainWindow.flyoutPanel.Show();
+                Wpf.Ui.Animations.Transitions.ApplyTransition(mainWindow.flyoutPanel,
+                Wpf.Ui.Animations.TransitionType.FadeInWithSlide, 400);
             }
             else
             {
-                mainWindow.optionsBrowser.Visibility = Visibility.Collapsed;
+                mainWindow.flyoutPanel.Hide();
+                //mainWindow.optionsBrowser.Visibility = Visibility.Collapsed;
                
             }
         }
@@ -222,9 +224,9 @@ namespace WebBrowserMinimalist.Views.Controls
 
         private void btnSettingEngines_Click(object sender, RoutedEventArgs e)
         {
-            Settings settingsWindow = new Settings();
-            settingsWindow.Owner = mainWindow;
-            settingsWindow.ShowDialog();
+            if (!FlyoutSettingPanel.IsOpen)
+            { FlyoutSettingPanel.Show(); }
+            else { FlyoutSettingPanel.Hide(); }
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using WebBrowserMinimalist.Models;
 using WebBrowserMinimalist.ViewModels;
 using Wpf.Ui.Appearance;
@@ -119,6 +120,7 @@ namespace WebBrowserMinimalist.Views.Windows
                     content.Children.Clear();
                 }
                 content.Children.Add(selectItem.Tab);
+                lista.ScrollIntoView(selectItem);
             }
         }
 
@@ -149,6 +151,7 @@ namespace WebBrowserMinimalist.Views.Windows
             newItem.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(newItem);
             lista.SelectedItem = newItem;
+            lista.ScrollIntoView(newItem);
         }
 
         private void btnDescargasOpen_Click(object sender, RoutedEventArgs e)
@@ -158,6 +161,7 @@ namespace WebBrowserMinimalist.Views.Windows
             newItem.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(newItem);
             lista.SelectedItem = newItem;
+            lista.ScrollIntoView(newItem);
         }
 
         private void btnHistorialOpen_Click(object sender, RoutedEventArgs e)
@@ -167,6 +171,7 @@ namespace WebBrowserMinimalist.Views.Windows
             newItem.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(newItem);
             lista.SelectedItem = newItem;
+            lista.ScrollIntoView(newItem);
         }
 
         private void menuItemCerrarMenosEste_Click(object sender, RoutedEventArgs e)
@@ -187,28 +192,5 @@ namespace WebBrowserMinimalist.Views.Windows
                 _viewmodel.CerrarTodosHaciaAbajoCommand.Execute(ctx);
         }
 
-        //private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    var list = (ListView)e.Source;
-        //    var item = list.SelectedItem as TabItemModel;
-
-        //    if (item != null)
-        //    {
-        //        item.ChangeMain();
-        //        if(item.Web != null)
-        //        {
-        //            if (ContentBrowser.Children.Count > 0) ContentBrowser.Children.Remove(ContentBrowser.Children[0]);
-        //            ContentBrowser.Children.Add(item.Web);
-        //        }
-        //    }
-        //}
-
-        //private void ProgressRing_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        //{
-        //    var progress = (ProgressRing)sender;
-        //    var parent = (Grid)progress.Parent;
-        //    var img = (Image)parent.Children[0];
-        //    img.Visibility = progress.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
-        //}
     }
 }
