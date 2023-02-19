@@ -41,9 +41,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Properties\Configurations.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Configurations.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="icons8-internet-48.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
+    </None>
+    <None Update="Properties\Configurations.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Configurations.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
 

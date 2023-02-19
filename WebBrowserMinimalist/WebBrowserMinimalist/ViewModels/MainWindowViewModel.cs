@@ -61,7 +61,43 @@ namespace WebBrowserMinimalist.ViewModels
             _items.Remove(item);
         }
 
-        
+        [RelayCommand]
+        void CerrarTodosMenosEste(ItemModel? item) {
+            if (item != null)
+            {
+                ItemModel[]? items2 = new ItemModel[_items.Count];
+                 _items.CopyTo(items2, 0);
+                for (int i = 0; i < items2.Length; i++)
+                {
+                    if (items2[i].UID != item.UID)
+                    {
+                        items2[i].Tab.webview.Dispose();
+                        items2[i] = null;
+                    }
+                }
+                Items = new ObservableCollection<ItemModel>(items2.Where(x => x != null));
+            }
+        }
+
+        [RelayCommand]
+        void CerrarTodosHaciaAbajo(ItemModel? item)
+        {
+            if (item != null)
+            {
+                ItemModel[]? items2 = new ItemModel[_items.Count];
+                _items.CopyTo(items2, 0);
+                var index = Array.IndexOf(items2, item);
+                for (int i = index; i < items2.Length; i++)
+                {
+                    if (items2[i].UID != item.UID)
+                    {
+                        items2[i].Tab.webview.Dispose();
+                        items2[i] = null;
+                    }
+                }
+                Items = new ObservableCollection<ItemModel>(items2.Where(x => x != null));
+            }
+        }
 
         public MainWindowViewModel()
         {

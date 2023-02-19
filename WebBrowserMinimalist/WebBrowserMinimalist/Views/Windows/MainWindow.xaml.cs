@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using JCS;
+using Microsoft.Extensions.Configuration.Json;
 using System;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -26,16 +28,14 @@ namespace WebBrowserMinimalist.Views.Windows
         {       
             InitializeComponent();
             _viewmodel = this.DataContext as MainWindowViewModel;
-            var build = OSVersionInfo.Version.Build;
-            if(build > 19045)
             Watcher.Watch(this, BackgroundType.Mica, true, true);
-            else
-                Watcher.Watch(this, BackgroundType.Acrylic, true, true);
 
             changeThicknes();
             var item = new ItemModel();
             item.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(item);
+
+            var config = ConfigurationManager.AppSettings.Keys;
             //SetPageService(pageService);
 
             //navigationService.SetNavigationControl(RootNavigation);
@@ -119,7 +119,6 @@ namespace WebBrowserMinimalist.Views.Windows
                     content.Children.Clear();
                 }
                 content.Children.Add(selectItem.Tab);
-                selectItem.Tab.webview.Visibility = Visibility.Visible;
             }
         }
 
@@ -168,6 +167,24 @@ namespace WebBrowserMinimalist.Views.Windows
             newItem.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(newItem);
             lista.SelectedItem = newItem;
+        }
+
+        private void menuItemCerrarMenosEste_Click(object sender, RoutedEventArgs e)
+        {
+            if (lista.Items.Count > 1)
+            {
+                var button = (System.Windows.Controls.MenuItem)e.Source;
+                var ctx = (ItemModel)button.DataContext;
+                _viewmodel.CerrarTodosMenosEsteCommand.Execute(ctx);
+            }
+        }
+
+        private void menuItemCerrarTodosAbajo_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (System.Windows.Controls.MenuItem)e.Source;
+            var ctx = (ItemModel)button.DataContext;
+            if (lista.SelectedIndex != lista.Items.Count - 1)
+                _viewmodel.CerrarTodosHaciaAbajoCommand.Execute(ctx);
         }
 
         //private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)

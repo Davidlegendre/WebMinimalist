@@ -69,6 +69,13 @@ namespace WebBrowserMinimalist.ViewModels
         }
 
         [RelayCommand]
+        void Stop(WebView2? webView2)
+        {
+            if (webView2 != null)
+                webView2.CoreWebView2.Stop();
+        }
+
+        [RelayCommand]
         void Back(WebView2? webView2)
         {
             if (webView2 != null)
@@ -118,8 +125,5 @@ namespace WebBrowserMinimalist.ViewModels
                 Image = _operacionesService.GetBitmap(icon);
             });
         }
-
-
-
     }
 }

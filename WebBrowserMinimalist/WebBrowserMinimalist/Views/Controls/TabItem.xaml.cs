@@ -61,8 +61,11 @@ namespace WebBrowserMinimalist.Views.Controls
                 var uri = e.Uri;
                 var newItem = new ItemModel();
                 newItem.Tab._tabItemVM.Search(uri);
+                newItem.Tab.countitem.DataContext = mainWindow.lista;
                 mainWindow._viewmodel.Items.Add(newItem);
+
                 mainWindow.lista.SelectedItem = newItem;
+               
             }
 
         }
@@ -105,29 +108,36 @@ namespace WebBrowserMinimalist.Views.Controls
         {
             if (_tabItemVM != null)
             {
-               
-                await Task.Run(async () => await _tabItemVM.geticon(sender));
-                _tabItemVM.Refreshvisibility = Visibility.Visible;
-                _tabItemVM.ProgressVisibility = Visibility.Collapsed;
-                _tabItemVM.UrlSource = webview.CoreWebView2.Source;
-                img.Visibility = Visibility.Visible;
-                if (webview.CoreWebView2.Source.Contains("https:"))
-                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
-                else
-                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldDismiss24;
 
-                if (webview.CoreWebView2.Source.Contains("file:"))
-                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Archive24;
-                if (webview.CoreWebView2.Source == "edge://downloads/all")
-                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ArrowDownload24;
-                if (webview.CoreWebView2.Source == "edge://history/all")
-                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.History24;
+                try
+                {
+                    await Task.Run(async () => await _tabItemVM.geticon(sender));
+                    _tabItemVM.ProgressVisibility = Visibility.Collapsed;
+                    _tabItemVM.UrlSource = webview.CoreWebView2.Source;
+                    btnRefresh.Visibility = Visibility.Visible;
+                    btnStop.Visibility = Visibility.Collapsed;
+                    img.Visibility = Visibility.Visible;
+                    if (webview.CoreWebView2.Source.Contains("https:"))
+                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
+                    else
+                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldDismiss24;
 
-                ModelP.IMg = _tabItemVM.Image;
-                ModelP.Source = _tabItemVM.UrlSource;
-                ModelP.ProgressVisibility = _tabItemVM.ProgressVisibility;
-                ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
-                ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
+                    if (webview.CoreWebView2.Source.Contains("file:"))
+                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Archive24;
+                    if (webview.CoreWebView2.Source == "edge://downloads/all")
+                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ArrowDownload24;
+                    if (webview.CoreWebView2.Source == "edge://history/all")
+                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.History24;
+
+                    ModelP.IMg = _tabItemVM.Image;
+                    ModelP.Source = _tabItemVM.UrlSource;
+                    ModelP.ProgressVisibility = _tabItemVM.ProgressVisibility;
+                    ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
+                    ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -148,14 +158,14 @@ namespace WebBrowserMinimalist.Views.Controls
                 //    }
                 //    //adblock youtube
                 //}
-                _tabItemVM.Refreshvisibility = Visibility.Collapsed;
+                btnRefresh.Visibility= Visibility.Collapsed;
+                btnStop.Visibility= Visibility.Visible;
                 _tabItemVM.ProgressVisibility = Visibility.Visible;
                 img.Visibility = Visibility.Collapsed;
 
                 ModelP.Source = _tabItemVM.UrlSource;
                 ModelP.TitleDoc = _tabItemVM.TitleDocument;
                 ModelP.ProgressVisibility = _tabItemVM.ProgressVisibility;
-                ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
             }
         }
         private void txtSearch_KeyDown(object sender, KeyEventArgs e)
@@ -180,10 +190,17 @@ namespace WebBrowserMinimalist.Views.Controls
 
         private void menubtn_Click(object sender, RoutedEventArgs e)
         {
-            if (webview.Visibility == Visibility.Visible)
-                webview.Visibility = Visibility.Collapsed;
+            if (mainWindow.optionsBrowser.Visibility == Visibility.Collapsed)
+            {
+                mainWindow.optionsBrowser.Visibility = Visibility.Visible;
+                Wpf.Ui.Animations.Transitions.ApplyTransition(mainWindow.optionsBrowser,
+                Wpf.Ui.Animations.TransitionType.SlideRight, 300);
+            }
             else
-                webview.Visibility = Visibility.Visible;
+            {
+                mainWindow.optionsBrowser.Visibility = Visibility.Collapsed;
+               
+            }
         }
 
         private void btnChangeToSearch_Click(object sender, RoutedEventArgs e)
