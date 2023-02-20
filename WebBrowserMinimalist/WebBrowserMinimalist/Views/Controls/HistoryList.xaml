@@ -34,7 +34,7 @@
                             <ColumnDefinition Width="auto"></ColumnDefinition>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <ui:Button Command="{Binding ClearAllCommand}">
+                        <ui:Button Command="{Binding ClearAllCommand}" Appearance="Primary">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -76,7 +76,7 @@
                                 </StackPanel>
                             </Grid>
                         </ui:Button>
-                        <ui:Button Grid.Column="1" Name="btnClearItem" Click="btnClearItem_Click" VerticalAlignment="Stretch" Margin="5,0,0,0">
+                        <ui:Button Grid.Column="1" Appearance="Danger" Name="btnClearItem" Click="btnClearItem_Click" VerticalAlignment="Stretch" Margin="5,0,0,0">
                             <ui:SymbolIcon Symbol="Delete12"></ui:SymbolIcon>
                         </ui:Button>
                     </Grid>

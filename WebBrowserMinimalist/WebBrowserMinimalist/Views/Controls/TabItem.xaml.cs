@@ -45,6 +45,7 @@ namespace WebBrowserMinimalist.Views.Controls
             InitialWebView2();
             webview.CreationProperties = new Microsoft.Web.WebView2.Wpf.CoreWebView2CreationProperties() { IsInPrivateModeEnabled = IsIncognite };
             _previewState = mainWindow.WindowState;
+            
         }
 
         async void InitialWebView2() {
@@ -56,6 +57,7 @@ namespace WebBrowserMinimalist.Views.Controls
             webview.CoreWebView2.IsDocumentPlayingAudioChanged += CoreWebView2_IsDocumentPlayingAudioChanged;
             webview.CoreWebView2.ServerCertificateErrorDetected += CoreWebView2_ServerCertificateErrorDetected;
             webview.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
+            _historyServices.Request(webview);
         }
 
         private void CoreWebView2_ContainsFullScreenElementChanged(object? sender, object e)
@@ -166,7 +168,7 @@ namespace WebBrowserMinimalist.Views.Controls
                     btnRefresh.Visibility = Visibility.Visible;
                     btnStop.Visibility = Visibility.Collapsed;
                     img.Visibility = Visibility.Visible;
-                    CambiarIconoShield();
+                    //CambiarIconoShield();
 
                     ModelP.IMg = _tabItemVM.Image;
                     ModelP.Source = _tabItemVM.UrlSource;                    
@@ -200,8 +202,8 @@ namespace WebBrowserMinimalist.Views.Controls
                 //    }
                 //    //adblock youtube
                 //}
-
-                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Empty;
+                CambiarIconoShield();
+                
 
                 btnRefresh.Visibility= Visibility.Collapsed;
                 btnStop.Visibility= Visibility.Visible;
@@ -242,18 +244,12 @@ namespace WebBrowserMinimalist.Views.Controls
             if (!mainWindow.flyoutPanel.IsOpen)
             {
                 //mainWindow.optionsBrowser.Visibility = Visibility.Visible;
-                mainWindow.flyoutPanel.Show();
+                mainWindow.flyoutPanel.IsOpen = true;
                 mainWindow.lista.Visibility = Visibility.Visible;
                 mainWindow.historyList.Visibility = Visibility.Collapsed;
                 mainWindow.historyList.Actualizar();
                 Wpf.Ui.Animations.Transitions.ApplyTransition(mainWindow.flyoutPanel,
                 Wpf.Ui.Animations.TransitionType.FadeInWithSlide, 400);
-            }
-            else
-            {
-                mainWindow.flyoutPanel.Hide();
-                //mainWindow.optionsBrowser.Visibility = Visibility.Collapsed;
-               
             }
         }
 
@@ -277,22 +273,27 @@ namespace WebBrowserMinimalist.Views.Controls
         private void btnSettingEngines_Click(object sender, RoutedEventArgs e)
         {
             if (!FlyoutSettingPanel.IsOpen)
-            { FlyoutSettingPanel.Show(); }
-            else { FlyoutSettingPanel.Hide(); }
+            { FlyoutSettingPanel.IsOpen = true; }
         }
 
         void CambiarIconoShield() {
-            if (webview.CoreWebView2.Source.Contains("https:"))
-                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
-            else
-                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldDismiss24;
 
-            if (webview.CoreWebView2.Source.Contains("file:"))
-                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Archive24;
-            if (webview.CoreWebView2.Source == "edge://downloads/all")
-                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ArrowDownload24;
-            if (webview.CoreWebView2.Source == "edge://history/all")
-                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.History24;
+            var Source = _tabItemVM.UrlSource;
+
+            if (Source.Contains("https:"))
+                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
+            else if (Source.Contains("http:"))
+                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldDismiss24;
+            else
+            {
+
+                if (Source.Contains("file:"))
+                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Archive24;
+                if (Source == "edge://downloads/all")
+                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ArrowDownload24;
+                if (Source == "edge://history/all")
+                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.History24;
+            }
         }
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -310,9 +311,11 @@ namespace WebBrowserMinimalist.Views.Controls
                 flyResults.IsOpen = false;
         }
 
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+        private void btnItemResultSearch_Click(object sender, RoutedEventArgs e)
         {
-            var item = (HistoryModel)listResultSearch.SelectedItem;
+            var button = (Wpf.Ui.Controls.Button)sender;
+            var item = (HistoryModel)button.DataContext;
             if (item != null)
             {
                 _tabItemVM.UrlSource = item.URL;

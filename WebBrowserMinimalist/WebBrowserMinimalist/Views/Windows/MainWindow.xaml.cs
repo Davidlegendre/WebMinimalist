@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using JCS;
 using Microsoft.Extensions.Configuration.Json;
 using System;
 using System.ComponentModel;
@@ -30,12 +29,13 @@ namespace WebBrowserMinimalist.Views.Windows
         {       
             InitializeComponent();
             _viewmodel = this.DataContext as MainWindowViewModel;
-            Watcher.Watch(this, BackgroundType.Mica, true, true);
-
             changeThicknes();
             var item = new ItemModel();
             item.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(item);
+            Watcher.Watch(this, BackgroundType.Acrylic, true, true);
+
+           
 
             //SetPageService(pageService);
 
@@ -174,11 +174,6 @@ namespace WebBrowserMinimalist.Views.Windows
                 historyList.Visibility = Visibility.Visible;
                 lista.Visibility = Visibility.Collapsed;
             }
-            else
-            {
-                historyList.Visibility = Visibility.Collapsed;
-                lista.Visibility = Visibility.Visible;
-            }
         }
 
         private void menuItemCerrarMenosEste_Click(object sender, RoutedEventArgs e)
@@ -199,5 +194,13 @@ namespace WebBrowserMinimalist.Views.Windows
                 _viewmodel.CerrarTodosHaciaAbajoCommand.Execute(ctx);
         }
 
+        private void btnAtras_Click(object sender, RoutedEventArgs e)
+        {
+            if (historyList.Visibility != Visibility.Collapsed)
+            {
+                historyList.Visibility = Visibility.Collapsed;
+                lista.Visibility = Visibility.Visible;
+            }
+        }
     }
 }
