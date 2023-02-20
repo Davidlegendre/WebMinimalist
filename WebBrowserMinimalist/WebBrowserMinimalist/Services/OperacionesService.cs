@@ -21,6 +21,8 @@ namespace WebBrowserMinimalist.Services
            { TypeSearchEngine.DockDockGo, new Valores() { URL = "https://duckduckgo.com/?q=", Value = 2 }}
        };
 
+        string[] _domains = new[] { ".com", ".net", ".app", ".org" };
+
 
         public OperacionesService() {
             var value = WebBrowserMinimalist.Properties.Configurations.Default.MotorBusqueda;
@@ -28,6 +30,20 @@ namespace WebBrowserMinimalist.Services
             //var value = ConfigurationManager.AppSettings.Get("MotorSelect");
             //_engine = SettingEngines.FirstOrDefault(x => x.Value.Value == Convert.ToInt32(value)).Key;
         }
+
+        public bool PerteneceADominio(string url)
+        {
+            bool result = false;
+            foreach(var domain in _domains) {
+                if (url.Contains(domain))
+                {
+                    result = true;
+                    break;
+                }
+            }
+            return result;
+        }
+
 
         public void SetEngine(TypeSearchEngine engine)
         {

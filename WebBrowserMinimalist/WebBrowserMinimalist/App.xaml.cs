@@ -30,28 +30,17 @@ namespace WebBrowserMinimalist
                 // App Host
                 services.AddHostedService<ApplicationHostService>();
 
-                //// Page resolver service
-                //services.AddSingleton<IPageService, PageService>();
-
                 // Theme manipulation
                 services.AddSingleton<IThemeService, ThemeService>();
 
                 // TaskBar manipulation
                 services.AddSingleton<ITaskBarService, TaskBarService>();
 
-                //// Service containing navigation, same as INavigationWindow... but without window
-                //services.AddSingleton<INavigationService, NavigationService>();
 
                 // Main window with navigation
                 services.AddScoped<Views.Windows.MainWindow>();
                 services.AddSingleton<OperacionesService>();
-                //services.AddScoped<ViewModels.MainWindowViewModel>();
-
-                // Views and ViewModels
-                //services.AddScoped<Views.Pages.MainPage>();
-                //services.AddScoped<ViewModels.MainPageViewModel>();
-                //services.AddScoped<Views.Pages.SettingsPage>();
-                //services.AddScoped<ViewModels.SettingsViewModel>();
+                services.AddSingleton<HistoryServices>();
 
                 // Configuration
                 services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));

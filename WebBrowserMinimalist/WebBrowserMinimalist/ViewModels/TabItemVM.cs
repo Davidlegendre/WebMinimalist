@@ -4,6 +4,8 @@ using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -11,9 +13,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
+using WebBrowserMinimalist.Models;
 using WebBrowserMinimalist.Services;
+using WebBrowserMinimalist.Views.Controls;
 using WebBrowserMinimalist.Views.Windows;
 using Wpf.Ui.Common;
 using Wpf.Ui.Controls;
@@ -26,6 +31,8 @@ namespace WebBrowserMinimalist.ViewModels
 
         static Uri _DefaultUriImg => new Uri("/Assets/applicationIcon-256.png", UriKind.RelativeOrAbsolute);
         private readonly OperacionesService _operacionesService;
+        
+        
         public TabItemVM()
         {
             _operacionesService = App.GetService<OperacionesService>();
@@ -40,6 +47,13 @@ namespace WebBrowserMinimalist.ViewModels
 
         [ObservableProperty]
         string _UrlSource = "Navigating";
+
+        [ObservableProperty]
+        bool _IsNotIncognit = true;
+
+        [ObservableProperty]
+        ObservableCollection<HistoryModel>? _ResultItems = new ObservableCollection<HistoryModel>();
+
 
         [ObservableProperty]
         Uri? _Url;
@@ -57,7 +71,7 @@ namespace WebBrowserMinimalist.ViewModels
         [ObservableProperty]
         Visibility _progressVisibility = Visibility.Collapsed;
 
-        
+
 
         [RelayCommand]
         void Refresh(WebView2? webView2) {
@@ -65,7 +79,7 @@ namespace WebBrowserMinimalist.ViewModels
             {
                 webView2.CoreWebView2.Reload();
                 UrlSource = webView2.CoreWebView2.Source;
-            }        
+            }
         }
 
         [RelayCommand]
@@ -83,7 +97,7 @@ namespace WebBrowserMinimalist.ViewModels
                 webView2.CoreWebView2.GoBack();
             }
         }
-        
+
         [RelayCommand]
         void Left(WebView2? webView2)
         {
@@ -93,16 +107,16 @@ namespace WebBrowserMinimalist.ViewModels
             }
         }
 
-        
         public void Search(string? texto) {
             if (texto != null) {
-                if (Uri.IsWellFormedUriString(texto, UriKind.Absolute))
+                if (Uri.IsWellFormedUriString(texto, UriKind.Absolute) || _operacionesService.PerteneceADominio(texto))
                 {
                     if (!texto.Contains("http:") && !texto.Contains("https:") 
                         && !texto.Contains("edge:") && !texto.Contains("file:"))
                         texto = "https://" + texto;
-                    UrlSource = texto;
+                   
                     Url = new Uri(texto);
+                    UrlSource = texto;
                 }
                 else
                 {

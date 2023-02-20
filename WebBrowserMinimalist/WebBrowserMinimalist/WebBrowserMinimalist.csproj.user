@@ -9,7 +9,7 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Views\Controls\SearchBar.xaml.cs">
+    <Compile Update="Views\Controls\HistoryList.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\Controls\SettingsControls.xaml.cs">
@@ -20,19 +20,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\Controls\SearchBar.xaml">
+    <Page Update="Views\Controls\HistoryList.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Controls\SettingsControls.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Controls\TabItem.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\Pages\MainPage.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\Pages\SettingsPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Windows\MainWindow.xaml">

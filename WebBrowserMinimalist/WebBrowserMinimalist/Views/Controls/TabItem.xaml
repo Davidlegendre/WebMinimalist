@@ -9,7 +9,7 @@
              xmlns:helpers="clr-namespace:WebBrowserMinimalist.Helpers"
              xmlns:web="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="484">
+             d:DesignHeight="450" d:DesignWidth="484" >
     <UserControl.DataContext>
         <context:TabItemVM ></context:TabItemVM>
     </UserControl.DataContext>
@@ -18,10 +18,10 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="38"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border  VerticalAlignment="Stretch" BorderThickness="0,0,0,1" >
+        <Border x:Name="toolBar" VerticalAlignment="Stretch" Height="38" BorderThickness="0,0,0,1" >
             <Border.BorderBrush>
                 <SolidColorBrush Color="white" Opacity="0.2"/>
             </Border.BorderBrush>
@@ -40,7 +40,7 @@
                             <ui:SymbolIcon Symbol="ArrowReset24" Filled="True"></ui:SymbolIcon>
                         </ui:Button>
                         <ui:Button Name="btnStop" Visibility="Collapsed" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding StopCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
-                            <ui:SymbolIcon Symbol="Stop16" Filled="True"></ui:SymbolIcon>
+                            <ui:SymbolIcon Symbol="Stop16"></ui:SymbolIcon>
                         </ui:Button>
                     </Grid>
                     <ui:Button  WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" Command="{Binding LeftCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding  CanGoForward,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderBrush="Transparent" VerticalAlignment="Stretch" >
@@ -53,18 +53,55 @@
                         <ColumnDefinition Width="auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+                    <Grid Name="URLSearchBar" MaxWidth="400" Margin="10,0,26,0" Visibility="Collapsed" Grid.Column="1" >
 
-                    <Grid Name="URLSearchBar" MaxWidth="400" Margin="10,0,10,0" Visibility="Collapsed" Grid.Column="1" >
-
-                        <ui:Badge ClipToBounds="True" BorderThickness="0" HorizontalAlignment="Center" Background="Transparent" MaxWidth="400" Padding="0" Width="{Binding ActualWidth,ElementName=URLSearchBar}" Height="28" HorizontalContentAlignment="Center" >
+                        <ui:Badge BorderThickness="0" HorizontalAlignment="Center" Background="Transparent" MaxWidth="400" Padding="0" Width="{Binding ActualWidth,ElementName=URLSearchBar}" Height="28" HorizontalContentAlignment="Center" >
 
                             <Grid>
-                                <Rectangle Grid.ColumnSpan="10" Fill="{Binding Foreground,ElementName=symbol}" Opacity="0.1" RadiusX="3.563" RadiusY="3.563"></Rectangle>
-                                <ui:TextBox ClipToBounds="True" Icon="Empty" Name="TxtSearch"  Text="{Binding UrlSource}" MouseDoubleClick="TxtSearch_MouseDoubleClick" KeyDown="txtSearch_KeyDown" VerticalAlignment="Stretch" ClearButtonEnabled="False" WindowChrome.IsHitTestVisibleInChrome="True"  BorderThickness="0" Background="Transparent"  PlaceholderText="url or Search" TextAlignment="Center"  Padding="30,2,30,0" BorderBrush="{x:Null}"/>
-                                <ui:Button Name="ReturnToIndicator" ToolTip="Cerrar Barra de Busqueda" Click="ReturnToIndicator_Click" Padding="5,2,5,5" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                                <Rectangle Grid.ColumnSpan="10" Fill="{Binding Foreground,ElementName=symbol}" Opacity="0.2" RadiusX="3.563" RadiusY="3.563"></Rectangle>
+
+                                <ui:TextBox TextChanged="TxtSearch_TextChanged" Foreground="{Binding Foreground,ElementName=symbol}" 
+                                            CaretBrush="{Binding Foreground,ElementName=symbol}" FontFamily="Segoe UI" FontSize="14" 
+                                            ClipToBounds="True" 
+                                            Icon="Empty" Name="TxtSearch"  Text="{Binding UrlSource}" 
+                                            MouseDoubleClick="TxtSearch_MouseDoubleClick" KeyDown="txtSearch_KeyDown" 
+                                            VerticalAlignment="Stretch" ClearButtonEnabled="False" 
+                                            WindowChrome.IsHitTestVisibleInChrome="True"  BorderThickness="0" 
+                                            Background="Transparent"  PlaceholderText="url or Search" 
+                                            TextAlignment="Center" VerticalContentAlignment="Center" 
+                                            Padding="30,0,30,0" BorderBrush="{x:Null}"
+                                            />
+                                <Popup Name="flyResults"
+                                          AllowsTransparency="true" 
+                                          Placement="Bottom"  
+                                          StaysOpen="False"
+                                          PopupAnimation="Fade" Width="{Binding ActualWidth,ElementName=URLSearchBar}">
+                                    <ui:Card Padding="2" Background="{ui:ThemeResource}">
+                                        <ListView Name="listResultSearch" ItemsSource="{Binding ResultItems,Mode=OneWay}" SelectionMode="Single" SelectionChanged="ListView_SelectionChanged" >
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <ui:SymbolIcon Symbol="History16" FontSize="20" Margin="0,0,7,0"></ui:SymbolIcon>
+                                                        <StackPanel Grid.Column="1" >
+                                                            <TextBlock Text="{Binding TitleDocument}"></TextBlock>
+                                                            <TextBlock Text="{Binding URL}" Opacity="0.5"></TextBlock>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </ui:Card>
+                                </Popup>
+
+                                <ui:Button Name="ReturnToIndicator" ToolTip="Cerrar Barra de Busqueda"
+                                           Click="ReturnToIndicator_Click" HorizontalContentAlignment="Center" Padding="5" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                                     <ui:SymbolIcon Symbol="ArrowRight12" Filled="True" FontSize="16"></ui:SymbolIcon>
                                 </ui:Button>
-                                <ui:Button Name="btnSettingEngines" ToolTip="Configuracion de Motor de Busqueda" HorizontalAlignment="Right" Click="btnSettingEngines_Click" WindowChrome.IsHitTestVisibleInChrome="True" Padding="5,2,5,5" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                                <ui:Button Name="btnSettingEngines" ToolTip="Configuracion de Motor de Busqueda" HorizontalAlignment="Right" Click="btnSettingEngines_Click" WindowChrome.IsHitTestVisibleInChrome="True" Padding="5" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                                     <ui:SymbolIcon Symbol="Settings20" FontSize="16"></ui:SymbolIcon>
                                 </ui:Button>
 
@@ -72,19 +109,19 @@
                         </ui:Badge>
 
                     </Grid>
-                    <ui:Badge x:Name="IndicatorDocumentPage" Margin="5,0,10,0"  Background="Transparent" Grid.Column="1" MaxWidth="400" Padding="0" Height="28" >
+                    <ui:Badge x:Name="IndicatorDocumentPage" Margin="5,0,26,0"  Background="Transparent" Grid.Column="1" MaxWidth="400" Padding="0" Height="28" >
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
-                            <Rectangle Grid.ColumnSpan="10" Fill="{Binding Foreground,ElementName=symbol}" Opacity="0.1" RadiusX="3.563" RadiusY="3.563"></Rectangle>
+                            <Rectangle Grid.ColumnSpan="10" Fill="{Binding Foreground,ElementName=symbol}" Opacity="0.2" RadiusX="3.563" RadiusY="3.563"></Rectangle>
                             <StackPanel Orientation="Horizontal" Margin="4,0,0,0">
-                                <ui:SymbolIcon Name="symbol" Symbol="{Binding ShieldIcon}" Margin="4,0,6,0" FontSize="18"></ui:SymbolIcon>
+                                <ui:SymbolIcon Name="symbol" Symbol="{Binding ShieldIcon}" Margin="4,0,6,0" Filled="True" FontSize="18"></ui:SymbolIcon>
                                 <ui:SymbolIcon Visibility="{Binding SoundVisibility,Mode=OneWay}" Symbol="Speaker224" Margin="2,0,6,0" FontSize="16"></ui:SymbolIcon>
                             </StackPanel>
-                            <ui:Button  Name="btnChangeToSearch" Click="btnChangeToSearch_Click" Padding="7,2,7,5" Grid.Column="3" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                            <ui:Button  Name="btnChangeToSearch" Click="btnChangeToSearch_Click" Padding="5" Grid.Column="3" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                                 <ui:SymbolIcon Symbol="Search12" Filled="True" FontSize="12"></ui:SymbolIcon>
                             </ui:Button>
                             <Grid HorizontalAlignment="Center" Grid.Column="1">
@@ -94,7 +131,7 @@
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                     <ColumnDefinition Width="auto"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <ui:ProgressRing Name="progressring" Grid.Column="1" IsIndeterminate="True" Visibility="{Binding ProgressVisibility}" Height="16" Width="16"></ui:ProgressRing>
+                                <ui:ProgressRing Name="progressring" Grid.Column="1" IsIndeterminate="True" Progress="0" Visibility="{Binding ProgressVisibility}" Height="16" Width="16"></ui:ProgressRing>
 
                                 <Image Name="img" Source="{Binding Image}" Grid.Column="1" Height="16" Width="16" Stretch="None"></Image>
                                 <TextBlock VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="{Binding TitleDocument}" FontSize="13" Grid.Column="2" Foreground="{Binding Foreground, ElementName=symbol}" HorizontalAlignment="Stretch" Opacity="1" FontStretch="ExtraExpanded" Text="{Binding TitleDocument}" Margin="7,0,0,0" Padding="0" TextTrimming="CharacterEllipsis" FontFamily="Segoe UI Semibold" />
@@ -118,10 +155,12 @@
         
         </Border>
 
-        
-        
-        <web:WebView2 Name="webview" Grid.Row="1" Source="{Binding Url, Mode=OneWay}" DefaultBackgroundColor="transparent">
 
+
+        <web:WebView2 Name="webview" Grid.Row="1" Source="{Binding Url}" DefaultBackgroundColor="transparent">
+            <web:WebView2.CreationProperties>
+                <web:CoreWebView2CreationProperties IsInPrivateModeEnabled="True"></web:CoreWebView2CreationProperties>
+            </web:WebView2.CreationProperties>
         </web:WebView2>
 
 

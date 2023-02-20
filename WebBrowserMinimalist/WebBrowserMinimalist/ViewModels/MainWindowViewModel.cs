@@ -22,7 +22,10 @@ namespace WebBrowserMinimalist.ViewModels
     public partial class MainWindowViewModel : ObservableObject
     {
         private bool _isInitialized = false;
+
         static Uri _DefaultUriImg => new Uri("/Assets/applicationIcon-256.png", UriKind.RelativeOrAbsolute);
+
+        public bool IsFullScreen { get; set; } = false;
 
         [ObservableProperty]
         private string _applicationTitle = String.Empty;
@@ -44,11 +47,6 @@ namespace WebBrowserMinimalist.ViewModels
 
         [ObservableProperty]
         private Thickness _marginWindowState = new Thickness(0);
-
-
-        [ObservableProperty]
-        ObservableCollection<TabItemModel>? _tabItems = null;
-
 
         [ObservableProperty]
         ObservableCollection<ItemModel>? _items = new ObservableCollection<ItemModel>();

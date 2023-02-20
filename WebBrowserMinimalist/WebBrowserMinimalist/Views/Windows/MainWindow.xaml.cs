@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using WebBrowserMinimalist.Models;
 using WebBrowserMinimalist.ViewModels;
 using Wpf.Ui.Appearance;
@@ -36,7 +37,6 @@ namespace WebBrowserMinimalist.Views.Windows
             item.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(item);
 
-            var config = ConfigurationManager.AppSettings.Keys;
             //SetPageService(pageService);
 
             //navigationService.SetNavigationControl(RootNavigation);
@@ -152,6 +152,9 @@ namespace WebBrowserMinimalist.Views.Windows
             _viewmodel.Items.Add(newItem);
             lista.SelectedItem = newItem;
             lista.ScrollIntoView(newItem);
+            historyList.Visibility = Visibility.Collapsed;
+            lista.Visibility = Visibility.Visible;
+           
         }
 
         private void btnDescargasOpen_Click(object sender, RoutedEventArgs e)
@@ -166,12 +169,16 @@ namespace WebBrowserMinimalist.Views.Windows
 
         private void btnHistorialOpen_Click(object sender, RoutedEventArgs e)
         {
-            var newItem = new ItemModel();
-            newItem.Tab._tabItemVM.Search("edge://history/all");
-            newItem.Tab.countitem.DataContext = lista;
-            _viewmodel.Items.Add(newItem);
-            lista.SelectedItem = newItem;
-            lista.ScrollIntoView(newItem);
+            if (historyList.Visibility != Visibility.Visible)
+            {
+                historyList.Visibility = Visibility.Visible;
+                lista.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                historyList.Visibility = Visibility.Collapsed;
+                lista.Visibility = Visibility.Visible;
+            }
         }
 
         private void menuItemCerrarMenosEste_Click(object sender, RoutedEventArgs e)

@@ -36,7 +36,7 @@
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Image Source="{Binding Image}" Width="16" Height="16"></Image>
+                            <ui:SymbolIcon Symbol="ReceiptSearch20" ></ui:SymbolIcon>
                             <Label Content="{Binding Name}" Opacity="1" Foreground="{Binding Foreground,ElementName=symbol}" Grid.Column="1" FontFamily="Segoe UI Semibold" VerticalAlignment="Center" Margin="5,1,0,0"></Label>
                         </Grid>
                     </RadioButton>

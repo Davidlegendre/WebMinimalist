@@ -20,21 +20,18 @@ namespace WebBrowserMinimalist.ViewModels
             {
                 typeSearchEngine = Services.TypeSearchEngine.Google,
                 Name = "Google",
-                Image = new Uri("https://img.icons8.com/fluency/48/null/google-logo.png", UriKind.RelativeOrAbsolute),
                 IsSelected = _operacionesService.GetEngine() == TypeSearchEngine.Google
             });
             Settings.Add(new SettingModel()
             {
                 typeSearchEngine = Services.TypeSearchEngine.Bing,
                 Name = "Bing",
-                Image = new Uri("https://img.icons8.com/fluency/48/null/bing--v1.png", UriKind.RelativeOrAbsolute),
                 IsSelected = _operacionesService.GetEngine() == TypeSearchEngine.Bing
             });
             Settings.Add(new SettingModel()
             {
                 typeSearchEngine = Services.TypeSearchEngine.DockDockGo,
                 Name = "Duck Duck Go",
-                Image = new Uri("https://img.icons8.com/fluency/48/null/duckduckgo.png", UriKind.RelativeOrAbsolute),
                 IsSelected = _operacionesService.GetEngine() == TypeSearchEngine.DockDockGo
             });
         } 

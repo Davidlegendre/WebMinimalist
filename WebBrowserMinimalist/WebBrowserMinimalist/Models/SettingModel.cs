@@ -11,7 +11,6 @@ namespace WebBrowserMinimalist.Models
     {
         public TypeSearchEngine typeSearchEngine { get; set; }
         public string Name { get; set; }
-        public Uri Image { get; set; }
         public bool IsSelected { get; set; }
     }
 }
