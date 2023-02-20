@@ -30,11 +30,7 @@
                     <ColumnDefinition Width="140"/>
                 </Grid.ColumnDefinitions>
                 <Rectangle Fill="{Binding Foreground,ElementName=symbol}" Height="1" VerticalAlignment="Bottom" Opacity="0.2" HorizontalAlignment="Stretch" Grid.ColumnSpan="10" RadiusX="1" RadiusY="1"></Rectangle>
-                <Rectangle Grid.ColumnSpan="10" Opacity="1">
-                    <Rectangle.Fill>
-                        <VisualBrush Visual="{Binding ElementName=webview}"></VisualBrush>
-                    </Rectangle.Fill>
-                </Rectangle>
+                
                 <StackPanel Orientation="Horizontal" Margin="4">
                     <ui:Button  WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding BackCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding CanGoBack,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                         <ui:SymbolIcon Symbol="ArrowLeft12"></ui:SymbolIcon>
@@ -177,13 +173,12 @@
         </Border>
 
 
-
-        <web:WebView2 Name="webview" Grid.Row="1" Source="{Binding Url}" DefaultBackgroundColor="transparent">
-            <web:WebView2.CreationProperties>
-                <web:CoreWebView2CreationProperties IsInPrivateModeEnabled="True"></web:CoreWebView2CreationProperties>
-            </web:WebView2.CreationProperties>
-        </web:WebView2>
-
-
+        <Grid Name="navegador" Grid.Row="1">
+            <web:WebView2 Name="webview"  Source="{Binding Url}" DefaultBackgroundColor="transparent" >
+                <web:WebView2.CreationProperties>
+                    <web:CoreWebView2CreationProperties IsInPrivateModeEnabled="True"></web:CoreWebView2CreationProperties>
+                </web:WebView2.CreationProperties>
+            </web:WebView2>
+        </Grid>
     </Grid>
 </UserControl>

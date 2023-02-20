@@ -23,6 +23,7 @@
     <Grid Margin="{Binding MarginWindowState, Mode=OneWay}" >
         <Grid>
             <Grid Height="38" VerticalAlignment="Top">
+               
                 <Popup  Name="flyoutPanel"
                                           AllowsTransparency="true" 
                                           Placement="Bottom"  
