@@ -316,6 +316,11 @@ namespace WebBrowserMinimalist.Views.Controls
                     flyResults.IsOpen = true;
                     _tabItemVM.ResultItems = new System.Collections.ObjectModel.ObservableCollection<HistoryModel>(result);
                 }
+                else
+                {
+                    flyResults.IsOpen = false;
+                    _tabItemVM.ResultItems = new System.Collections.ObjectModel.ObservableCollection<HistoryModel>();
+                }
             }
             else if (flyResults != null)
                 flyResults.IsOpen = false;

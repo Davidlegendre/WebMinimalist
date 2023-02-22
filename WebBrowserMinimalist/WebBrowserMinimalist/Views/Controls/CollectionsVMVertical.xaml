@@ -111,7 +111,7 @@
                                                 </MenuItem>
                                             </ContextMenu>
                                         </ui:Button.ContextMenu>
-                                        <TextBlock Text="{Binding TituloDocumento}" TextTrimming="CharacterEllipsis"></TextBlock>
+                                        <TextBlock Text="{Binding TituloDocumento}" ToolTip="{Binding TituloDocumento}" TextTrimming="CharacterEllipsis"></TextBlock>
                                     </ui:Button>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
