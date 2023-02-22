@@ -9,6 +9,12 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\Controls\Collections Windows\AgregarColeccionWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Controls\CollectionsVMVertical.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Controls\HistoryList.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -20,6 +26,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Views\Controls\Collections Windows\AgregarColeccionWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Controls\CollectionsVMVertical.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\Controls\HistoryList.xaml">
       <SubType>Designer</SubType>
     </Page>

@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using WebBrowserMinimalist.Models;
+using WebBrowserMinimalist.Services;
 using WebBrowserMinimalist.ViewModels;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -33,7 +34,8 @@ namespace WebBrowserMinimalist.Views.Windows
             var item = new ItemModel();
             item.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(item);
-            Watcher.Watch(this, BackgroundType.Acrylic, true, true);
+            
+            Watcher.Watch(this, BackgroundType.Mica, true, true);
 
            
 
@@ -121,6 +123,7 @@ namespace WebBrowserMinimalist.Views.Windows
                 }
                 content.Children.Add(selectItem.Tab);
                 lista.ScrollIntoView(selectItem);
+                
             }
         }
 
@@ -145,7 +148,7 @@ namespace WebBrowserMinimalist.Views.Windows
             }    
            
         }
-        private void addbutton_Click(object sender, RoutedEventArgs e)
+        public void addbutton_Click(object sender, RoutedEventArgs e)
         {
             var newItem = new ItemModel();
             newItem.Tab.countitem.DataContext = lista;
@@ -171,8 +174,10 @@ namespace WebBrowserMinimalist.Views.Windows
         {
             if (historyList.Visibility != Visibility.Visible)
             {
+                btnAtras.Visibility = Visibility.Visible;
                 historyList.Visibility = Visibility.Visible;
                 lista.Visibility = Visibility.Collapsed;
+                Wpf.Ui.Animations.Transitions.ApplyTransition(historyList, Wpf.Ui.Animations.TransitionType.SlideRight, 400);
             }
         }
 
@@ -196,10 +201,50 @@ namespace WebBrowserMinimalist.Views.Windows
 
         private void btnAtras_Click(object sender, RoutedEventArgs e)
         {
-            if (historyList.Visibility != Visibility.Collapsed)
+
+
+            if (lista.Visibility != Visibility.Visible)
             {
                 historyList.Visibility = Visibility.Collapsed;
                 lista.Visibility = Visibility.Visible;
+                btnAtras.Visibility = Visibility.Collapsed;
+                
+                Wpf.Ui.Animations.Transitions.ApplyTransition(lista, Wpf.Ui.Animations.TransitionType.SlideLeft, 400);
+            }
+        }
+
+        private void btnCollectionsOpen_Click(object sender, RoutedEventArgs e)
+        {
+            if (Colecciones.Visibility != Visibility.Visible)
+            {
+                //btnAtras.Visibility = Visibility.Visible;
+                Colecciones.Visibility = Visibility.Visible;
+                flyoutPanel.IsOpen = false;
+                //lista.Visibility = Visibility.Collapsed;
+                Wpf.Ui.Animations.Transitions.ApplyTransition(Colecciones, Wpf.Ui.Animations.TransitionType.FadeInWithSlide, 400);
+            }
+            else
+            {
+                Colecciones.Visibility = Visibility.Collapsed;
+                flyoutPanel.IsOpen = false;
+
+            }
+        }
+
+        private void ProgressRing_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var progressRing = (Wpf.Ui.Controls.ProgressRing)sender;
+            if (progressRing.Visibility != Visibility.Visible)
+                progressRing.IsIndeterminate = false;
+            else
+                progressRing.IsIndeterminate = true;
+        }
+
+        private void btnCloseCollections_Click(object sender, RoutedEventArgs e)
+        {
+            if (Colecciones.Visibility == Visibility.Visible)
+            {
+                Colecciones.Visibility = Visibility.Collapsed;
             }
         }
     }

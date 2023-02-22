@@ -41,11 +41,11 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="auto"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <ui:SymbolIcon Symbol="Eraser20" Margin="0,0,7,0"></ui:SymbolIcon>
-                                <TextBlock Text="Borrar Todo" Grid.Column="1"></TextBlock>
+                                <ui:SymbolIcon Symbol="Eraser20" Filled="True" Foreground="{Binding Foreground,ElementName=tb}" Margin="0,0,7,0"></ui:SymbolIcon>
+                                <TextBlock Name="tb" Text="Borrar Todo" Grid.Column="1"></TextBlock>
                             </Grid>
                         </ui:Button>
-                        <ui:Card Grid.Column="1" Margin="5,0,0,0" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Opacity="0.7" HorizontalContentAlignment="Center">
+                        <ui:Card Grid.Column="1" Margin="7,0,0,0" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Opacity="0.7" HorizontalContentAlignment="Center">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Margin="7,0,0,0" Text="{Binding ListaHistorial.Count}" Grid.Column="2"></TextBlock>
                                 <TextBlock Margin="7,0,7,0" Text="Items" Grid.Column="2"></TextBlock>
@@ -55,7 +55,12 @@
                 </StackPanel>
             </Grid>
         </ui:Card>
-        <ListView Name="listResultSearch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Row="1" ItemsSource="{Binding ListaHistorial,Mode=OneWay}" SelectionMode="Single">
+        <ListView Name="listResultSearch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Row="1" ItemsSource="{Binding ListaHistorial, Mode=OneWay}" SelectionMode="Single">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="1"></UniformGrid>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -63,7 +68,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <ui:Button Name="historyBtn" Height="58" HorizontalContentAlignment="Stretch" VerticalAlignment="Top" HorizontalAlignment="Stretch" Click="historyBtn_Click">
+                        <ui:Button Name="historyBtn" Height="58" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="historyBtn_Click">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -71,12 +76,12 @@
                                 </Grid.ColumnDefinitions>
                                 <ui:SymbolIcon Symbol="History16" FontSize="20" Margin="0,0,7,0"></ui:SymbolIcon>
                                 <StackPanel Grid.Column="1" >
-                                    <TextBlock Text="{Binding TitleDocument}" TextTrimming="CharacterEllipsis" ToolTip="{Binding TitleDocument}"></TextBlock>
-                                    <TextBlock Text="{Binding URL}" Opacity="0.5" TextTrimming="CharacterEllipsis" ToolTip="{Binding URL}"></TextBlock>
+                                    <TextBlock Text="{Binding title}" TextTrimming="CharacterEllipsis" ToolTip="{Binding TitleDocument}"></TextBlock>
+                                    <TextBlock Text="{Binding url}" Opacity="0.5" TextTrimming="CharacterEllipsis" ToolTip="{Binding URL}"></TextBlock>
                                 </StackPanel>
                             </Grid>
                         </ui:Button>
-                        <ui:Button Grid.Column="1" Appearance="Danger" Name="btnClearItem" Click="btnClearItem_Click" VerticalAlignment="Stretch" Margin="5,0,0,0">
+                        <ui:Button Grid.Column="1" Appearance="Danger" Name="btnClearItem" Click="btnClearItem_Click" Width="40" VerticalAlignment="Stretch" Margin="5,0,0,0">
                             <ui:SymbolIcon Symbol="Delete12"></ui:SymbolIcon>
                         </ui:Button>
                     </Grid>

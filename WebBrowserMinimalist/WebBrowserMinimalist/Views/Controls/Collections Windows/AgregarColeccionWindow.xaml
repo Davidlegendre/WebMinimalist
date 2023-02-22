@@ -1,0 +1,83 @@
+﻿<ui:UiWindow x:Class="WebBrowserMinimalist.Views.Controls.Collections_Windows.AgregarColeccionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WebBrowserMinimalist.Views.Controls.Collections_Windows"
+        mc:Ignorable="d"
+        ExtendsContentIntoTitleBar="True"
+        WindowCornerPreference="Round"
+        WindowBackdropType="Mica"
+        ResizeMode="NoResize"
+        Title="Crear Coleccion" Height="386" Width="464" WindowStartupLocation="CenterOwner" Background="{ui:ThemeResource}" Icon="/Views/Windows/icons8-internet-48.png">
+    <Grid Margin="17">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <ui:SymbolIcon Name="symbol" Symbol="Collections24" FontSize="20" Margin="0,0,7,0"></ui:SymbolIcon>
+            <Label Name="titleW" Content="Crear Coleccion" Foreground="{Binding Foreground, ElementName=symbol}" FontSize="16" ></Label>
+        </StackPanel>
+        <Grid Grid.Row="1" Margin="0,7,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <DockPanel >
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Text="Titulo" Foreground="{Binding Foreground, ElementName=symbol}"></TextBlock>
+                    <ui:TextBox Name="txtTitulo" Margin="0,7,0,0"  PlaceholderText="Titulo"></ui:TextBox>
+                </StackPanel>
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Color de Fondo" Margin="0,7,0,0" Foreground="{Binding Foreground, ElementName=symbol}"></TextBlock>
+                    <ui:Card Margin="0,7,0,0" Padding="0">
+                        <ListView Name="listColor" SelectionMode="Single" SelectedIndex="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="3"></UniformGrid>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ui:CardColor Color="#0FFFFFFF" Title="Ninguno"  Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Subtitle="Transparent">
+
+                            </ui:CardColor>
+                            <ui:CardColor Color="#e39d13" Title="#e39d13"  Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Subtitle="#e39d13">
+                                
+                            </ui:CardColor>
+                            <ui:CardColor Color="#b39676" Title="#b39676"  Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Subtitle="#b39676">
+
+                            </ui:CardColor>
+                            <ui:CardColor Color="#20bbd8" Title="#20bbd8"  Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Subtitle="#20bbd8">
+
+                            </ui:CardColor>
+                            <ui:CardColor Color="#c0e369" Title="#c0e369"  Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Subtitle="#c0e369">
+
+                            </ui:CardColor>
+                            <ui:CardColor Color="#59596e" Title="#59596e"  Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Subtitle="#59596e">
+
+                            </ui:CardColor>
+                            <ui:CardColor Color="#614d2f" Title="#614d2f"  Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Subtitle="#614d2f">
+
+                            </ui:CardColor>
+                        </ListView>
+                    </ui:Card>
+                </DockPanel>
+            </DockPanel>
+            <UniformGrid Columns="1" Margin="7"  Grid.Column="1" VerticalAlignment="Top">
+                <ui:Button Name="btnAddOrMod" Click="btnAddOrMod_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="68">
+                    <StackPanel>
+                        <ui:SymbolIcon Name="SymbolAddOrMod" Symbol="Add24"></ui:SymbolIcon>
+                        <TextBlock x:Name="txtBtnAddOrMod" Text="Crear Coleccion" FontSize="12" Margin="0,7,0,0"></TextBlock>
+                    </StackPanel>
+                </ui:Button>
+                <ui:Button Name="btnCancelar" Click="btnCancelar_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="68" Margin="0,7,0,0">
+                    <StackPanel>
+                        <ui:SymbolIcon Symbol="ArrowExit20"></ui:SymbolIcon>
+                        <TextBlock Text="Cancelar" FontSize="12" Margin="0,7,0,0"></TextBlock>
+                    </StackPanel>
+                </ui:Button>
+            </UniformGrid>
+        </Grid>
+    </Grid>
+</ui:UiWindow>

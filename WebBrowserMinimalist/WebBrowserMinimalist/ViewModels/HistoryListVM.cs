@@ -27,18 +27,19 @@ namespace WebBrowserMinimalist.ViewModels
         ObservableCollection<HistoryModel> _listaHistorial = new ObservableCollection<HistoryModel>();
 
         [RelayCommand]
-        void ClearHistorial(HistoryModel? historyModel) {
+       void ClearHistorial(HistoryModel? historyModel) {
            if(historyModel != null)
             {
                 _historyServices?.ClearOne(historyModel);
-                ListaHistorial = new ObservableCollection<HistoryModel>(_historyServices.GetAllHistories());
+                ListaHistorial = new ObservableCollection<HistoryModel>( _historyServices.GetAllHistories());
+
             }
         }
 
         [RelayCommand]
-        void ClearAll() {
+       void ClearAll() {
             _historyServices.ClearAll();
-            ListaHistorial = new ObservableCollection<HistoryModel>(_historyServices.GetAllHistories());
+            ListaHistorial = new ObservableCollection<HistoryModel>( _historyServices.GetAllHistories());
         }
 
         [RelayCommand]
@@ -50,7 +51,7 @@ namespace WebBrowserMinimalist.ViewModels
                 {
                     var newItem = new ItemModel();
                     newItem.Tab.countitem.DataContext = _mainWindow.lista;
-                    newItem.Tab._tabItemVM.Search(historyModel.URL);
+                    newItem.Tab._tabItemVM.Search(historyModel.url);
                     _mainWindow._viewmodel.Items.Add(newItem);
                     _mainWindow.lista.SelectedItem = newItem;
                     _mainWindow.lista.ScrollIntoView(newItem);
@@ -59,7 +60,8 @@ namespace WebBrowserMinimalist.ViewModels
         }
 
         public void ActualizarVM() {
-            ListaHistorial = new ObservableCollection<HistoryModel>(_historyServices.GetAllHistories());
+            var result = _historyServices.GetAllHistories();
+            ListaHistorial = new ObservableCollection<HistoryModel>(result);
         }
         
     }

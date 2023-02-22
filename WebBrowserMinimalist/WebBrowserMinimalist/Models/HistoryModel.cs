@@ -9,9 +9,13 @@ namespace WebBrowserMinimalist.Models
 {
     public class HistoryModel
     {
+        //SELECT id, url, title, visit_count, typed_count, last_visit_time, hidden
+       // FROM urls
         public Int64 id { get; set; }
-        public string? TitleDocument { get; set; }
-        public string? URL { get; set; }
+        public string? title { get; set; }
+        public string? url { get; set; }
+        public string? date { get; set; }
+
     }
 
     

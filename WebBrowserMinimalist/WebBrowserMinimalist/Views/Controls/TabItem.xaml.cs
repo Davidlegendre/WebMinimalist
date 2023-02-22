@@ -34,22 +34,27 @@ namespace WebBrowserMinimalist.Views.Controls
         readonly MainWindow? mainWindow;
         WindowState _previewState;
 
+        readonly GlobalService _globalService;
+
         readonly ItemModel ModelP;
-        public TabItem(ItemModel modelP, bool? IsIncognite = true)
+        public TabItem(ItemModel modelP)
         {
             InitializeComponent();
             mainWindow = App.Current.MainWindow as MainWindow;
             _tabItemVM = DataContext as TabItemVM;
             _historyServices = App.GetService<HistoryServices>();
+            _globalService = App.GetService<GlobalService>();
+            btnAddPage.Click += mainWindow.addbutton_Click;
             ModelP = modelP;
             InitialWebView2();
-            webview.CreationProperties = new Microsoft.Web.WebView2.Wpf.CoreWebView2CreationProperties() { IsInPrivateModeEnabled = IsIncognite };
             _previewState = mainWindow.WindowState;
             
         }
 
         async void InitialWebView2() {
+            
            await webview.EnsureCoreWebView2Async();
+            
             webview.CoreWebView2.ContainsFullScreenElementChanged += CoreWebView2_ContainsFullScreenElementChanged;
             webview.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
             webview.CoreWebView2.NavigationCompleted += CoreWebView2_NavigationCompleted;
@@ -57,8 +62,10 @@ namespace WebBrowserMinimalist.Views.Controls
             webview.CoreWebView2.IsDocumentPlayingAudioChanged += CoreWebView2_IsDocumentPlayingAudioChanged;
             webview.CoreWebView2.ServerCertificateErrorDetected += CoreWebView2_ServerCertificateErrorDetected;
             webview.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
-            _historyServices.Request(webview);
+            if (_globalService.GetDefaulProfileFolder() == "")
+                _globalService.SetDefaultProfileFolder(webview.CoreWebView2.Profile.ProfilePath);
         }
+
 
         private void CoreWebView2_ContainsFullScreenElementChanged(object? sender, object e)
         {
@@ -146,10 +153,12 @@ namespace WebBrowserMinimalist.Views.Controls
 
                 URLSearchBar.Visibility = Visibility.Collapsed;
                 IndicatorDocumentPage.Visibility = Visibility.Visible;
+
                 _historyServices.Insert(new HistoryModel() { 
                     id = _historyServices.CountHistory() + 1,
-                    TitleDocument= _tabItemVM.TitleDocument,
-                    URL = _tabItemVM.UrlSource
+                    title = _tabItemVM.TitleDocument,
+                    url = _tabItemVM.UrlSource,
+                    date = DateTime.Now.ToLongTimeString()
                 });
             }
         }
@@ -175,7 +184,7 @@ namespace WebBrowserMinimalist.Views.Controls
                     ModelP.ProgressVisibility = _tabItemVM.ProgressVisibility;
                     ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
                     ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
-                    mainWindow.historyList.Actualizar();
+                    
                     webview.Focus();
                 }
                 catch (Exception)
@@ -239,7 +248,7 @@ namespace WebBrowserMinimalist.Views.Controls
 
         
 
-        private void menubtn_Click(object sender, RoutedEventArgs e)
+        private async void menubtn_Click(object sender, RoutedEventArgs e)
         {
             if (!mainWindow.flyoutPanel.IsOpen)
             {
@@ -247,9 +256,10 @@ namespace WebBrowserMinimalist.Views.Controls
                 mainWindow.flyoutPanel.IsOpen = true;
                 mainWindow.lista.Visibility = Visibility.Visible;
                 mainWindow.historyList.Visibility = Visibility.Collapsed;
-                mainWindow.historyList.Actualizar();
+                mainWindow.btnAtras.Visibility = Visibility.Collapsed;                
                 Wpf.Ui.Animations.Transitions.ApplyTransition(mainWindow.flyoutPanel,
                 Wpf.Ui.Animations.TransitionType.FadeInWithSlide, 400);
+                mainWindow.historyList.Actualizar();
             }
         }
 
@@ -280,10 +290,10 @@ namespace WebBrowserMinimalist.Views.Controls
 
             var Source = _tabItemVM.UrlSource;
 
-            if (Source.Contains("https:"))
-                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
-            else if (Source.Contains("http:"))
+            if (Source.Contains("http:"))
                 _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldDismiss24;
+            else if (Source.Contains("https:"))
+                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
             else
             {
 
@@ -318,7 +328,7 @@ namespace WebBrowserMinimalist.Views.Controls
             var item = (HistoryModel)button.DataContext;
             if (item != null)
             {
-                _tabItemVM.UrlSource = item.URL;
+                _tabItemVM.UrlSource = item.url;
                 TxtSearch.Focus();
                 TxtSearch.SelectAll();
                 flyResults.IsOpen = false;

@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
+using WebBrowserMinimalist.DBA;
 using WebBrowserMinimalist.Models;
 using WebBrowserMinimalist.Services;
 using Wpf.Ui.Mvvm.Contracts;
@@ -35,6 +36,11 @@ namespace WebBrowserMinimalist
 
                 // TaskBar manipulation
                 services.AddSingleton<ITaskBarService, TaskBarService>();
+
+                services.AddSingleton<GlobalService>();
+                services.AddSingleton<CollectionsDBA>();
+                services.AddSingleton<CollectionService>();
+                
 
 
                 // Main window with navigation

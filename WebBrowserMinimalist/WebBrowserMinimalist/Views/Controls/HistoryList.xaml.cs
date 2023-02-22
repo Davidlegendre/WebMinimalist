@@ -27,6 +27,7 @@ namespace WebBrowserMinimalist.Views.Controls
         {
             InitializeComponent();
             historyListVM = DataContext as HistoryListVM;
+           
         }
 
         public void Actualizar() {
