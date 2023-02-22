@@ -25,6 +25,7 @@ namespace WebBrowserMinimalist.Views.Controls.Collections_Windows
     public partial class AgregarColeccionWindow : INavigationWindow
     {
         readonly CollectionVM _collectionVm;
+        readonly MensajeService _msg;
         TypeDataTranfered dataTranfered;
         public AgregarColeccionWindow(Window Owner, CollectionVM collectionVM,TypeDataTranfered typeDataTranfered = TypeDataTranfered.Add)
         {
@@ -32,7 +33,9 @@ namespace WebBrowserMinimalist.Views.Controls.Collections_Windows
             this.Owner = Owner;
             _collectionVm = collectionVM;
             dataTranfered = typeDataTranfered;
+            _msg = App.GetService<MensajeService>();
             cambiarInterfaz();
+            
         }
 
         void cambiarInterfaz()
@@ -89,7 +92,7 @@ namespace WebBrowserMinimalist.Views.Controls.Collections_Windows
         {
             if (IsAnyNotVoid())
             {
-                if (MessageBox.Show("Desea " + (dataTranfered == TypeDataTranfered.Add ? "agregar " : " modificar ") + " la coleccion?",
+                if (_msg.ShowDialog("Desea " + (dataTranfered == TypeDataTranfered.Add ? "agregar " : " modificar ") + " la coleccion?",
                     (dataTranfered == TypeDataTranfered.Add ? "Crear": "Modificar"), MessageBoxButton.YesNo) == MessageBoxResult.Yes) {
                     var selectColor = (Wpf.Ui.Controls.CardColor)listColor.SelectedItem;
                     switch (dataTranfered)
@@ -128,13 +131,13 @@ namespace WebBrowserMinimalist.Views.Controls.Collections_Windows
             bool result = true;
             if(string.IsNullOrWhiteSpace(txtTitulo.Text))
             {
-                MessageBox.Show("Escriba algun Titulo para la coleccion");
+                _msg.ShowDialog("Escriba algun Titulo para la coleccion");
                 txtTitulo.Focus();
                 result = false;
             }
 
             if (listColor.SelectedIndex == -1) {
-                MessageBox.Show("Seleccione algun Color");
+                _msg.ShowDialog("Seleccione algun Color");
                 result = false;
             }
             return result;

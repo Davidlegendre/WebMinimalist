@@ -65,11 +65,14 @@ namespace WebBrowserMinimalist.ViewModels
         Visibility _SoundVisibility = Visibility.Collapsed;
 
         [ObservableProperty]
-        SymbolRegular _ShieldIcon = SymbolRegular.Shield24;
+        SymbolRegular _ShieldIcon = SymbolRegular.Empty;
 
 
         [ObservableProperty]
         Visibility _progressVisibility = Visibility.Collapsed;
+
+        [ObservableProperty]
+        Visibility _imgVisible = Visibility.Collapsed;
 
 
 
@@ -106,15 +109,25 @@ namespace WebBrowserMinimalist.ViewModels
                 webView2.CoreWebView2.GoForward();
             }
         }
-
+        //file:
         public void Search(string? texto) {
-            if (texto != null) {
-                if (Uri.IsWellFormedUriString(texto, UriKind.Absolute) || _operacionesService.PerteneceADominio(texto))
-                {
-                    if (!texto.Contains("http:") && !texto.Contains("https:") 
-                        && !texto.Contains("edge:") && !texto.Contains("file:"))
+            
+            if (texto != null && !texto.StartsWith("edge://surf")) {
+                if (_operacionesService.PerteneceADominio(texto) && !Uri.IsWellFormedUriString(texto, UriKind.Absolute))
+                    if (!texto.StartsWith("http:") && !texto.StartsWith("https:")
+                        && !texto.StartsWith("edge:") && !texto.StartsWith("file:"))
                         texto = "https://" + texto;
-                   
+                if (_operacionesService.IsArchivoAdmitido(texto) && !texto.StartsWith("http:") && !texto.StartsWith("https:"))
+                {
+                    if (!texto.StartsWith("file:"))
+                        Url = new Uri("file:///" + texto);
+                    else
+                        Url = new Uri(texto);
+                    UrlSource = texto;
+                }
+                else
+                if (Uri.IsWellFormedUriString(texto, UriKind.Absolute))
+                {                  
                     Url = new Uri(texto);
                     UrlSource = texto;
                 }
@@ -137,7 +150,11 @@ namespace WebBrowserMinimalist.ViewModels
                 var icon = await browser?.GetFaviconAsync(Microsoft.Web.WebView2.Core.CoreWebView2FaviconImageFormat.Png);
 
                 Image = _operacionesService.GetBitmap(icon);
+                var main = App.Current.MainWindow as MainWindow;
+                ProgressVisibility = Visibility.Collapsed;
+                ImgVisible = Visibility.Visible;
             });
+            
         }
     }
 }

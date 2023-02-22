@@ -156,9 +156,9 @@
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                     <ColumnDefinition Width="auto"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <ui:ProgressRing Name="progressring" Grid.Column="1" IsIndeterminate="True" Progress="0" Visibility="{Binding ProgressVisibility}" Height="16" Width="16"></ui:ProgressRing>
+                                <ui:ProgressRing Name="progressring" Grid.Column="1"  IsIndeterminate="{Binding IsVisible,ElementName=progressring}" Progress="0" Visibility="{Binding ProgressVisibility}" Height="16" Width="16"></ui:ProgressRing>
 
-                                <Image Name="img" Source="{Binding Image}" Grid.Column="1" Height="16" Width="16" Stretch="None"></Image>
+                                <Image Name="img" Source="{Binding Image}" Visibility="{Binding ImgVisible}" Grid.Column="1" Height="16" Width="16" Stretch="None"></Image>
                                 <TextBlock VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="{Binding TitleDocument}" FontSize="13" Grid.Column="2" Foreground="{Binding Foreground, ElementName=symbol}" HorizontalAlignment="Stretch" Opacity="1" FontStretch="ExtraExpanded" Text="{Binding TitleDocument}" Margin="7,0,0,0" Padding="0" TextTrimming="CharacterEllipsis" FontFamily="Segoe UI Semibold" />
 
 
@@ -185,7 +185,7 @@
         <Grid Name="navegador" Grid.Row="1">
             <web:WebView2 Name="webview" ZoomFactor="0.9" Source="{Binding Url}" DefaultBackgroundColor="transparent" >
                 <web:WebView2.CreationProperties>
-                    <web:CoreWebView2CreationProperties IsInPrivateModeEnabled="True"></web:CoreWebView2CreationProperties>
+                    <web:CoreWebView2CreationProperties IsInPrivateModeEnabled="False"></web:CoreWebView2CreationProperties>
                 </web:WebView2.CreationProperties>
             </web:WebView2>
         </Grid>

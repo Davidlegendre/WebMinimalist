@@ -25,24 +25,53 @@ namespace WebBrowserMinimalist.Views.Windows
     public partial class MainWindow : Window
     {
         public MainWindowViewModel? _viewmodel { get; }
-
+        readonly OperacionesService _operaciones;
+        readonly MensajeService _maensajeService;
         public MainWindow()
         {       
             InitializeComponent();
+            _operaciones = App.GetService<OperacionesService>();
+            _maensajeService = App.GetService<MensajeService>();
             _viewmodel = this.DataContext as MainWindowViewModel;
             changeThicknes();
-            var item = new ItemModel();
-            item.Tab.countitem.DataContext = lista;
-            _viewmodel.Items.Add(item);
-            
-            Watcher.Watch(this, BackgroundType.Mica, true, true);
-
            
-
+            Watcher.Watch(this, BackgroundType.Mica, true, true);
+            this.Loaded += MainWindow_Loaded;
             //SetPageService(pageService);
 
             //navigationService.SetNavigationControl(RootNavigation);
         }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            CargaArchivosExternos();
+        }
+
+        void CargaArchivosExternos() {
+            if (Environment.CommandLine.Split(" ").Length > 1)
+            {
+                var ruta = Environment.CommandLine.Split('"')[1];
+
+                if (_operaciones.IsArchivoAdmitido(ruta) == true || ruta.StartsWith("http:") || ruta.StartsWith("https:"))
+                {
+                    
+                    var item = new ItemModel();
+                    item.Tab._tabItemVM.Search(ruta);
+                    item.Tab.countitem.DataContext = lista;
+                    _viewmodel.Items.Add(item);
+                }
+                else
+                    App.Current.Shutdown();
+            }
+            else
+            {
+                var item = new ItemModel();
+                item.Tab.countitem.DataContext = lista;
+                _viewmodel.Items.Add(item);
+            }
+            
+        }
+
 
         #region INavigationWindow methods
 

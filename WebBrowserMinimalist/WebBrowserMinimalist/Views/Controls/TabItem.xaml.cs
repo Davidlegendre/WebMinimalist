@@ -32,6 +32,7 @@ namespace WebBrowserMinimalist.Views.Controls
         public readonly TabItemVM? _tabItemVM;
         readonly HistoryServices? _historyServices;
         readonly MainWindow? mainWindow;
+        readonly ErrorsPageService? _errorPageService;
         WindowState _previewState;
 
         readonly GlobalService _globalService;
@@ -44,6 +45,7 @@ namespace WebBrowserMinimalist.Views.Controls
             _tabItemVM = DataContext as TabItemVM;
             _historyServices = App.GetService<HistoryServices>();
             _globalService = App.GetService<GlobalService>();
+            _errorPageService = App.GetService<ErrorsPageService>();
             btnAddPage.Click += mainWindow.addbutton_Click;
             ModelP = modelP;
             InitialWebView2();
@@ -107,7 +109,9 @@ namespace WebBrowserMinimalist.Views.Controls
             if(_tabItemVM != null)
             {
                 e.Handled = true;
+
                 var uri = e.Uri;
+
                 var newItem = new ItemModel();
                 newItem.Tab._tabItemVM.Search(uri);
                 newItem.Tab.countitem.DataContext = mainWindow.lista;
@@ -145,7 +149,7 @@ namespace WebBrowserMinimalist.Views.Controls
             if (_tabItemVM != null)
             {
                 _tabItemVM.TitleDocument = webview.CoreWebView2.DocumentTitle;
-
+               
                 ModelP.TitleDoc = _tabItemVM.TitleDocument;
 
                 _tabItemVM.UrlSource = webview.CoreWebView2.Source;
@@ -165,27 +169,29 @@ namespace WebBrowserMinimalist.Views.Controls
 
         private async void CoreWebView2_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
         {
+
             if (_tabItemVM != null)
             {
 
+                
                 try
                 {
-                    await Task.Run(async () => await _tabItemVM.geticon(sender));
-                    _tabItemVM.ProgressVisibility = Visibility.Collapsed;
-                    progressring.IsIndeterminate = false;
+                    changePage(e.WebErrorStatus);
+                    CambiarIconoShield(e.WebErrorStatus);
                     _tabItemVM.UrlSource = webview.CoreWebView2.Source;
                     btnRefresh.Visibility = Visibility.Visible;
                     btnStop.Visibility = Visibility.Collapsed;
-                    img.Visibility = Visibility.Visible;
-                    //CambiarIconoShield();
+                    ModelP.Source = _tabItemVM.UrlSource;
+                    ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
+                    webview.Focus();
 
+                    await Task.Run(async () => await _tabItemVM.geticon(sender));                                      
+                                 
                     ModelP.IMg = _tabItemVM.Image;
                     ModelP.Source = _tabItemVM.UrlSource;                    
                     ModelP.ProgressVisibility = _tabItemVM.ProgressVisibility;
                     ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
-                    ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
                     
-                    webview.Focus();
                 }
                 catch (Exception)
                 {
@@ -198,34 +204,32 @@ namespace WebBrowserMinimalist.Views.Controls
         {
             if (_tabItemVM != null)
             {
-                //var ruta = "C:/Users/" + Environment.UserName + "/AppData/Local/Microsoft/Edge/User Data/Default/Extensions";
-                //var exist = Directory.Exists(ruta);
-                //if (exist)
-                //{
-                //    //adblock
-                //    var archivo = ruta + "/gmgoamodcdcjnbaobigkjelfplakmdhh/3.16.1_0/vendor/webext-sdk/content.js";
-                //    if (File.Exists(archivo))
-                //    {
-                //        var js = await File.ReadAllTextAsync(archivo);
-                //        await webview.ExecuteScriptAsync(js);
-                //    }
-                //    //adblock youtube
-                //}
-                CambiarIconoShield();
-                
+                if (webview.CoreWebView2.Source.Contains("edge://surf/"))
+                    e.Cancel = true;
+                else
+                {
 
-                btnRefresh.Visibility= Visibility.Collapsed;
-                btnStop.Visibility= Visibility.Visible;
-                _tabItemVM.ProgressVisibility = Visibility.Visible;
-                progressring.IsIndeterminate = true;
-                img.Visibility = Visibility.Collapsed;
 
-                ModelP.Source = _tabItemVM.UrlSource;
-                ModelP.TitleDoc = _tabItemVM.TitleDocument;
-                ModelP.ProgressVisibility = _tabItemVM.ProgressVisibility;
-                ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
+                    if (_tabItemVM.UrlSource.StartsWith("http:"))
+                    {
+                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldError24;
+                    }
+                    else if (_tabItemVM.UrlSource.StartsWith("https:"))
+                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
 
-                flyResults.IsOpen = false;
+
+                    btnRefresh.Visibility = Visibility.Collapsed;
+                    btnStop.Visibility = Visibility.Visible;
+                    _tabItemVM.ProgressVisibility = Visibility.Visible;
+                    _tabItemVM.ImgVisible = Visibility.Collapsed;
+
+                    ModelP.Source = _tabItemVM.UrlSource;
+                    ModelP.TitleDoc = _tabItemVM.TitleDocument;
+                    ModelP.ProgressVisibility = _tabItemVM.ProgressVisibility;
+                    ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
+
+                    flyResults.IsOpen = false;
+                }
             }
         }
         private void txtSearch_KeyDown(object sender, KeyEventArgs e)
@@ -286,14 +290,15 @@ namespace WebBrowserMinimalist.Views.Controls
             { FlyoutSettingPanel.IsOpen = true; }
         }
 
-        void CambiarIconoShield() {
+        void CambiarIconoShield(CoreWebView2WebErrorStatus errorStatus) {
 
             var Source = _tabItemVM.UrlSource;
+           
 
-            if (Source.Contains("http:"))
-                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldDismiss24;
-            else if (Source.Contains("https:"))
-                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
+            if (Source.Contains("http:") || Source.Contains("https:"))
+            {
+                _tabItemVM.ShieldIcon = _errorPageService.GetSymbol(errorStatus);
+            }
             else
             {
 
@@ -303,6 +308,18 @@ namespace WebBrowserMinimalist.Views.Controls
                     _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ArrowDownload24;
                 if (Source == "edge://history/all")
                     _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.History24;
+            }
+            ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
+            
+        }
+
+       async void changePage(CoreWebView2WebErrorStatus? errorStatus = null) {
+            if (errorStatus != null)
+            {
+                if (errorStatus == CoreWebView2WebErrorStatus.Disconnected)
+                    await webview.CoreWebView2.ExecuteScriptAsync(@"
+                   document.getElementById('game-button').remove()
+                ");
             }
         }
 
@@ -339,5 +356,6 @@ namespace WebBrowserMinimalist.Views.Controls
                 flyResults.IsOpen = false;
             }
         }
+
     }
 }

@@ -112,6 +112,5 @@ namespace WebBrowserMinimalist.ViewModels
            
         }
 
-
     }
 }

@@ -22,7 +22,7 @@ namespace WebBrowserMinimalist.Services
        };
 
         string[] _domains = new[] { ".com", ".net", ".app", ".org" };
-
+        string[] ArchivosAdmitidos = { ".html", ".htm", ".pdf", ".svg" };
 
         public OperacionesService() {
             var value = WebBrowserMinimalist.Properties.Configurations.Default.MotorBusqueda;
@@ -76,6 +76,19 @@ namespace WebBrowserMinimalist.Services
             return bitmap;
         }
 
+        public bool IsArchivoAdmitido(string ruta)
+        {
+            bool r = false;
+            foreach (string ar in ArchivosAdmitidos)
+            {
+                if (ruta.Contains(ar))
+                {
+                    r = true;
+                    break;
+                }
+            }
+            return r;
+        }
 
 
     }

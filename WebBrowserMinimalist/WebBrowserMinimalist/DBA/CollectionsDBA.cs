@@ -20,12 +20,14 @@ namespace WebBrowserMinimalist.DBA
         readonly GlobalService _globalService;
         string rutaBD;
         string connectionString;
-        public CollectionsDBA(GlobalService globalService)
+        readonly MensajeService _msn;
+        public CollectionsDBA(GlobalService globalService, MensajeService msn)
         {
             _globalService = globalService;
             rutaBD = _globalService.GetFolderAppDomain + "/CollectionsDB.db";
             connectionString = "Data Source=" + rutaBD + ";Version=3;";
             createNewDataBase();
+            _msn = msn;
         }
 
         async void createNewDataBase()
@@ -69,7 +71,7 @@ namespace WebBrowserMinimalist.DBA
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                _msn.ShowDialog(ex.Message);
                 return false;
             }
         }
@@ -90,7 +92,7 @@ namespace WebBrowserMinimalist.DBA
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                _msn.ShowDialog(ex.Message);
                 return false;
             }
         }
@@ -121,7 +123,7 @@ namespace WebBrowserMinimalist.DBA
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                _msn.ShowDialog(ex.Message);
                 return null;
             }
         }
@@ -137,7 +139,7 @@ namespace WebBrowserMinimalist.DBA
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                _msn.ShowDialog(ex.Message);
                 return null;
             }
         }
@@ -152,7 +154,7 @@ namespace WebBrowserMinimalist.DBA
                         "IDCollection from ContentCollection where IDCollection = '" + IDCollection + "'");
                 }
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message); return null; }            
+            catch (Exception ex) { _msn.ShowDialog(ex.Message); return null; }            
         }
 
         public async Task<bool> UpdateCollection(CollectionsModel collectionsModel)
@@ -167,7 +169,7 @@ namespace WebBrowserMinimalist.DBA
                 }
                 return true;
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message); return false; }
+            catch (Exception ex) { _msn.ShowDialog(ex.Message); return false; }
         }
 
         public async Task<bool> DeleteAllCollection(string IDCollection)
@@ -181,7 +183,7 @@ namespace WebBrowserMinimalist.DBA
                 }
                 return true;
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message); return false; }
+            catch (Exception ex) { _msn.ShowDialog(ex.Message); return false; }
         }
 
         public async Task<bool> DeleteOneContentCollection(string IDContent)
@@ -194,7 +196,7 @@ namespace WebBrowserMinimalist.DBA
                 }
                 return true;
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message); return false; }
+            catch (Exception ex) { _msn.ShowDialog(ex.Message); return false; }
         }
     }
 }

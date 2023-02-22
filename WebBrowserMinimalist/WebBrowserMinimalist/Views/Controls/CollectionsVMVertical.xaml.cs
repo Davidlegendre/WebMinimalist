@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WebBrowserMinimalist.Models;
+using WebBrowserMinimalist.Services;
 using WebBrowserMinimalist.ViewModels;
 using WebBrowserMinimalist.Views.Controls.Collections_Windows;
 using WebBrowserMinimalist.Views.Windows;
@@ -26,11 +27,13 @@ namespace WebBrowserMinimalist.Views.Controls
     {
         readonly CollectionVM? _VM;
         readonly MainWindow? _MainWindow;
+        readonly MensajeService _msn;
         public CollectionsVMVertical()
         {
             InitializeComponent();
             _VM = DataContext as CollectionVM;
             _MainWindow = App.Current.MainWindow as MainWindow;
+            _msn = App.GetService<MensajeService>();
         }
 
         private void btnLinkContentColectionItem_Click(object sender, RoutedEventArgs e)
@@ -86,7 +89,7 @@ namespace WebBrowserMinimalist.Views.Controls
             var collection = button.Tag as CollectionsModel;
             if(_VM != null)
             {
-                if (MessageBox.Show("Desea Eliminar la coleccion: " + collection.TituloColeccion + "?", "Eliminando", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (_msn.ShowDialog("Desea Eliminar la coleccion: " + collection.TituloColeccion + "?", "Eliminando", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     var result = await _VM.DeleteAllCollection(collection.ID);
                 }

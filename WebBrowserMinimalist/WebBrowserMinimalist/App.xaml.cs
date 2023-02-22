@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using System.IO;
 using System.Reflection;
@@ -40,12 +41,13 @@ namespace WebBrowserMinimalist
                 services.AddSingleton<GlobalService>();
                 services.AddSingleton<CollectionsDBA>();
                 services.AddSingleton<CollectionService>();
-                
-
+                services.AddSingleton<OperacionesService>();
+                services.AddSingleton<MensajeService>();
+                services.AddSingleton<ErrorsPageService>();
 
                 // Main window with navigation
                 services.AddScoped<Views.Windows.MainWindow>();
-                services.AddSingleton<OperacionesService>();
+                
                 services.AddSingleton<HistoryServices>();
 
                 // Configuration
