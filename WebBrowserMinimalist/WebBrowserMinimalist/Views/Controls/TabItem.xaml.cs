@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Policy;
@@ -214,6 +215,7 @@ namespace WebBrowserMinimalist.Views.Controls
                         _tabItemVM.Image = new BitmapImage(new Uri("/Views/Windows/icons8-internet-48.png", UriKind.RelativeOrAbsolute));
                         //webview.Visibility = Visibility.Collapsed;
                         _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Home12;
+                        webview.DefaultBackgroundColor = System.Drawing.Color.Transparent;
                         ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
                         _tabItemVM.TitleDocument = "Home";
                        
@@ -252,7 +254,10 @@ namespace WebBrowserMinimalist.Views.Controls
                     //}
                     //else if (_tabItemVM.UrlSource.StartsWith("https:"))
                     //    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
-
+                    if (_tabItemVM.UrlSource != "about:blank")
+                        webview.DefaultBackgroundColor = System.Drawing.Color.White;
+                    else
+                        webview.DefaultBackgroundColor = System.Drawing.Color.Transparent;
 
                     btnRefresh.Visibility = Visibility.Collapsed;
                     btnStop.Visibility = Visibility.Visible;
