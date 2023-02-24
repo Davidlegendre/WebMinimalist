@@ -59,6 +59,9 @@
                     <ui:CardExpander Grid.ColumnSpan="2"  Background="{Binding Background}" VerticalAlignment="Top" IsExpanded="{Binding HasItems,ElementName=listaContents,Mode=OneWay}" HorizontalAlignment="Stretch" >
                         <ui:CardExpander.ContextMenu>
                             <ContextMenu>
+                                <ContextMenu.BorderBrush>
+                                    <SolidColorBrush Color="Black" Opacity="0.3"></SolidColorBrush>
+                                </ContextMenu.BorderBrush>
                                 <MenuItem Header="Editar Coleccion" Tag="{Binding}" Click="btnEditCollection_Click">
                                     <MenuItem.Icon>
                                         <ui:SymbolIcon Symbol="Edit24" ></ui:SymbolIcon>
@@ -104,7 +107,11 @@
                                 <DataTemplate>
                                     <ui:Button Name="btnLinkContentColectionItem" Margin="2" Tag="{Binding}" HorizontalAlignment="Stretch" Click="btnLinkContentColectionItem_Click" Height="38">
                                         <ui:Button.ContextMenu>
+                                            
                                             <ContextMenu>
+                                                <ContextMenu.BorderBrush>
+                                                    <SolidColorBrush Color="Black" Opacity="0.3"></SolidColorBrush>
+                                                </ContextMenu.BorderBrush>
                                                 <MenuItem Name="EliminarContent" Click="EliminarContent_Click" Tag="{Binding}" Header="Eliminar">
                                                     <MenuItem.Icon>
                                                         <ui:SymbolIcon Symbol="Delete24" ></ui:SymbolIcon>

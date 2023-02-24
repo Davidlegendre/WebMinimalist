@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -56,6 +57,8 @@ namespace WebBrowserMinimalist.ViewModels
 
         [ObservableProperty]
         ObservableCollection<SymbolRegular> _Permisos = new ObservableCollection<SymbolRegular>();
+
+
 
 
         [ObservableProperty]
@@ -120,19 +123,16 @@ namespace WebBrowserMinimalist.ViewModels
                     if (!texto.StartsWith("http:") && !texto.StartsWith("https:")
                         && !texto.StartsWith("edge:") && !texto.StartsWith("file:"))
                         texto = "https://" + texto;
-                if (_operacionesService.IsArchivoAdmitido(texto) && !texto.StartsWith("http:") && !texto.StartsWith("https:"))
-                {
-                    if (!texto.StartsWith("file:"))
-                        Url = new Uri("file:///" + texto);
-                    else
-                        Url = new Uri(texto);
-                    UrlSource = texto;
-                }
-                else
-                if (Uri.IsWellFormedUriString(texto, UriKind.Absolute))
+
+                if (Uri.IsWellFormedUriString(texto, UriKind.Absolute) || texto.StartsWith("file:///"))
                 {                  
                     Url = new Uri(texto);
                     UrlSource = texto;
+                    if (texto.StartsWith("file:///"))
+                    {
+                        var info = new FileInfo(texto);
+                        TitleDocument = WebUtility.UrlDecode(info.Name);
+                    }
                 }
                 else
                 {

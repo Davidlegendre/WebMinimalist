@@ -94,5 +94,19 @@ namespace WebBrowserMinimalist.Views.Controls.Commons
             _msnmodel.MessageBoxResult = MessageBoxResult.Cancel;
             this.Close();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Wpf.Ui.Controls.Button)sender;
+            var context = button.DataContext as CustomButtonMSGModel;
+
+           if(context != null) {
+                if (context.Action != null)
+                    context.Action.Invoke();
+            }
+
+            _msnmodel.MessageBoxResult = MessageBoxResult.OK;
+            this.Close();
+        }
     }
 }

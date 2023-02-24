@@ -45,6 +45,22 @@ namespace WebBrowserMinimalist.Services
             };
             var msg = new MSG(msgmodel).ShowDialog();
             return msgmodel.MessageBoxResult;
-        }        
+        }
+        public MessageBoxResult ShowDialog(string contenido, string titulo, List<CustomButtonMSGModel> customButtonMSG)
+        {
+            var msgmodel = new MSNModel()
+            {
+                Content = contenido,
+                Title = titulo,
+                ButtonOkVisibility = Visibility.Collapsed,
+                ButtonOkCancelVisibility = Visibility.Collapsed,
+                ButtonYesNoCancelVisibility = Visibility.Collapsed,
+                ButtonYesNoVisibility = Visibility.Collapsed,
+                CustomButtonsVisibility = Visibility.Visible,                   
+                CustomButtons = new System.Collections.ObjectModel.ObservableCollection<CustomButtonMSGModel>(customButtonMSG)
+            };
+            var msg = new MSG(msgmodel).ShowDialog();
+            return msgmodel.MessageBoxResult;
+        }
     }
 }

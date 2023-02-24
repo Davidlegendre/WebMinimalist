@@ -9,23 +9,30 @@
              d:DesignHeight="288.548" d:DesignWidth="768">
     <Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0">
-            <ui:SymbolIcon Name="Symbol" FontSize="110" Margin="00,0,-30,0"></ui:SymbolIcon>
             <ui:Card  Grid.Row="0" Background="{ui:ThemeResource}">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="auto"></RowDefinition>
-                        <RowDefinition Height="auto"></RowDefinition>
-                        <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
-                    
-                    <TextBlock Name="txtSaludo" Text="Hola, Buenos Días"  FontSize="22" TextAlignment="Center"></TextBlock>
-                    
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1" Margin="0,-6,0,0">
-                        <TextBlock Name="txttime" Text="00:00" FontSize="58"></TextBlock>
-                        <TextBlock Name="txttimeAMPM" Text=" PM" FontSize="{Binding FontSize,ElementName=txttime}"></TextBlock>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:SymbolIcon Name="Symbol" Grid.Column="1" Filled="True" FontSize="200" ></ui:SymbolIcon>
+
+                    <UniformGrid Columns="1" VerticalAlignment="Center">
+                        <TextBlock Name="txthour" Text="00" TextAlignment="Center" FontSize="67" FontFamily="Century Gothic"></TextBlock>
+                        <TextBlock x:Name="txtmin" Text="00" FontSize="67" FontFamily="{Binding FontFamily,ElementName=txthour}" TextAlignment="Center"></TextBlock>
+                        <TextBlock Name="txttimeAMPM" Text="PM" FontSize="48" TextAlignment="Center" FontFamily="{Binding FontFamily,ElementName=txthour}" FontWeight="UltraLight"></TextBlock>
+                    </UniformGrid>
+                    <StackPanel Grid.Row="2" Grid.ColumnSpan="2">
+                        <TextBlock Name="txtSaludo"  Grid.Row="1" Text="Buenos Días"  FontSize="16" TextWrapping="Wrap" FontFamily="Segoe UI Semibold"></TextBlock>
+
+                        <TextBlock  Name="txtFechaLarga" FontSize="14" Opacity="0.5" Text="lunes, 21 de Diciembre 2021" FontFamily="Segoe UI Semibold"></TextBlock>
+
                     </StackPanel>
-                    <TextBlock Grid.Row="2" Name="txtFechaLarga" Text="lunes, 21 de Diciembre 2021" TextAlignment="Center"></TextBlock>
-                </Grid>
+                 </Grid>
             </ui:Card>
         </StackPanel>
     </Grid>

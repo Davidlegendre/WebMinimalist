@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Web.WebView2.Core;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
@@ -35,8 +37,7 @@ namespace WebBrowserMinimalist.Views.Windows
             _maensajeService = App.GetService<MensajeService>();
             _globalService = App.GetService<GlobalService>();
             _viewmodel = this.DataContext as MainWindowViewModel;
-            changeThicknes();
-           
+            changeThicknes();           
             Watcher.Watch(this, BackgroundType.Mica, true, true);
             this.Loaded += MainWindow_Loaded;
             this.Closing += MainWindow_Closing;
@@ -44,7 +45,6 @@ namespace WebBrowserMinimalist.Views.Windows
 
             //navigationService.SetNavigationControl(RootNavigation);
         }
-
         private void MainWindow_Closing(object? sender, CancelEventArgs e)
         {
             _globalService.DisposeTimeHour();
@@ -53,32 +53,35 @@ namespace WebBrowserMinimalist.Views.Windows
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             CargaArchivosExternos();
+           
+
         }
 
         void CargaArchivosExternos() {
-            if (Environment.CommandLine.Split(" ").Length > 1)
-            {
-                var ruta = Environment.CommandLine.Split('"')[1];
 
-                if (_operaciones.IsArchivoAdmitido(ruta) == true || ruta.StartsWith("http:") || ruta.StartsWith("https:"))
+            try
+            {
+
+                if (Environment.CommandLine.Split(" ").Length > 1)
                 {
 
+                    var pre = (Environment.CommandLine.Contains('"') ?
+                        Environment.CommandLine.Split(" " + '"')[1] 
+                        : Environment.CommandLine.Split(" ")[1]);
+                    var ruta = pre.EndsWith('"') ? pre.Remove(pre.Length - 1) : pre;
                     var item = new ItemModel();
-                    item.Tab._tabItemVM.Search(ruta);
-                    item.Tab.countitem.DataContext = lista;
+                    item.Tab._tabItemVM.Search("file:///" + ruta);
                     _viewmodel.Items.Add(item);
                 }
                 else
                 {
                     var item = new ItemModel();
-                    item.Tab.countitem.DataContext = lista;
                     _viewmodel.Items.Add(item);
                 }
             }
-            else
+            catch (Exception ex)
             {
                 var item = new ItemModel();
-                item.Tab.countitem.DataContext = lista;
                 _viewmodel.Items.Add(item);
             }
             
@@ -192,7 +195,6 @@ namespace WebBrowserMinimalist.Views.Windows
         public void addbutton_Click(object sender, RoutedEventArgs e)
         {
             var newItem = new ItemModel();
-            newItem.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(newItem);
             lista.SelectedItem = newItem;
             lista.ScrollIntoView(newItem);
@@ -205,7 +207,6 @@ namespace WebBrowserMinimalist.Views.Windows
         {
             var newItem = new ItemModel();
             newItem.Tab._tabItemVM.Search("edge://downloads/all");
-            newItem.Tab.countitem.DataContext = lista;
             _viewmodel.Items.Add(newItem);
             lista.SelectedItem = newItem;
             lista.ScrollIntoView(newItem);
@@ -219,6 +220,8 @@ namespace WebBrowserMinimalist.Views.Windows
                 historyList.Visibility = Visibility.Visible;
                 lista.Visibility = Visibility.Collapsed;
                 Wpf.Ui.Animations.Transitions.ApplyTransition(historyList, Wpf.Ui.Animations.TransitionType.SlideRight, 400);
+                
+
             }
         }
 

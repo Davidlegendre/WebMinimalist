@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Xps.Serialization;
 using WebBrowserMinimalist.Models;
 using WebBrowserMinimalist.Services;
 
@@ -38,16 +39,19 @@ namespace WebBrowserMinimalist.Views.Controls
             Wpf.Ui.Animations.Transitions.ApplyTransition(this, Wpf.Ui.Animations.TransitionType.FadeIn, 500);
             Wpf.Ui.Animations.Transitions.ApplyTransition(Symbol, Wpf.Ui.Animations.TransitionType.SlideRight, 700);
             txtFechaLarga.Text = DateTime.Now.ToLongDateString();
-            txttime.Text = DateTime.Now.ToString("hh:mm");
-            txttimeAMPM.Text = (DateTime.Now.Hour > 12 ? TypeHora.PM : TypeHora.AM) == TypeHora.AM ? " AM" : " PM";
+            var hora = DateTime.Now.ToString("hh:mm");
+            txthour.Text = hora.Substring(0, 2);
+            txtmin.Text = hora.Substring(3);
+            txttimeAMPM.Text = (DateTime.Now.Hour > 12 ? TypeHora.PM : TypeHora.AM) == TypeHora.AM ? "AM" : "PM";
             saludar(DateTime.Now.Hour, (DateTime.Now.Hour > 12 ? TypeHora.PM : TypeHora.AM));
         }
 
         private void _globalService_TimeSystemEvent(object? sender, HomeDataModel e)
         {
             txtFechaLarga.Text = e.Fecha;
-            txttime.Text = e.Hora;
-            txttimeAMPM.Text = e.TypeHora == TypeHora.AM ? " AM" : " PM";
+            txthour.Text = e.Hora.Substring(0, 2);
+            txtmin.Text = e.Hora.Substring(3);
+            txttimeAMPM.Text = e.TypeHora == TypeHora.AM ? "AM" : "PM";
             saludar(e.Hora24, e.TypeHora);
         }
 
@@ -57,27 +61,17 @@ namespace WebBrowserMinimalist.Views.Controls
             if (typeHora == TypeHora.AM)
             {
                 if (hour >= 1 && hour < 12)
-                {
                     txtSaludo.Text = EnumSaludos.HolaBuenosDías;
-                }
             }
             else
             {
                 if (hour >= 12 && hour < 19)
-                {
                     txtSaludo.Text = EnumSaludos.HolaBuenasTardes;
-
-
-                }
                 if (hour >= 19 && hour < 24)
-                {
                     txtSaludo.Text = EnumSaludos.HolaBuenasNoches;
-
-                }
-
             }
 
-            if(hour > 0 && hour <= 5)
+            if(hour >= 0 && hour <= 5)
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherPartlyCloudyNight20;
             if (hour > 5 && hour <= 7)
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherSunnyLow48;
@@ -89,15 +83,12 @@ namespace WebBrowserMinimalist.Views.Controls
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherPartlyCloudyDay48;
             if (hour > 19)
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherMoon48;
-
         }
-
-        
     }
 
     static internal class EnumSaludos {
-        public static string HolaBuenosDías = "Hola, Buenos Días";
-        public static string HolaBuenasTardes = "Hola, Buenas Tardes";
-        public static string HolaBuenasNoches = "Hola, Buenas Noches";
+        public static string HolaBuenosDías = "Buenos Días, usuario < " + Environment.UserName + " />";
+        public static string HolaBuenasTardes = "Buenas Tardes, usuario < " + Environment.UserName + " />";
+        public static string HolaBuenasNoches = "Buenas Noches, usuario < " + Environment.UserName + " />";
     }
 }

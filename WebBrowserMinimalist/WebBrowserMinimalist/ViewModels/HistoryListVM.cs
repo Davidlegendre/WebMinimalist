@@ -50,7 +50,6 @@ namespace WebBrowserMinimalist.ViewModels
                 if (_mainWindow != null)
                 {
                     var newItem = new ItemModel();
-                    newItem.Tab.countitem.DataContext = _mainWindow.lista;
                     newItem.Tab._tabItemVM.Search(historyModel.url);
                     _mainWindow._viewmodel.Items.Add(newItem);
                     _mainWindow.lista.SelectedItem = newItem;

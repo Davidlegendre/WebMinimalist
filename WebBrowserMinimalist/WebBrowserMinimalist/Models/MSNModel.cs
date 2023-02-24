@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,15 @@ namespace WebBrowserMinimalist.Models
         [ObservableProperty]
         Visibility _ButtonYesNoCancelVisibility = Visibility.Collapsed;
 
-        public MessageBoxResult MessageBoxResult { get; set; }
+        [ObservableProperty]
+        Visibility _CustomButtonsVisibility = Visibility.Collapsed;
+
+       
+
+        [ObservableProperty]
+        ObservableCollection<CustomButtonMSGModel> _CustomButtons = new ObservableCollection<CustomButtonMSGModel>();
+
+        public MessageBoxResult MessageBoxResult { get; set;}
 
     }
 

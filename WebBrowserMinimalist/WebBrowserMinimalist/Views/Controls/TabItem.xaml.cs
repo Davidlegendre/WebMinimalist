@@ -74,6 +74,8 @@ namespace WebBrowserMinimalist.Views.Controls
             ModelP.Source = _tabItemVM.UrlSource;
             ModelP.TitleDoc = _tabItemVM.TitleDocument;
             ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
+
+            
         }
 
         private void CoreWebView2_PermissionRequested(object? sender, CoreWebView2PermissionRequestedEventArgs e)
@@ -119,9 +121,6 @@ namespace WebBrowserMinimalist.Views.Controls
                     webview.Focus();
 
                 }
-                
-                
-
             }
         }
 
@@ -136,7 +135,6 @@ namespace WebBrowserMinimalist.Views.Controls
 
                 var newItem = new ItemModel();
                 newItem.Tab._tabItemVM.Search(uri);
-                newItem.Tab.countitem.DataContext = mainWindow.lista;
                 mainWindow._viewmodel.Items.Add(newItem);
 
                 mainWindow.lista.SelectedItem = newItem;
@@ -195,11 +193,13 @@ namespace WebBrowserMinimalist.Views.Controls
             if (_tabItemVM != null)
             {
 
-                
+
                 try
                 {
                     changePage(e.WebErrorStatus);
                     CambiarIconoShield(e.WebErrorStatus);
+                    //if(_tabItemVM.UrlSource.StartsWith("file:///"))
+                    //    _tabItemVM.TitleDocument
                     _tabItemVM.UrlSource = webview.CoreWebView2.Source;
                     btnRefresh.Visibility = Visibility.Visible;
                     btnStop.Visibility = Visibility.Collapsed;
@@ -207,8 +207,19 @@ namespace WebBrowserMinimalist.Views.Controls
                     ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
                     webview.Focus();
 
-                    await Task.Run(async () => await _tabItemVM.geticon(sender));                                      
-                                 
+               
+                        await Task.Run(async () => await _tabItemVM.geticon(sender));
+                    if (_tabItemVM.UrlSource == "about:blank")
+                    {
+                        _tabItemVM.Image = new BitmapImage(new Uri("/Views/Windows/icons8-internet-48.png", UriKind.RelativeOrAbsolute));
+                        //webview.Visibility = Visibility.Collapsed;
+                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Home12;
+                        ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
+                        _tabItemVM.TitleDocument = "Home";
+                       
+                    }
+
+                    ModelP.TitleDoc = _tabItemVM.TitleDocument;
                     ModelP.IMg = _tabItemVM.Image;
                     ModelP.Source = _tabItemVM.UrlSource;                    
                     ModelP.ProgressVisibility = _tabItemVM.ProgressVisibility;
@@ -241,10 +252,6 @@ namespace WebBrowserMinimalist.Views.Controls
                     //}
                     //else if (_tabItemVM.UrlSource.StartsWith("https:"))
                     //    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
-                    if (_tabItemVM.UrlSource != "about:blank")
-                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Empty;
-                    else
-                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Home12;
 
 
                     btnRefresh.Visibility = Visibility.Collapsed;

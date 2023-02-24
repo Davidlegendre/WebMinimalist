@@ -22,15 +22,14 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <Border x:Name="toolBar" VerticalAlignment="Stretch" Height="38" BorderThickness="0,0,0,1" >
+        <Border x:Name="toolBar" VerticalAlignment="Stretch" Height="38" BorderThickness="0,0,0,0" >
             <Grid ClipToBounds="True">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="145"/>
+                    <ColumnDefinition Width="150"/>
                 </Grid.ColumnDefinitions>
                 <local:WindowButtons Grid.Column="2" Visibility="Collapsed"></local:WindowButtons>
-                <Rectangle Fill="{Binding Foreground,ElementName=symbol}" Height="1" VerticalAlignment="Bottom" Opacity="0.2" HorizontalAlignment="Stretch" Grid.ColumnSpan="10" RadiusX="1" RadiusY="1"></Rectangle>
               
                 <StackPanel Orientation="Horizontal" Margin="2,4,8,4">
                     <ui:Button WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding BackCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding CanGoBack,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
@@ -189,12 +188,6 @@
                     <ui:Button x:Name="btnAddPage" Width="33" Padding="1,0,0,2" Height="{Binding ActualHeight,ElementName=btnRefresh}" Grid.Column="0" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                         <ui:SymbolIcon Symbol="Add12" FontSize="14" Filled="False"></ui:SymbolIcon>
                     </ui:Button>
-                    <ui:Button  Name="countitem" Appearance="Transparent" BorderThickness="0" MinWidth="25"  Visibility="Collapsed"  Margin="4,0,0,0" Height="27" Padding="0" FontSize="12" VerticalAlignment="Center"  >
-                        <Grid>
-                            <Rectangle HorizontalAlignment="Stretch" MinWidth="25" Height="25" Opacity="0.1" RadiusX="7" RadiusY="7" VerticalAlignment="Stretch" Fill="{Binding Foreground,ElementName=symbol}"></Rectangle>
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" Text="{Binding Items.Count, Mode=OneWay}"></TextBlock>
-                        </Grid>
-                    </ui:Button>
                 </StackPanel>
             </Grid>
         
@@ -202,7 +195,7 @@
 
 
         <Grid Name="navegador" Grid.Row="1">
-            <web:WebView2 Name="webview" ZoomFactor="0.9" Visibility="Collapsed" SourceChanged="webview_SourceChanged" Source="{Binding Url}" DefaultBackgroundColor="white" >
+            <web:WebView2 Name="webview" ZoomFactor="0.9"  SourceChanged="webview_SourceChanged" Source="{Binding Url,Mode=TwoWay}" DefaultBackgroundColor="transparent" >
                 <web:WebView2.CreationProperties>
                     <web:CoreWebView2CreationProperties IsInPrivateModeEnabled="True"></web:CoreWebView2CreationProperties>
                 </web:WebView2.CreationProperties>
@@ -210,6 +203,7 @@
             <local:Home >
             </local:Home>
         </Grid>
-        
+        <Rectangle Fill="{Binding Foreground,ElementName=symbol}" Height="1" VerticalAlignment="Bottom" Opacity="0.3" HorizontalAlignment="Stretch" Grid.ColumnSpan="10" RadiusX="1" RadiusY="1"></Rectangle>
+
     </Grid>
 </UserControl>

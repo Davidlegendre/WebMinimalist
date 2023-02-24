@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.DirectoryServices.ActiveDirectory;
+using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Runtime.InteropServices.ObjectiveC;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Navigation;
 using WebBrowserMinimalist.Models;
 
 namespace WebBrowserMinimalist.Services
@@ -14,6 +17,16 @@ namespace WebBrowserMinimalist.Services
     {
         string? ProfileFolderDefault = "";
         public string GetFolderAppDomain => AppDomain.CurrentDomain.BaseDirectory;
+
+        public string FondoDeWindows
+        {
+            get
+            {
+                var file = System.IO.Directory.GetFiles("C:/Users/" + Environment.UserName + "/AppData/Roaming/Microsoft/Windows/Themes/CachedFiles/");
+                var files = from f in file orderby f ascending select f;
+                return files.First();
+            }
+        }
 
         Thread? TimeHour;
         bool IsOnline = true;
