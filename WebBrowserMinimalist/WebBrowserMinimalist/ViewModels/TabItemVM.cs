@@ -29,24 +29,24 @@ namespace WebBrowserMinimalist.ViewModels
     public partial class TabItemVM : ObservableObject
     {
 
-        static Uri _DefaultUriImg => new Uri("/Assets/applicationIcon-256.png", UriKind.RelativeOrAbsolute);
+        static Uri _DefaultUriImg => new Uri("/Views/Windows/icons8-internet-48.png", UriKind.RelativeOrAbsolute);
         private readonly OperacionesService _operacionesService;
         
         
         public TabItemVM()
         {
             _operacionesService = App.GetService<OperacionesService>();
-            Url = new Uri(_operacionesService.GetURlEngine().Replace("/search?q=", "").Replace("?q=", ""));
+           // Url = new Uri(_operacionesService.GetURlEngine().Replace("/search?q=", "").Replace("?q=", ""));
         }
 
         [ObservableProperty]
-        string _TitleDocument = "Buscando";
+        string _TitleDocument = "Home";
 
         [ObservableProperty]
         BitmapImage _Image = new BitmapImage(_DefaultUriImg);
 
         [ObservableProperty]
-        string _UrlSource = "Navigating";
+        string _UrlSource = "";
 
         [ObservableProperty]
         bool _IsNotIncognit = true;
@@ -65,14 +65,14 @@ namespace WebBrowserMinimalist.ViewModels
         Visibility _SoundVisibility = Visibility.Collapsed;
 
         [ObservableProperty]
-        SymbolRegular _ShieldIcon = SymbolRegular.Empty;
+        SymbolRegular _ShieldIcon = SymbolRegular.Shield16;
 
 
         [ObservableProperty]
         Visibility _progressVisibility = Visibility.Collapsed;
 
         [ObservableProperty]
-        Visibility _imgVisible = Visibility.Collapsed;
+        Visibility _imgVisible = Visibility.Visible;
 
 
 
@@ -143,17 +143,24 @@ namespace WebBrowserMinimalist.ViewModels
 
        public async Task geticon(object sender)
         {
-            var browser = (Microsoft.Web.WebView2.Core.CoreWebView2)sender;
-            Thread.Sleep(1000);
-            await Application.Current.Dispatcher.Invoke(async () =>
+            try
             {
-                var icon = await browser?.GetFaviconAsync(Microsoft.Web.WebView2.Core.CoreWebView2FaviconImageFormat.Png);
+                var browser = (Microsoft.Web.WebView2.Core.CoreWebView2)sender;
+                Thread.Sleep(1000);
+                await Application.Current.Dispatcher.Invoke(async () =>
+                {
+                    var icon = await browser?.GetFaviconAsync(Microsoft.Web.WebView2.Core.CoreWebView2FaviconImageFormat.Png);
 
-                Image = _operacionesService.GetBitmap(icon);
-                var main = App.Current.MainWindow as MainWindow;
+                    Image = _operacionesService.GetBitmap(icon);
+                    var main = App.Current.MainWindow as MainWindow;
+                    ProgressVisibility = Visibility.Collapsed;
+                    ImgVisible = Visibility.Visible;
+                });
+            }
+            catch (Exception)
+            {
                 ProgressVisibility = Visibility.Collapsed;
-                ImgVisible = Visibility.Visible;
-            });
+            }
             
         }
     }

@@ -34,6 +34,7 @@ namespace WebBrowserMinimalist.Views.Controls
         readonly MainWindow? mainWindow;
         readonly ErrorsPageService? _errorPageService;
         WindowState _previewState;
+       
 
         readonly GlobalService _globalService;
 
@@ -66,6 +67,11 @@ namespace WebBrowserMinimalist.Views.Controls
             webview.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
             if (_globalService.GetDefaulProfileFolder() == "")
                 _globalService.SetDefaultProfileFolder(webview.CoreWebView2.Profile.ProfilePath);
+
+            ModelP.IMg = _tabItemVM.Image;
+            ModelP.Source = _tabItemVM.UrlSource;
+            ModelP.TitleDoc = _tabItemVM.TitleDocument;
+            ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
         }
 
 
@@ -191,6 +197,7 @@ namespace WebBrowserMinimalist.Views.Controls
                     ModelP.Source = _tabItemVM.UrlSource;                    
                     ModelP.ProgressVisibility = _tabItemVM.ProgressVisibility;
                     ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
+
                     
                 }
                 catch (Exception)
@@ -210,12 +217,13 @@ namespace WebBrowserMinimalist.Views.Controls
                 {
 
 
-                    if (_tabItemVM.UrlSource.StartsWith("http:"))
-                    {
-                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldError24;
-                    }
-                    else if (_tabItemVM.UrlSource.StartsWith("https:"))
-                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
+                    //if (_tabItemVM.UrlSource.StartsWith("http:"))
+                    //{
+                    //    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldError24;
+                    //}
+                    //else if (_tabItemVM.UrlSource.StartsWith("https:"))
+                    //    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
+                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Empty;
 
 
                     btnRefresh.Visibility = Visibility.Collapsed;
@@ -318,9 +326,11 @@ namespace WebBrowserMinimalist.Views.Controls
             {
                 if (errorStatus == CoreWebView2WebErrorStatus.Disconnected)
                     await webview.CoreWebView2.ExecuteScriptAsync(@"
-                   document.getElementById('game-button').remove()
+                   document.getElementById('game-buttons').remove()
                 ");
+
             }
+            
         }
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -357,5 +367,10 @@ namespace WebBrowserMinimalist.Views.Controls
             }
         }
 
+        private void webview_SourceChanged(object sender, CoreWebView2SourceChangedEventArgs e)
+        {
+            if (_tabItemVM.UrlSource != "Home")
+                webview.Visibility = Visibility.Visible;
+        }
     }
 }

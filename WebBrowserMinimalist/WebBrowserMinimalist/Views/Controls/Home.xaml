@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="WebBrowserMinimalist.Views.Controls.Home"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WebBrowserMinimalist.Views.Controls"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d" 
+             d:DesignHeight="288.548" d:DesignWidth="768">
+    <Grid>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0">
+            <ui:SymbolIcon Name="Symbol" Symbol="WeatherMoonOff48" FontSize="110" Margin="00,0,-30,0"></ui:SymbolIcon>
+            <ui:Card  Grid.Row="0" Background="{ui:ThemeResource}">
+                <ui:Card.Effect>
+                    <DropShadowEffect BlurRadius="15" Opacity="0.4" ShadowDepth="1" Direction="270" ></DropShadowEffect>
+                </ui:Card.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Name="txtSaludo" Text="Hola, Buenos Días"  FontSize="22" TextAlignment="Center"></TextBlock>
+                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1" Margin="0,-6,0,0">
+                        <TextBlock Name="txttime" Text="00:00" FontSize="58"></TextBlock>
+                        <TextBlock Name="txttimeAMPM" Text=" PM" FontSize="{Binding FontSize,ElementName=txttime}"></TextBlock>
+                    </StackPanel>
+                    <TextBlock Grid.Row="2" Name="txtFechaLarga" Text="lunes, 21 de Diciembre 2021" TextAlignment="Center"></TextBlock>
+                </Grid>
+            </ui:Card>
+        </StackPanel>
+    </Grid>
+</UserControl>

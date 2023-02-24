@@ -27,19 +27,27 @@ namespace WebBrowserMinimalist.Views.Windows
         public MainWindowViewModel? _viewmodel { get; }
         readonly OperacionesService _operaciones;
         readonly MensajeService _maensajeService;
+        readonly GlobalService _globalService;
         public MainWindow()
         {       
             InitializeComponent();
             _operaciones = App.GetService<OperacionesService>();
             _maensajeService = App.GetService<MensajeService>();
+            _globalService = App.GetService<GlobalService>();
             _viewmodel = this.DataContext as MainWindowViewModel;
             changeThicknes();
            
             Watcher.Watch(this, BackgroundType.Mica, true, true);
             this.Loaded += MainWindow_Loaded;
+            this.Closing += MainWindow_Closing;
             //SetPageService(pageService);
 
             //navigationService.SetNavigationControl(RootNavigation);
+        }
+
+        private void MainWindow_Closing(object? sender, CancelEventArgs e)
+        {
+            _globalService.DisposeTimeHour();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -54,14 +62,18 @@ namespace WebBrowserMinimalist.Views.Windows
 
                 if (_operaciones.IsArchivoAdmitido(ruta) == true || ruta.StartsWith("http:") || ruta.StartsWith("https:"))
                 {
-                    
+
                     var item = new ItemModel();
                     item.Tab._tabItemVM.Search(ruta);
                     item.Tab.countitem.DataContext = lista;
                     _viewmodel.Items.Add(item);
                 }
                 else
-                    App.Current.Shutdown();
+                {
+                    var item = new ItemModel();
+                    item.Tab.countitem.DataContext = lista;
+                    _viewmodel.Items.Add(item);
+                }
             }
             else
             {

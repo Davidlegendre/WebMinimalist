@@ -7,7 +7,7 @@
              xmlns:context="clr-namespace:WebBrowserMinimalist.ViewModels"
              xmlns:local="clr-namespace:WebBrowserMinimalist.Views.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" Width="340">
+             d:DesignHeight="450" d:DesignWidth="340">
     <UserControl.DataContext>
         <context:CollectionVM></context:CollectionVM>
     </UserControl.DataContext>
@@ -50,12 +50,12 @@
         <ListView Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding Collections, Mode=OneWay}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel HorizontalAlignment="Center"></WrapPanel>
+                    <WrapPanel ></WrapPanel>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <ui:CardExpander Background="{Binding Background}" Width="314" >
+                    <ui:CardExpander Background="{Binding Background}" VerticalAlignment="Top" IsExpanded="{Binding HasItems,ElementName=listaContents,Mode=OneWay}" Width="316" >
                         <ui:CardExpander.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Editar Coleccion" Tag="{Binding}" Click="btnEditCollection_Click">

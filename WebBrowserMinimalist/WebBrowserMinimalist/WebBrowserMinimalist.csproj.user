@@ -21,10 +21,16 @@
     <Compile Update="Views\Controls\HistoryList.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Controls\Home.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Controls\SettingsControls.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\Controls\TabItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Controls\WindowButtons.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -41,10 +47,16 @@
     <Page Update="Views\Controls\HistoryList.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\Controls\Home.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\Controls\SettingsControls.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Controls\TabItem.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Controls\WindowButtons.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Windows\MainWindow.xaml">

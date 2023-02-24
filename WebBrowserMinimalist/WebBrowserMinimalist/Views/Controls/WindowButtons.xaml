@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="WebBrowserMinimalist.Views.Controls.WindowButtons"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:local="clr-namespace:WebBrowserMinimalist.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="48"  WindowChrome.IsHitTestVisibleInChrome="True">
+    <UserControl.DataContext>
+        <local:WindowButtonsVM></local:WindowButtonsVM>
+    </UserControl.DataContext>
+    <Grid Margin="4">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="38"/>
+            <ColumnDefinition Width="38"/>
+            <ColumnDefinition Width="38"/>
+        </Grid.ColumnDefinitions>
+        <ui:Button HorizontalAlignment="Stretch" BorderThickness="0" Appearance="Transparent" VerticalAlignment="Stretch" Icon="LineHorizontal120" Command="{Binding MinimizedCommand}"  Padding="0" FontSize="12"></ui:Button>
+        <ui:Button Grid.Column="1" HorizontalAlignment="Stretch" Appearance="Transparent" BorderThickness="0" VerticalAlignment="Stretch" Command="{Binding MaxOrNormalCommand}" Icon="{Binding MaxOrNormalIcon}" FontSize="12"></ui:Button>
+        <ui:Button Grid.Column="2" HorizontalAlignment="Stretch" Appearance="Transparent" BorderThickness="0" VerticalAlignment="Stretch" Icon="Dismiss16" Command="{Binding CloseCommand}" FontSize="12" ></ui:Button>
+    </Grid>
+</UserControl>
