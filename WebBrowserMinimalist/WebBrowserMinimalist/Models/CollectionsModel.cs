@@ -9,11 +9,17 @@ using System.Windows.Media;
 
 namespace WebBrowserMinimalist.Models
 {
+    /// <summary>
+    /// Dapper es capaz de hacer match hasta con una clase partial con observable
+    /// </summary>
     public partial class CollectionsModel : ObservableObject
     {
-        public string ID { get; set; }
-        public string? TituloColeccion { get; set; }
-        public string? Background { get; set; }
+        [ObservableProperty]
+        string? _ID;
+        [ObservableProperty]
+        string? _TituloColeccion;
+        [ObservableProperty]
+        string? _Background;
 
         [ObservableProperty]
         ObservableCollection<ContentColletionModel> _ContentCollection = new ObservableCollection<ContentColletionModel>();

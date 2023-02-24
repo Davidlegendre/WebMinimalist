@@ -52,8 +52,10 @@ namespace WebBrowserMinimalist.Views.Controls
             var button = sender as Wpf.Ui.Controls.Button;
             var collection = button.Tag as CollectionsModel;
             var itemSelected = _MainWindow.lista.SelectedItem as ItemModel;
-            if(itemSelected != null) {
-               var result =  await _VM.CreateContent(new ContentColletionModel() { 
+            if (itemSelected != null && !string.IsNullOrWhiteSpace(itemSelected.Source))
+            {
+                var result = await _VM.CreateContent(new ContentColletionModel()
+                {
                     IDContent = Guid.NewGuid().ToString(),
                     TituloDocumento = itemSelected.TitleDoc,
                     URl = itemSelected.Source,

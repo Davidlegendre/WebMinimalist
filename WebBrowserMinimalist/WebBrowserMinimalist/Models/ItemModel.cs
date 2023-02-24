@@ -36,7 +36,7 @@ namespace WebBrowserMinimalist.Models
         Visibility _SoundVisibility = Visibility.Collapsed;
 
         [ObservableProperty]
-        SymbolRegular _ShieldIcon = SymbolRegular.Shield24;
+        SymbolRegular _ShieldIcon = SymbolRegular.Home12;
 
         [ObservableProperty]
         string? _source = "";

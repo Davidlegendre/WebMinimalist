@@ -18,7 +18,7 @@
         <VM:MainWindowViewModel></VM:MainWindowViewModel>
     </Window.DataContext>
     <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="-1" UseAeroCaptionButtons="False" CaptionHeight="38"></WindowChrome>
+        <WindowChrome GlassFrameThickness="-1" CaptionHeight="38"></WindowChrome>
     </WindowChrome.WindowChrome>
     <Grid Margin="{Binding MarginWindowState, Mode=OneWay}">
         <Grid.ColumnDefinitions>

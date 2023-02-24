@@ -65,6 +65,8 @@ namespace WebBrowserMinimalist.Views.Controls
             webview.CoreWebView2.IsDocumentPlayingAudioChanged += CoreWebView2_IsDocumentPlayingAudioChanged;
             webview.CoreWebView2.ServerCertificateErrorDetected += CoreWebView2_ServerCertificateErrorDetected;
             webview.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
+           // webview.CoreWebView2.PermissionRequested += CoreWebView2_PermissionRequested;
+           
             if (_globalService.GetDefaulProfileFolder() == "")
                 _globalService.SetDefaultProfileFolder(webview.CoreWebView2.Profile.ProfilePath);
 
@@ -74,6 +76,20 @@ namespace WebBrowserMinimalist.Views.Controls
             ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
         }
 
+        private void CoreWebView2_PermissionRequested(object? sender, CoreWebView2PermissionRequestedEventArgs e)
+        {
+            var icon = _tabItemVM.PermisosIcons.GetValueOrDefault(e.PermissionKind);
+            if (e.IsUserInitiated)
+                if (!_tabItemVM.Permisos.Contains(icon))
+                {
+                    _tabItemVM.Permisos.Add(icon);
+                }
+            else if (!e.IsUserInitiated)
+                _tabItemVM.Permisos.Remove(icon);
+
+            if (e.State == CoreWebView2PermissionState.Deny)
+                _tabItemVM.Permisos.Remove(icon);
+        }
 
         private void CoreWebView2_ContainsFullScreenElementChanged(object? sender, object e)
         {
@@ -131,10 +147,10 @@ namespace WebBrowserMinimalist.Views.Controls
 
         private void CoreWebView2_ServerCertificateErrorDetected(object? sender, CoreWebView2ServerCertificateErrorDetectedEventArgs e)
         {
-           if(_tabItemVM != null) {
-                _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldDismiss24;
-                ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
-            }
+           //if(_tabItemVM != null) {
+           //     _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldDismiss24;
+           //     ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
+           // }
         }
 
         private void CoreWebView2_IsDocumentPlayingAudioChanged(object? sender, object e)
@@ -211,6 +227,8 @@ namespace WebBrowserMinimalist.Views.Controls
         {
             if (_tabItemVM != null)
             {
+                _tabItemVM.Permisos.Clear();
+                
                 if (webview.CoreWebView2.Source.Contains("edge://surf/"))
                     e.Cancel = true;
                 else
@@ -223,7 +241,10 @@ namespace WebBrowserMinimalist.Views.Controls
                     //}
                     //else if (_tabItemVM.UrlSource.StartsWith("https:"))
                     //    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
-                    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Empty;
+                    if (_tabItemVM.UrlSource != "about:blank")
+                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Empty;
+                    else
+                        _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Home12;
 
 
                     btnRefresh.Visibility = Visibility.Collapsed;

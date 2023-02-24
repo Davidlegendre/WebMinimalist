@@ -46,13 +46,16 @@ namespace WebBrowserMinimalist.ViewModels
         BitmapImage _Image = new BitmapImage(_DefaultUriImg);
 
         [ObservableProperty]
-        string _UrlSource = "";
+        string _UrlSource = "about:blank";
 
         [ObservableProperty]
         bool _IsNotIncognit = true;
 
         [ObservableProperty]
         ObservableCollection<HistoryModel>? _ResultItems = new ObservableCollection<HistoryModel>();
+
+        [ObservableProperty]
+        ObservableCollection<SymbolRegular> _Permisos = new ObservableCollection<SymbolRegular>();
 
 
         [ObservableProperty]
@@ -65,7 +68,7 @@ namespace WebBrowserMinimalist.ViewModels
         Visibility _SoundVisibility = Visibility.Collapsed;
 
         [ObservableProperty]
-        SymbolRegular _ShieldIcon = SymbolRegular.Shield16;
+        SymbolRegular _ShieldIcon = SymbolRegular.Home12;
 
 
         [ObservableProperty]
@@ -163,5 +166,15 @@ namespace WebBrowserMinimalist.ViewModels
             }
             
         }
+
+        public Dictionary<CoreWebView2PermissionKind, SymbolRegular> PermisosIcons = new Dictionary<CoreWebView2PermissionKind, SymbolRegular>() {
+            { CoreWebView2PermissionKind.UnknownPermission, SymbolRegular.Question16 },
+            { CoreWebView2PermissionKind.OtherSensors, SymbolRegular.DeveloperBoard20 },
+            { CoreWebView2PermissionKind.Notifications, SymbolRegular.Alert12 },
+            { CoreWebView2PermissionKind.Microphone, SymbolRegular.Mic16 },
+            { CoreWebView2PermissionKind.Geolocation, SymbolRegular.Location12 },
+            { CoreWebView2PermissionKind.ClipboardRead, SymbolRegular.ClipboardPaste16 },
+            { CoreWebView2PermissionKind.Camera, SymbolRegular.Camera16 },
+        };
     }
 }

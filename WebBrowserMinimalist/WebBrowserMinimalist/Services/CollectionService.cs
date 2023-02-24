@@ -61,7 +61,7 @@ namespace WebBrowserMinimalist.Services
             return collectionsDBA.DeleteAllCollection(IDCollection);
         }
 
-        public async Task<bool> DeleteOneContentCollection(string IDContent)
+        public async Task<ContentColletionModel?> DeleteOneContentCollection(string IDContent)
         { 
            return await collectionsDBA.DeleteOneContentCollection(IDContent);
         }

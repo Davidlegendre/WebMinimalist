@@ -29,7 +29,14 @@ namespace WebBrowserMinimalist.Views.Controls
             _globalService = App.GetService<GlobalService>();
             _globalService.TimeSystemEvent += _globalService_TimeSystemEvent;
             _globalService.InitTimerHour();
+            this.Loaded += Home_Loaded;
+            
+        }
+
+        private void Home_Loaded(object sender, RoutedEventArgs e)
+        {
             Wpf.Ui.Animations.Transitions.ApplyTransition(this, Wpf.Ui.Animations.TransitionType.FadeIn, 500);
+            Wpf.Ui.Animations.Transitions.ApplyTransition(Symbol, Wpf.Ui.Animations.TransitionType.SlideRight, 700);
             txtFechaLarga.Text = DateTime.Now.ToLongDateString();
             txttime.Text = DateTime.Now.ToString("hh:mm");
             txttimeAMPM.Text = (DateTime.Now.Hour > 12 ? TypeHora.PM : TypeHora.AM) == TypeHora.AM ? " AM" : " PM";
@@ -70,7 +77,7 @@ namespace WebBrowserMinimalist.Views.Controls
 
             }
 
-            if(hour >= 0 && hour <= 5)
+            if(hour > 0 && hour <= 5)
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherPartlyCloudyNight20;
             if (hour > 5 && hour <= 7)
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherSunnyLow48;
@@ -80,7 +87,7 @@ namespace WebBrowserMinimalist.Views.Controls
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherSunny48;
             if (hour > 14 && hour <= 19)
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherPartlyCloudyDay48;
-            if (hour > 19 && hour < 0)
+            if (hour > 19)
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherMoon48;
 
         }

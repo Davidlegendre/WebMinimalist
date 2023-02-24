@@ -62,8 +62,9 @@ namespace WebBrowserMinimalist.DBA
             {
                 using (var con = new SQLiteConnection(connectionString))
                 {
+                    collectionsModel.ID = Guid.NewGuid().ToString();
                     await con.ExecuteAsync("insert into collections(ID,TituloColeccion,Background)" +
-                        "values('" + Guid.NewGuid() + "', '" + collectionsModel.TituloColeccion + "', '" 
+                        "values('" + collectionsModel.ID + "', '" + collectionsModel.TituloColeccion + "', '" 
                         + collectionsModel.Background + "')");
 
                 }
@@ -82,8 +83,9 @@ namespace WebBrowserMinimalist.DBA
             {
                 using (var con = new SQLiteConnection(connectionString))
                 {
+                    contentColletionModel.IDContent = Guid.NewGuid().ToString();
                    var result = await con.ExecuteAsync("insert into ContentCollection(IDContent,TituloDocumento,URl,IDCollection)" +
-                        "values('" + Guid.NewGuid() + "', '" +
+                        "values('" + contentColletionModel.IDContent + "', '" +
                         contentColletionModel.TituloDocumento + "','" + contentColletionModel.URl + "', '"
                         + contentColletionModel.IDCollection + "')");
                 }
@@ -186,17 +188,21 @@ namespace WebBrowserMinimalist.DBA
             catch (Exception ex) { _msn.ShowDialog(ex.Message); return false; }
         }
 
-        public async Task<bool> DeleteOneContentCollection(string IDContent)
+        public async Task<ContentColletionModel?> DeleteOneContentCollection(string IDContent)
         {
             try
             {
+                ContentColletionModel contentColletionModel;
                 using (var con = new SQLiteConnection(connectionString))
                 {
+                    contentColletionModel = await con.QueryFirstAsync<ContentColletionModel>("select IDContent, TituloDocumento,URl," +
+                        "IDCollection from ContentCollection where IDContent = '" + IDContent + "'");
                     await con.ExecuteAsync("delete from ContentCollection where IDContent = '" + IDContent + "'");
+                    
                 }
-                return true;
+                return contentColletionModel;
             }
-            catch (Exception ex) { _msn.ShowDialog(ex.Message); return false; }
+            catch (Exception ex) { _msn.ShowDialog(ex.Message); return null; }
         }
     }
 }

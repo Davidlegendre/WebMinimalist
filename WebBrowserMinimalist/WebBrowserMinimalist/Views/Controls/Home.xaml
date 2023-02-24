@@ -9,17 +9,15 @@
              d:DesignHeight="288.548" d:DesignWidth="768">
     <Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0">
-            <ui:SymbolIcon Name="Symbol" Symbol="WeatherMoonOff48" FontSize="110" Margin="00,0,-30,0"></ui:SymbolIcon>
+            <ui:SymbolIcon Name="Symbol" FontSize="110" Margin="00,0,-30,0"></ui:SymbolIcon>
             <ui:Card  Grid.Row="0" Background="{ui:ThemeResource}">
-                <ui:Card.Effect>
-                    <DropShadowEffect BlurRadius="15" Opacity="0.4" ShadowDepth="1" Direction="270" ></DropShadowEffect>
-                </ui:Card.Effect>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"></RowDefinition>
                         <RowDefinition Height="auto"></RowDefinition>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
+                    
                     <TextBlock Name="txtSaludo" Text="Hola, Buenos Días"  FontSize="22" TextAlignment="Center"></TextBlock>
                     
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1" Margin="0,-6,0,0">

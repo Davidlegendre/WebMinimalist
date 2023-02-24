@@ -27,25 +27,25 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="145"/>
                 </Grid.ColumnDefinitions>
-                <local:WindowButtons Grid.Column="2"></local:WindowButtons>
+                <local:WindowButtons Grid.Column="2" Visibility="Collapsed"></local:WindowButtons>
                 <Rectangle Fill="{Binding Foreground,ElementName=symbol}" Height="1" VerticalAlignment="Bottom" Opacity="0.2" HorizontalAlignment="Stretch" Grid.ColumnSpan="10" RadiusX="1" RadiusY="1"></Rectangle>
               
                 <StackPanel Orientation="Horizontal" Margin="2,4,8,4">
-                    <ui:Button Width="33" Padding="3,0,0,2.5" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding BackCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding CanGoBack,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
-                        <ui:SymbolIcon Symbol="IosArrowLtr24" ></ui:SymbolIcon>
+                    <ui:Button WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding BackCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding CanGoBack,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                        <ui:SymbolIcon Symbol="ChevronLeft12" ></ui:SymbolIcon>
                     </ui:Button>
-                    <Grid Width="33">
-                        <ui:Button Name="btnRefresh" Padding="0,0,0,2.5" HorizontalAlignment="Stretch" Visibility="Visible" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding RefreshCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
+                    <Grid>
+                        <ui:Button Name="btnRefresh" HorizontalAlignment="Stretch" Visibility="Visible" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding RefreshCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
                             <ui:SymbolIcon Symbol="ArrowSync16"></ui:SymbolIcon>
                         </ui:Button>
                         <ui:Button Name="btnStop" Visibility="Collapsed" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding StopCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
                             <ui:SymbolIcon Symbol="Square12" Filled="True"></ui:SymbolIcon>
                         </ui:Button>
                     </Grid>
-                    <ui:Button Width="33" Padding="0,0,3,2.5" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" Command="{Binding LeftCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding  CanGoForward,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderBrush="Transparent" VerticalAlignment="Stretch" >
-                        <ui:SymbolIcon Symbol="IosArrowRtl24" ></ui:SymbolIcon>
+                    <ui:Button WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" Command="{Binding LeftCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding  CanGoForward,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                        <ui:SymbolIcon Symbol="ChevronRight12" ></ui:SymbolIcon>
                     </ui:Button>
                 </StackPanel>
                 <Rectangle Fill="{Binding Foreground,ElementName=symbol}" Width="4" Height="4" HorizontalAlignment="Right" RadiusX="10" RadiusY="10" Margin="0,15,0,15"></Rectangle>
@@ -143,9 +143,21 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
-                            <StackPanel Orientation="Horizontal" Margin="4,0,0,0">
-                                <ui:SymbolIcon Name="symbol" Symbol="{Binding ShieldIcon}" Margin="4,0,6,0" Filled="False" FontSize="18"></ui:SymbolIcon>
+                            <StackPanel Name="stackiconsPermisos" Orientation="Horizontal" Margin="4,0,0,0">
+                                <ui:SymbolIcon Name="symbol" Symbol="{Binding ShieldIcon}" Margin="4,0,6,0" Filled="True" FontSize="16"></ui:SymbolIcon>
                                 <ui:SymbolIcon Visibility="{Binding SoundVisibility,Mode=OneWay}" Symbol="Speaker224" Margin="2,0,6,0" FontSize="16"></ui:SymbolIcon>
+                                <ItemsControl ItemsSource="{Binding Permisos,Mode=OneWay}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Rows="0"></UniformGrid>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <ui:SymbolIcon Symbol="{Binding}" Margin="2" FontSize="18"></ui:SymbolIcon>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </StackPanel>
                             <ui:Button  Name="btnChangeToSearch" Click="btnChangeToSearch_Click" Padding="5" Width="28" Grid.Column="3" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                                 <ui:SymbolIcon Symbol="Search12" Filled="True" FontSize="12"></ui:SymbolIcon>
@@ -168,8 +180,8 @@
                     </ui:Badge>
                     
                     <StackPanel Orientation="Horizontal" Margin="4,0,0,0">
-                        <ui:Button Name="menubtn" Width="33" Padding="0,0,0,2" Click="menubtn_Click" Height="{Binding ActualHeight,ElementName=btnRefresh}" Grid.Column="0" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
-                            <ui:SymbolIcon Name="tabssymbol" Symbol="LineHorizontal320" ></ui:SymbolIcon>
+                        <ui:Button Name="menubtn" Click="menubtn_Click" Height="{Binding ActualHeight,ElementName=btnRefresh}" Grid.Column="0" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                            <ui:SymbolIcon Name="tabssymbol" Symbol="TextAlignLeft16" ></ui:SymbolIcon>
                         </ui:Button>                        
                     </StackPanel>
                 </Grid>
