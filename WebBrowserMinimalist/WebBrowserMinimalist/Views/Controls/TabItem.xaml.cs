@@ -1,4 +1,5 @@
-﻿using Microsoft.Web.WebView2.Core;
+﻿using HandyControl.Tools.Extension;
+using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -58,7 +59,6 @@ namespace WebBrowserMinimalist.Views.Controls
         async void InitialWebView2() {
             
            await webview.EnsureCoreWebView2Async();
-            
             webview.CoreWebView2.ContainsFullScreenElementChanged += CoreWebView2_ContainsFullScreenElementChanged;
             webview.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
             webview.CoreWebView2.NavigationCompleted += CoreWebView2_NavigationCompleted;
@@ -66,8 +66,10 @@ namespace WebBrowserMinimalist.Views.Controls
             webview.CoreWebView2.IsDocumentPlayingAudioChanged += CoreWebView2_IsDocumentPlayingAudioChanged;
             webview.CoreWebView2.ServerCertificateErrorDetected += CoreWebView2_ServerCertificateErrorDetected;
             webview.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
-           // webview.CoreWebView2.PermissionRequested += CoreWebView2_PermissionRequested;
-           
+            // webview.CoreWebView2.PermissionRequested += CoreWebView2_PermissionRequested;
+            webview.CoreWebView2.DOMContentLoaded += CoreWebView2_DOMContentLoaded;
+
+
             if (_globalService.GetDefaulProfileFolder() == "")
                 _globalService.SetDefaultProfileFolder(webview.CoreWebView2.Profile.ProfilePath);
 
@@ -75,8 +77,41 @@ namespace WebBrowserMinimalist.Views.Controls
             ModelP.Source = _tabItemVM.UrlSource;
             ModelP.TitleDoc = _tabItemVM.TitleDocument;
             ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
+        }
 
+        private void CoreWebView2_DOMContentLoaded(object? sender, CoreWebView2DOMContentLoadedEventArgs e)
+        {
             
+            //"polyfill.js", "ext/common.js", "ext/background.js", "background.js"
+            //var file_JsonFormatter = _globalService.GetFolderAppDomain + "/JSONFORMATTER/0.7.1_0/content.js";
+            //await webview.CoreWebView2.ExecuteScriptAsync(await File.ReadAllTextAsync(file_JsonFormatter));
+            ////var file_adblockyoutube = _globalService.GetFolderAppDomain + "/Extensions/adblockYoutube/";
+            //string[] scripts = {
+            //                file_adblockyoutube + "scripts/contentscript.js",
+            //                file_adblockyoutube + "scripts/background.js"
+            //         };
+
+            //scripts.ForEach(async x =>
+            //{
+            //    var result = await File.ReadAllTextAsync(x);
+            //    await webview.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(result);
+            //}
+            //);
+
+
+            //var adblock = _globalService.GetFolderAppDomain + "/Extensions/gmgoamodcdcjnbaobigkjelfplakmdhh/3.16.1_0/";
+
+            //string[] scripts = {
+            //            adblock + "vendor/webext-sdk/content.js",
+            //            adblock + "background.js",
+            //            adblock + "ext/background.js",
+            //            adblock + "ext/common.js",
+            //            adblock + "polyfill.js",
+            //            adblock + "ext/content.js",
+            //            adblock + "composer.preload.js"
+            //        };
+            //scripts.ForEach(async x => await webview.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(await File.ReadAllTextAsync(x)));
+
         }
 
         private void CoreWebView2_PermissionRequested(object? sender, CoreWebView2PermissionRequestedEventArgs e)
@@ -208,8 +243,8 @@ namespace WebBrowserMinimalist.Views.Controls
                     ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
                     webview.Focus();
 
-               
-                        await Task.Run(async () => await _tabItemVM.geticon(sender));
+
+                    await Task.Run(async () => await _tabItemVM.geticon(sender));
                     if (_tabItemVM.UrlSource == "about:blank")
                     {
                         _tabItemVM.Image = new BitmapImage(new Uri("/Views/Windows/icons8-internet-48.png", UriKind.RelativeOrAbsolute));
@@ -218,16 +253,31 @@ namespace WebBrowserMinimalist.Views.Controls
                         webview.DefaultBackgroundColor = System.Drawing.Color.Transparent;
                         ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
                         _tabItemVM.TitleDocument = "Home";
-                       
+
                     }
 
                     ModelP.TitleDoc = _tabItemVM.TitleDocument;
                     ModelP.IMg = _tabItemVM.Image;
-                    ModelP.Source = _tabItemVM.UrlSource;                    
+                    ModelP.Source = _tabItemVM.UrlSource;
                     ModelP.ProgressVisibility = _tabItemVM.ProgressVisibility;
                     ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
 
-                    
+
+
+                    //var file_adblockyoutube = _globalService.GetFolderAppDomain + "/Extensions/mbdlpgncclnhomdpmicmgdihapedhhak/1.1.7_0/";
+                    //string[] scripts = { file_adblockyoutube + "scripts/kye.js",
+                    //        file_adblockyoutube + "scripts/ky.js",
+                    // };
+                    //scripts.ForEach(async x => await webview.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(await File.ReadAllTextAsync(x)));
+                    _historyServices.Insert(new HistoryModel()
+                    {
+                        id = _historyServices.CountHistory() + 1,
+                        title = _tabItemVM.TitleDocument,
+                        url = _tabItemVM.UrlSource,
+                        date = DateTime.Now.ToLongTimeString()
+                    });
+
+
                 }
                 catch (Exception)
                 {
@@ -247,13 +297,7 @@ namespace WebBrowserMinimalist.Views.Controls
                 else
                 {
 
-
-                    //if (_tabItemVM.UrlSource.StartsWith("http:"))
-                    //{
-                    //    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.ShieldError24;
-                    //}
-                    //else if (_tabItemVM.UrlSource.StartsWith("https:"))
-                    //    _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Shield24;
+                    
                     if (_tabItemVM.UrlSource != "about:blank")
                         webview.DefaultBackgroundColor = System.Drawing.Color.White;
                     else
@@ -270,6 +314,8 @@ namespace WebBrowserMinimalist.Views.Controls
                     ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
 
                     flyResults.IsOpen = false;
+
+                    
                 }
             }
         }

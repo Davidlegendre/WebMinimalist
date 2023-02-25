@@ -65,9 +65,9 @@ namespace WebBrowserMinimalist.Views.Controls
             }
             else
             {
-                if (hour >= 12 && hour < 19)
+                if (hour >= 12 && hour < 18)
                     txtSaludo.Text = EnumSaludos.HolaBuenasTardes;
-                if (hour >= 19 && hour < 24)
+                if (hour >= 18 && hour < 24)
                     txtSaludo.Text = EnumSaludos.HolaBuenasNoches;
             }
 
@@ -79,9 +79,9 @@ namespace WebBrowserMinimalist.Views.Controls
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherSunnyHigh48;
             if (hour > 10 && hour <= 14)
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherSunny48;
-            if (hour > 14 && hour <= 19)
+            if (hour > 14 && hour <= 18)
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherPartlyCloudyDay48;
-            if (hour > 19)
+            if (hour > 18)
                 Symbol.Symbol = Wpf.Ui.Common.SymbolRegular.WeatherMoon48;
         }
     }
