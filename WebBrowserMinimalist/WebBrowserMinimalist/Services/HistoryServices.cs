@@ -14,7 +14,6 @@ namespace WebBrowserMinimalist.Services
     {
         List<HistoryModel> _historial = new List<HistoryModel>();
 
-
         public void Insert(HistoryModel historyModel)
         {
             if (historyModel.title != historyModel.url)
@@ -24,7 +23,6 @@ namespace WebBrowserMinimalist.Services
                     _historial.Add(historyModel);
             }
         }
-
 
         public void ClearAll()
         {

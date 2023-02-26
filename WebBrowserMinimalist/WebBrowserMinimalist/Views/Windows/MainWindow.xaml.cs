@@ -53,8 +53,6 @@ namespace WebBrowserMinimalist.Views.Windows
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             CargaArchivosExternos();
-           
-
         }
 
         void CargaArchivosExternos() {
@@ -70,19 +68,19 @@ namespace WebBrowserMinimalist.Views.Windows
                         : Environment.CommandLine.Split(" ")[1]);
                     var ruta = pre.EndsWith('"') ? pre.Remove(pre.Length - 1) : pre;
                     var item = new ItemModel();
-                    item.Tab._tabItemVM.Search("file:///" + ruta);
-                    _viewmodel.Items.Add(item);
+                    item!.Tab!._tabItemVM!.Search("file:///" + ruta);
+                    _viewmodel!.Items!.Add(item);
                 }
                 else
                 {
                     var item = new ItemModel();
-                    _viewmodel.Items.Add(item);
+                    _viewmodel!.Items!.Add(item);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 var item = new ItemModel();
-                _viewmodel.Items.Add(item);
+                _viewmodel!.Items!.Add(item);
             }
             
         }
@@ -173,29 +171,37 @@ namespace WebBrowserMinimalist.Views.Windows
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
+            EliminarPestaña();
+        }
+
+        public void EliminarPestaña()
+        {
             if (lista.Items.Count != 1)
             {
-                var button = (Wpf.Ui.Controls.Button)e.Source;
-                var ctx = (ItemModel)button.DataContext;
+                //var button = (Wpf.Ui.Controls.Button)e.Source;
+                //var ctx = (ItemModel)button.DataContext;
                 var current = lista.SelectedItem as ItemModel;
-                if (current.UID == ctx.UID && lista.Items.Count > 1) {
+                if (/*current!.UID == ctx.UID &&*/ lista.Items.Count > 1)
+                {
                     if (lista.SelectedIndex != 0)
                         lista.SelectedIndex -= 1;
-                    else if(lista.SelectedIndex != lista.Items.Count - 1)
+                    else if (lista.SelectedIndex != lista.Items.Count - 1)
                         lista.SelectedIndex += 1;
                 }
-                if (ctx != null) {
-                    
-                    _viewmodel.DeleteItemCommand.Execute(ctx.UID);
-                    
-                }
-            }    
-           
+                _viewmodel!.DeleteItemCommand.Execute(current!.UID);
+                //if (ctx != null)
+                //{
+
+
+
+                //}
+            }
         }
+
         public void addbutton_Click(object sender, RoutedEventArgs e)
         {
             var newItem = new ItemModel();
-            _viewmodel.Items.Add(newItem);
+            _viewmodel!.Items!.Add(newItem);
             lista.SelectedItem = newItem;
             lista.ScrollIntoView(newItem);
             historyList.Visibility = Visibility.Collapsed;
@@ -206,8 +212,8 @@ namespace WebBrowserMinimalist.Views.Windows
         private void btnDescargasOpen_Click(object sender, RoutedEventArgs e)
         {
             var newItem = new ItemModel();
-            newItem.Tab._tabItemVM.Search("edge://downloads/all");
-            _viewmodel.Items.Add(newItem);
+            newItem.Tab!._tabItemVM!.Search("edge://downloads/all");
+            _viewmodel!.Items!.Add(newItem);
             lista.SelectedItem = newItem;
             lista.ScrollIntoView(newItem);
         }
@@ -220,8 +226,6 @@ namespace WebBrowserMinimalist.Views.Windows
                 historyList.Visibility = Visibility.Visible;
                 lista.Visibility = Visibility.Collapsed;
                 Wpf.Ui.Animations.Transitions.ApplyTransition(historyList, Wpf.Ui.Animations.TransitionType.SlideRight, 400);
-                
-
             }
         }
 
@@ -231,7 +235,7 @@ namespace WebBrowserMinimalist.Views.Windows
             {
                 var button = (System.Windows.Controls.MenuItem)e.Source;
                 var ctx = (ItemModel)button.DataContext;
-                _viewmodel.CerrarTodosMenosEsteCommand.Execute(ctx);
+                _viewmodel!.CerrarTodosMenosEsteCommand.Execute(ctx);
             }
         }
 
@@ -240,19 +244,16 @@ namespace WebBrowserMinimalist.Views.Windows
             var button = (System.Windows.Controls.MenuItem)e.Source;
             var ctx = (ItemModel)button.DataContext;
             if (lista.SelectedIndex != lista.Items.Count - 1)
-                _viewmodel.CerrarTodosHaciaAbajoCommand.Execute(ctx);
+                _viewmodel!.CerrarTodosHaciaAbajoCommand.Execute(ctx);
         }
 
         private void btnAtras_Click(object sender, RoutedEventArgs e)
         {
-
-
             if (lista.Visibility != Visibility.Visible)
             {
                 historyList.Visibility = Visibility.Collapsed;
                 lista.Visibility = Visibility.Visible;
-                btnAtras.Visibility = Visibility.Collapsed;
-                
+                btnAtras.Visibility = Visibility.Collapsed;                
                 Wpf.Ui.Animations.Transitions.ApplyTransition(lista, Wpf.Ui.Animations.TransitionType.SlideLeft, 400);
             }
         }
@@ -271,7 +272,6 @@ namespace WebBrowserMinimalist.Views.Windows
             {
                 Colecciones.Visibility = Visibility.Collapsed;
                 flyoutPanel.IsOpen = false;
-
             }
         }
 

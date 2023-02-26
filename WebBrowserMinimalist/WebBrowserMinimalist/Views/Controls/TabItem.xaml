@@ -177,7 +177,7 @@
                     </ui:Badge>
                     
                     <StackPanel Orientation="Horizontal" Margin="4,0,0,0">
-                        <ui:Button Name="menubtn" Click="menubtn_Click" Height="{Binding ActualHeight,ElementName=btnRefresh}" Grid.Column="0" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                        <ui:Button Name="menubtn" Width="38" Click="menubtn_Click" Height="{Binding ActualHeight,ElementName=btnRefresh}" Grid.Column="0" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                             <ui:SymbolIcon Name="tabssymbol" Symbol="TextAlignLeft16" ></ui:SymbolIcon>
                         </ui:Button>                        
                     </StackPanel>
@@ -193,7 +193,7 @@
 
 
         <Grid Name="navegador" Grid.Row="1">
-            <web:WebView2 Name="webview" ZoomFactor="0.9"  SourceChanged="webview_SourceChanged" Source="{Binding Url}" DefaultBackgroundColor="transparent" >
+            <web:WebView2 Name="webview" Source="{Binding Url, Mode=OneWay}" Margin="0" DefaultBackgroundColor="transparent" >
                 <web:WebView2.CreationProperties>
                     <web:CoreWebView2CreationProperties IsInPrivateModeEnabled="True"></web:CoreWebView2CreationProperties>
                 </web:WebView2.CreationProperties>

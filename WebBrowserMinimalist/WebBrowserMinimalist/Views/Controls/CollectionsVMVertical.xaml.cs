@@ -39,27 +39,27 @@ namespace WebBrowserMinimalist.Views.Controls
         private void btnLinkContentColectionItem_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Wpf.Ui.Controls.Button;
-            var collection = button.Tag as ContentColletionModel;
-            var itemSelected = _MainWindow.lista.SelectedItem as ItemModel;
+            var collection = button!.Tag as ContentColletionModel;
+            var itemSelected = _MainWindow!.lista.SelectedItem as ItemModel;
             if(itemSelected != null)
             {
-                _VM.Navegar(collection);
+                _VM!.Navegar(collection);
             }
         }
 
         private async void btnAddContentItem_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Wpf.Ui.Controls.Button;
-            var collection = button.Tag as CollectionsModel;
-            var itemSelected = _MainWindow.lista.SelectedItem as ItemModel;
+            var collection = button!.Tag as CollectionsModel;
+            var itemSelected = _MainWindow!.lista.SelectedItem as ItemModel;
             if (itemSelected != null && !string.IsNullOrWhiteSpace(itemSelected.Source))
             {
-                var result = await _VM.CreateContent(new ContentColletionModel()
+                var result = await _VM!.CreateContent(new ContentColletionModel()
                 {
                     IDContent = Guid.NewGuid().ToString(),
                     TituloDocumento = itemSelected.TitleDoc,
                     URl = itemSelected.Source,
-                    IDCollection = collection.ID
+                    IDCollection = collection!.ID!
                 });
             }
         }
@@ -71,7 +71,7 @@ namespace WebBrowserMinimalist.Views.Controls
             if (_MainWindow != null && _VM != null)
             {
                 var agregarModWin = new AgregarColeccionWindow(_MainWindow, _VM, TypeDataTranfered.Edit);
-                agregarModWin.txtTitulo.Text = collection.TituloColeccion;
+                agregarModWin.txtTitulo.Text = collection!.TituloColeccion;
                 agregarModWin.Tag = collection.ID;
                 foreach (var card in agregarModWin.listColor.Items) {
                     if (((Wpf.Ui.Controls.CardColor)card).Color.ToString() == collection.Background) {
@@ -91,9 +91,9 @@ namespace WebBrowserMinimalist.Views.Controls
             var collection = button.Tag as CollectionsModel;
             if(_VM != null)
             {
-                if (_msn.ShowDialog("Desea Eliminar la coleccion: " + collection.TituloColeccion + "?", "Eliminando", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (_msn.ShowDialog("Desea Eliminar la coleccion: " + collection!.TituloColeccion + "?", "Eliminando", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
-                    var result = await _VM.DeleteAllCollection(collection.ID);
+                    var result = await _VM.DeleteAllCollection(collection.ID!);
                 }
             }
         }
@@ -112,10 +112,10 @@ namespace WebBrowserMinimalist.Views.Controls
         private async void EliminarContent_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as MenuItem;
-            var collection = button.Tag as ContentColletionModel;
+            var collection = button!.Tag as ContentColletionModel;
             if (collection != null)
             {
-                await _VM.DeleteOneContentCollection(collection.IDContent);
+                await _VM!.DeleteOneContentCollection(collection.IDContent);
             }
         }
     }

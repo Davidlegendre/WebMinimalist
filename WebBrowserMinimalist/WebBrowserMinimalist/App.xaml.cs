@@ -44,6 +44,7 @@ namespace WebBrowserMinimalist
                 services.AddSingleton<OperacionesService>();
                 services.AddSingleton<MensajeService>();
                 services.AddSingleton<ErrorsPageService>();
+                services.AddSingleton<AdblockService>();
 
                 // Main window with navigation
                 services.AddScoped<Views.Windows.MainWindow>();

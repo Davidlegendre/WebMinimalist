@@ -11,16 +11,19 @@
     d:DesignWidth="1100"
     MinWidth="484"
     d:DesignHeight="650"  
+    
     mc:Ignorable="d"
     WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged"
-     WindowState="Maximized" Icon="/Views/Windows/icons8-internet-48.png" Background="{ui:ThemeResource}">
+    
+     WindowState="Normal" Icon="/Views/Windows/icons8-internet-48.png" Background="{ui:ThemeResource}">
     <Window.DataContext>
         <VM:MainWindowViewModel></VM:MainWindowViewModel>
     </Window.DataContext>
     <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="-1" CaptionHeight="38"></WindowChrome>
+        <WindowChrome CaptionHeight="38" GlassFrameThickness="-1"></WindowChrome>
     </WindowChrome.WindowChrome>
-    <Grid Margin="{Binding MarginWindowState, Mode=OneWay}">
+    <!--Margin="{Binding MarginWindowState, Mode=OneWay}"-->
+    <Grid Margin="{Binding MarginWindowState, Mode=OneWay}" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
