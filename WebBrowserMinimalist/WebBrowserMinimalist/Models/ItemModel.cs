@@ -14,14 +14,13 @@ using Wpf.Ui.Common;
 namespace WebBrowserMinimalist.Models
 {
     public partial class ItemModel : ObservableObject
-    {
+    { 
+       
         public ItemModel() {
             UID = Guid.NewGuid();
             _tabitem = new TabItem(this);
         }
-
         TabItem? _tabitem; 
-
         public Guid UID { get; }
 
         public TabItem? Tab { get => _tabitem; }

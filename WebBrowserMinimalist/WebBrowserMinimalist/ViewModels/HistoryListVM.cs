@@ -1,16 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Security.RightsManagement;
-using System.Text;
-using System.Threading.Tasks;
 using WebBrowserMinimalist.Models;
 using WebBrowserMinimalist.Services;
 using WebBrowserMinimalist.Views.Windows;
-using Wpf.Ui.Mvvm.Interfaces;
 
 namespace WebBrowserMinimalist.ViewModels
 {
@@ -50,7 +43,7 @@ namespace WebBrowserMinimalist.ViewModels
                 if (_mainWindow != null)
                 {
                     var newItem = new ItemModel();
-                    newItem.Tab._tabItemVM.Search(historyModel.url);
+                    newItem.Tab._tabItemVM.Search(historyModel.url, newItem.Tab.webview);
                     _mainWindow._viewmodel.Items.Add(newItem);
                     _mainWindow.lista.SelectedItem = newItem;
                     _mainWindow.lista.ScrollIntoView(newItem);

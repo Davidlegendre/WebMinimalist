@@ -9,7 +9,7 @@
              d:DesignHeight="288.548" d:DesignWidth="768">
     <Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0">
-            <ui:Card  Grid.Row="0" Background="{ui:ThemeResource}">
+            <ui:Card  Grid.Row="0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"></RowDefinition>

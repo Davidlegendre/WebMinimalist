@@ -1,6 +1,7 @@
 ﻿using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,11 +42,14 @@ namespace WebBrowserMinimalist.Views.Controls
             _errorPageService = App.GetService<ErrorsPageService>();
             _adblock = App.GetService<AdblockService>();
             _msn = App.GetService<MensajeService>();
-            ModelP = modelP;
+           
 
             btnAddPage.Click += mainWindow!.addbutton_Click;
+            btnCloseTab.Click += mainWindow!.btnClose_Click;
+            txtCountTabs.DataContext = mainWindow!.lista;
             _previewState = mainWindow.WindowState;
             InitialWebView2();
+            ModelP = modelP;
         }
 
         async void InitialWebView2() {
@@ -57,23 +61,20 @@ namespace WebBrowserMinimalist.Views.Controls
             webview.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
             webview.CoreWebView2.IsDocumentPlayingAudioChanged += CoreWebView2_IsDocumentPlayingAudioChanged;
             webview.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
-            // webview.CoreWebView2.PermissionRequested += CoreWebView2_PermissionRequested;
-            webview.CoreWebView2.DownloadStarting += CoreWebView2_DownloadStarting;
+             webview.CoreWebView2.PermissionRequested += CoreWebView2_PermissionRequested;
             webview.CoreWebView2.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All);
             webview.CoreWebView2.WebResourceRequested += CoreWebView2_WebResourceRequested;
-
+            
+            
             if (_globalService.GetDefaulProfileFolder() == "")
                 _globalService.SetDefaultProfileFolder(webview.CoreWebView2.Profile.ProfilePath);
+
+            
 
             ModelP.IMg = _tabItemVM!.Image;
             ModelP.Source = _tabItemVM.UrlSource;
             ModelP.TitleDoc = _tabItemVM.TitleDocument;
             ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
-        }
-
-        private void CoreWebView2_DownloadStarting(object? sender, CoreWebView2DownloadStartingEventArgs e)
-        {
-            
         }
 
         #region WebviewEvents
@@ -88,16 +89,22 @@ namespace WebBrowserMinimalist.Views.Controls
         private void CoreWebView2_PermissionRequested(object? sender, CoreWebView2PermissionRequestedEventArgs e)
         {
             var icon = _tabItemVM!.PermisosIcons.GetValueOrDefault(e.PermissionKind);
-            if (e.IsUserInitiated)
-                if (!_tabItemVM.Permisos.Contains(icon))
-                {
-                    _tabItemVM.Permisos.Add(icon);
-                }
-            else if (!e.IsUserInitiated)
-                _tabItemVM.Permisos.Remove(icon);
-
             if (e.State == CoreWebView2PermissionState.Deny)
                 _tabItemVM.Permisos.Remove(icon);
+            else if (!_tabItemVM.Permisos.Contains(icon))
+            {
+                _tabItemVM.Permisos.Add(icon);
+            }
+
+            //if (e.IsUserInitiated)
+            //    if (!_tabItemVM.Permisos.Contains(icon))
+            //    {
+            //        _tabItemVM.Permisos.Add(icon);
+            //    }
+            //else if (!e.IsUserInitiated)
+            //    _tabItemVM.Permisos.Remove(icon);
+
+
         }
 
         private void CoreWebView2_ContainsFullScreenElementChanged(object? sender, object e)
@@ -134,14 +141,12 @@ namespace WebBrowserMinimalist.Views.Controls
         {
             if (_tabItemVM != null)
             {
+
                 e.Handled = true;
-
                 var uri = e.Uri;
-
                 var newItem = new ItemModel();
-                newItem.Tab!._tabItemVM!.Search(uri);
-                mainWindow!._viewmodel!.Items!.Add(newItem);
-
+                newItem.Tab._tabItemVM.Search(uri, webview);
+                mainWindow._viewmodel.Items.Add(newItem);
                 mainWindow.lista.SelectedItem = newItem;
             }
         }
@@ -188,6 +193,7 @@ namespace WebBrowserMinimalist.Views.Controls
             {
                 try
                 {
+                    
                     changePage(e.WebErrorStatus);
                     CambiarIconoShield(e.WebErrorStatus);
                     _tabItemVM.UrlSource = webview.CoreWebView2.Source;
@@ -206,6 +212,8 @@ namespace WebBrowserMinimalist.Views.Controls
                         webview.DefaultBackgroundColor = System.Drawing.Color.Transparent;
                         ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
                         _tabItemVM.TitleDocument = "Home";
+                        home.Visibility = Visibility.Visible;
+                        Wpf.Ui.Animations.Transitions.ApplyTransition(home, Wpf.Ui.Animations.TransitionType.FadeIn, 400);
                     }
 
                     ModelP.TitleDoc = _tabItemVM.TitleDocument;
@@ -233,21 +241,29 @@ namespace WebBrowserMinimalist.Views.Controls
         {
             if (_tabItemVM != null)
             {
-                _tabItemVM.Permisos.Clear();
                 
-                if (webview.CoreWebView2.Source.StartsWith("edge:") && !webview.CoreWebView2.Source.Contains("edge://downloads/all"))
-                    e.Cancel = true;
-                if (_adblock.BlockSites(webview.CoreWebView2.Source))
+                if (_tabItemVM.UrlSource.StartsWith("edge:") && !_tabItemVM.UrlSource.Contains("edge://downloads/all"))
                 {
                     e.Cancel = true;
-                    mainWindow!.EliminarPestaña();
+                }
+                else
+                if (_adblock.BlockSites(_tabItemVM.UrlSource))
+                {
+                    e.Cancel = true;
                 }
                 else
                 {
                     if (_tabItemVM.UrlSource != "about:blank")
+                    {
                         webview.DefaultBackgroundColor = System.Drawing.Color.White;
+                        home.Visibility = Visibility.Collapsed;
+                    }
                     else
+                    {
                         webview.DefaultBackgroundColor = System.Drawing.Color.Transparent;
+                    }
+               
+
 
                     btnRefresh.Visibility = Visibility.Collapsed;
                     btnStop.Visibility = Visibility.Visible;
@@ -272,16 +288,20 @@ namespace WebBrowserMinimalist.Views.Controls
             {
                 if (_tabItemVM != null)
                 {
-                    _tabItemVM.Search("https://www." + TxtSearch.Text + ".com");
+                    _tabItemVM.Search("https://www." + TxtSearch.Text + ".com", webview);
                     webview.Focus();
-                }
+                    cambiarAIndicador();
+                }               
             }
             else if (e.Key == Key.Enter)
                 if (_tabItemVM != null)
                 {
-                    _tabItemVM.Search(TxtSearch.Text);
+                    _tabItemVM.Search(TxtSearch.Text, webview);
                     webview.Focus();
+                    cambiarAIndicador();
                 }
+
+            
         }
 
         
@@ -308,6 +328,11 @@ namespace WebBrowserMinimalist.Views.Controls
         }
 
         private void ReturnToIndicator_Click(object sender, RoutedEventArgs e)
+        {
+            cambiarAIndicador();
+        }
+
+        void cambiarAIndicador()
         {
             URLSearchBar.Visibility = Visibility.Collapsed;
             IndicatorDocumentPage.Visibility = Visibility.Visible;
@@ -382,15 +407,14 @@ namespace WebBrowserMinimalist.Views.Controls
 
         private void btnItemResultSearch_Click(object sender, RoutedEventArgs e)
         {
+
             var button = (Wpf.Ui.Controls.Button)sender;
             var item = (HistoryModel)button.DataContext;
             if (item != null)
-            {
-                _tabItemVM!.UrlSource = item.url!;
-                TxtSearch.Focus();
-                TxtSearch.SelectAll();
-                flyResults.IsOpen = false;
+            {               
+                _tabItemVM!.Search(item.url, webview);
             }
         }
+
     }
 }

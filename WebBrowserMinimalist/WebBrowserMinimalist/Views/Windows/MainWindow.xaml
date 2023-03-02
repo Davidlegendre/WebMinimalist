@@ -15,7 +15,7 @@
     mc:Ignorable="d"
     WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged"
     
-     WindowState="Normal" Icon="/Views/Windows/icons8-internet-48.png" Background="{ui:ThemeResource}">
+     WindowState="Maximized" Icon="/Views/Windows/icons8-internet-48.png" Background="{ui:ThemeResource}">
     <Window.DataContext>
         <VM:MainWindowViewModel></VM:MainWindowViewModel>
     </Window.DataContext>
@@ -46,8 +46,9 @@
                
                 <Popup  Name="flyoutPanel"
                                           AllowsTransparency="true" 
-                                          Placement="Bottom"  
+                                          Placement="Top"  
                                           StaysOpen="False"
+                                          
                                           PopupAnimation="Fade" HorizontalOffset="5" VerticalOffset="5">
                     <Border Margin="0"  Padding="7" Background="{ui:ThemeResource}" CornerRadius="10" BorderThickness="1" >
                         <Border.BorderBrush>
@@ -93,10 +94,10 @@
                                         </ui:Card>
 
                                         <ListView Name="lista" SelectionMode="Single" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Column="1" ItemsSource="{Binding Items, Mode=OneWay}" SelectedIndex="0" SelectionChanged="ListBox_SelectionChanged">
-
+                                           
                                             <ListView.ItemTemplate>
                                                 <DataTemplate >
-                                                    <ui:Card Name="card" Margin="0" Padding="5" Height="80" Width="270"  Grid.Row="1" VerticalAlignment="Stretch">
+                                                    <ui:Card Name="card" Margin="0" Padding="5" Height="80" Width="270" VerticalAlignment="Stretch">
                                                         <ui:Card.ContextMenu>
                                                             <ContextMenu BorderThickness="1">
                                                                 <ContextMenu.BorderBrush>
@@ -123,7 +124,7 @@
                                                                 </Grid.RowDefinitions>
                                                                 <StackPanel Orientation="Horizontal">
                                                                     <ui:ProgressRing Visibility="{Binding ProgressVisibility, Mode=OneWay}" IsVisibleChanged="ProgressRing_IsVisibleChanged"  Height="16" Width="16"></ui:ProgressRing>
-                                                                    <Image Source="{Binding IMg}" Width="18" Height="18" Stretch="Uniform"></Image>
+                                                                    <Image Source="{Binding IMg}" Visibility="{Binding }" Width="18" Height="18" Stretch="Uniform"></Image>
 
                                                                     <ui:SymbolIcon Grid.Row="1" Symbol="{Binding ShieldIcon}" Margin="7,0,0,0" Filled="True" FontSize="14" ></ui:SymbolIcon>
 

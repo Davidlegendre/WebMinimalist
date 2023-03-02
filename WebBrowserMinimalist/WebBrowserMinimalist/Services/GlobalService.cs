@@ -10,12 +10,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Navigation;
 using WebBrowserMinimalist.Models;
+using WebBrowserMinimalist.Views.Windows;
 
 namespace WebBrowserMinimalist.Services
 {
     public class GlobalService
     {
         string? ProfileFolderDefault = "";
+
         public string GetFolderAppDomain => AppDomain.CurrentDomain.BaseDirectory;
 
         public string FondoDeWindows
@@ -40,7 +42,7 @@ namespace WebBrowserMinimalist.Services
         }
 
         public void InitTimerHour() {
-            if(TimeHour== null)
+            if (TimeHour == null)
             {
                 IsOnline = true;
                 TimeHour = new Thread(() =>
@@ -68,8 +70,8 @@ namespace WebBrowserMinimalist.Services
             }
         }
 
-        public void DisposeTimeHour() { 
-            if(TimeHour != null )
+        public void DisposeTimeHour() {
+            if (TimeHour != null)
             {
                 IsOnline = false;
                 TimeHour = null;
@@ -78,6 +80,46 @@ namespace WebBrowserMinimalist.Services
 
         public event EventHandler<HomeDataModel>? TimeSystemEvent;
 
+        List<descargaModel> descargad { get; set; } = new List<descargaModel>();
 
+        static pruebas? pruebas;
+        public void OpenWindow() {
+            if (pruebas == null)
+            {
+                pruebas = new pruebas();
+                pruebas.Show();
+            }
+            else
+                pruebas.Activate();
+        }
+
+        public void SetDescarga(descargaModel descargaModel, Guid? id)
+        {
+            if (descargad.Count(x => x.id == id) > 0 && id != null)
+            {
+                var item = descargad.First(x => x.id == id);
+                item.bytes = descargaModel.bytes;
+            }
+            else
+                descargad.Add(descargaModel);
+            
+            if (descargaEvent != null) {
+                descargaEvent.Invoke(this, descargad);
+            }
+        }
+
+        public event EventHandler<List<descargaModel>>? descargaEvent; 
+
+
+    }
+
+    public class descargaModel {
+        public descargaModel()
+        { 
+
+        }       
+        public Guid id { get; set; }
+        public long? bytes { get; set; }
+        public string? url { get;set; }
     }
 }

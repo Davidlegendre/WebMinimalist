@@ -5,25 +5,16 @@ using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using WebBrowserMinimalist.Models;
 using WebBrowserMinimalist.Services;
-using WebBrowserMinimalist.Views.Controls;
 using WebBrowserMinimalist.Views.Windows;
 using Wpf.Ui.Common;
-using Wpf.Ui.Controls;
-using Wpf.Ui.Mvvm.Interfaces;
 
 namespace WebBrowserMinimalist.ViewModels
 {
@@ -32,12 +23,12 @@ namespace WebBrowserMinimalist.ViewModels
 
         static Uri _DefaultUriImg => new Uri("/Views/Windows/icons8-internet-48.png", UriKind.RelativeOrAbsolute);
         private readonly OperacionesService _operacionesService;
-        
-        
+
+
         public TabItemVM()
         {
             _operacionesService = App.GetService<OperacionesService>();
-           // Url = new Uri(_operacionesService.GetURlEngine().Replace("/search?q=", "").Replace("?q=", ""));
+            // Url = new Uri(_operacionesService.GetURlEngine().Replace("/search?q=", "").Replace("?q=", ""));
         }
 
         [ObservableProperty]
@@ -62,7 +53,7 @@ namespace WebBrowserMinimalist.ViewModels
 
 
         [ObservableProperty]
-        Uri? _Url;
+        Uri _Url = new Uri("about:blank");
 
         [ObservableProperty]
         Visibility _refreshvisibility = Visibility.Visible;
@@ -116,29 +107,37 @@ namespace WebBrowserMinimalist.ViewModels
             }
         }
         //file:
-        public void Search(string? texto) {
+        public void Search(string? texto, WebView2 webView) {
             
             if (texto != null && !texto.StartsWith("edge://surf")) {
-                if (_operacionesService.PerteneceADominio(texto) && !Uri.IsWellFormedUriString(texto, UriKind.Absolute))
-                    if (!texto.StartsWith("http:") && !texto.StartsWith("https:")
-                        && !texto.StartsWith("edge:") && !texto.StartsWith("file:"))
-                        texto = "https://" + texto;
+                if (texto != UrlSource)
+                {
+                    if (_operacionesService.PerteneceADominio(texto) && !Uri.IsWellFormedUriString(texto, UriKind.Absolute))
+                        if (!texto.StartsWith("http:") && !texto.StartsWith("https:")
+                            && !texto.StartsWith("edge:") && !texto.StartsWith("file:"))
+                            texto = "https://" + texto;
 
-                if (Uri.IsWellFormedUriString(texto, UriKind.Absolute) || texto.StartsWith("file:///"))
-                {                  
-                    Url = new Uri(texto);
-                    UrlSource = texto;
-                    if (texto.StartsWith("file:///"))
+                    if (Uri.IsWellFormedUriString(texto, UriKind.Absolute) || texto.StartsWith("file:///"))
                     {
-                        var info = new FileInfo(texto);
-                        TitleDocument = WebUtility.UrlDecode(info.Name);
+                        Url = new Uri(texto);
+
+                        UrlSource = texto;
+
+                        if (texto.StartsWith("file:///"))
+                        {
+                            var info = new FileInfo(texto);
+                            TitleDocument = WebUtility.UrlDecode(info.Name);
+                        }
+                    }
+                    else
+                    {
+                        Url = new Uri(_operacionesService.GetURlEngine() + WebUtility.UrlEncode(texto));
+
+                        UrlSource = Url.ToString();
                     }
                 }
                 else
-                {
-                    Url = new Uri(_operacionesService.GetURlEngine() + WebUtility.UrlEncode(texto));
-                    UrlSource = Url.ToString();
-                }
+                    RefreshCommand.Execute(webView);
             }
         }
 

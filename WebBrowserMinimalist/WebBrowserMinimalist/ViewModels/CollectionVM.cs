@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -118,14 +119,14 @@ namespace WebBrowserMinimalist.ViewModels
             return true;
         }
 
-       public void Navegar(ContentColletionModel? content)
+       public void Navegar(ContentColletionModel? content, WebView2 webview)
         {
             if (content != null)
             {
                 if (_mainWindow != null)
                 {
                     var newItem = new ItemModel();
-                    newItem.Tab._tabItemVM.Search(content.URl);
+                    newItem.Tab._tabItemVM.Search(content.URl, webview);
                     _mainWindow._viewmodel.Items.Add(newItem);
                     _mainWindow.lista.SelectedItem = newItem;
                     _mainWindow.lista.ScrollIntoView(newItem);

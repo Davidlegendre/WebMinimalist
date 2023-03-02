@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -53,6 +54,7 @@ namespace WebBrowserMinimalist.Views.Windows
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             CargaArchivosExternos();
+            //new pruebas().Show();
         }
 
         void CargaArchivosExternos() {
@@ -60,7 +62,7 @@ namespace WebBrowserMinimalist.Views.Windows
             try
             {
 
-                if (Environment.CommandLine.Split(" ").Length > 1)
+                if (Environment.CommandLine.Split(" ").Length > 2)
                 {
 
                     var pre = (Environment.CommandLine.Contains('"') ?
@@ -68,7 +70,7 @@ namespace WebBrowserMinimalist.Views.Windows
                         : Environment.CommandLine.Split(" ")[1]);
                     var ruta = pre.EndsWith('"') ? pre.Remove(pre.Length - 1) : pre;
                     var item = new ItemModel();
-                    item!.Tab!._tabItemVM!.Search("file:///" + ruta);
+                    item!.Tab!._tabItemVM!.Search("file:///" + ruta, item.Tab.webview);
                     _viewmodel!.Items!.Add(item);
                 }
                 else
@@ -77,8 +79,9 @@ namespace WebBrowserMinimalist.Views.Windows
                     _viewmodel!.Items!.Add(item);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _maensajeService.ShowDialog(ex.Message);
                 var item = new ItemModel();
                 _viewmodel!.Items!.Add(item);
             }
@@ -169,34 +172,48 @@ namespace WebBrowserMinimalist.Views.Windows
             }
         }
 
-        private void btnClose_Click(object sender, RoutedEventArgs e)
-        {
-            EliminarPestaña();
-        }
-
-        public void EliminarPestaña()
+        public void btnClose_Click(object sender, RoutedEventArgs e)
         {
             if (lista.Items.Count != 1)
             {
-                //var button = (Wpf.Ui.Controls.Button)e.Source;
-                //var ctx = (ItemModel)button.DataContext;
+                var button = (Wpf.Ui.Controls.Button)e.Source;
+                ItemModel? ctx = (button.DataContext.GetType() == typeof(ItemModel))? (ItemModel)button.DataContext : null;
                 var current = lista.SelectedItem as ItemModel;
-                if (/*current!.UID == ctx.UID &&*/ lista.Items.Count > 1)
+                if (ctx != null)
                 {
-                    if (lista.SelectedIndex != 0)
-                        lista.SelectedIndex -= 1;
-                    else if (lista.SelectedIndex != lista.Items.Count - 1)
-                        lista.SelectedIndex += 1;
+                    var index = lista.Items.IndexOf(ctx);
+                    if(lista.SelectedIndex == index)
+                    {
+                        if (lista.Items.Count > 1)
+                        {
+                            if (lista.SelectedIndex != 0)
+                                lista.SelectedIndex -= 1;
+                            else if (lista.SelectedIndex != lista.Items.Count - 1)
+                                lista.SelectedIndex += 1;
+                        }
+                    }
+                    _viewmodel!.DeleteItemCommand.Execute(ctx!.UID);
                 }
-                _viewmodel!.DeleteItemCommand.Execute(current!.UID);
-                //if (ctx != null)
-                //{
+                else
+                {      
+                    if (lista.Items.Count > 1)
+                    {
+                        if (lista.SelectedIndex != 0)
+                            lista.SelectedIndex -= 1;
+                        else if (lista.SelectedIndex != lista.Items.Count - 1)
+                            lista.SelectedIndex += 1;
+                    }             
+                    _viewmodel!.DeleteItemCommand.Execute(current!.UID);
+                   
+                }
+                //tratar de liminar el contexto
+                //sino eliminar el seleccionado
+               
+                
 
-
-
-                //}
             }
         }
+
 
         public void addbutton_Click(object sender, RoutedEventArgs e)
         {
@@ -212,7 +229,7 @@ namespace WebBrowserMinimalist.Views.Windows
         private void btnDescargasOpen_Click(object sender, RoutedEventArgs e)
         {
             var newItem = new ItemModel();
-            newItem.Tab!._tabItemVM!.Search("edge://downloads/all");
+            newItem.Tab!._tabItemVM!.Search("edge://downloads/all", newItem.Tab.webview);
             _viewmodel!.Items!.Add(newItem);
             lista.SelectedItem = newItem;
             lista.ScrollIntoView(newItem);

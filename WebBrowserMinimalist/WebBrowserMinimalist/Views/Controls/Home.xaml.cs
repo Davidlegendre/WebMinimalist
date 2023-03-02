@@ -60,14 +60,14 @@ namespace WebBrowserMinimalist.Views.Controls
         {
             if (typeHora == TypeHora.AM)
             {
-                if (hour >= 1 && hour < 12)
+                if (hour >= 0 && hour <= 12)
                     txtSaludo.Text = EnumSaludos.HolaBuenosDías;
             }
             else
             {
-                if (hour >= 12 && hour < 18)
+                if (hour > 12 && hour <= 18)
                     txtSaludo.Text = EnumSaludos.HolaBuenasTardes;
-                if (hour >= 18 && hour < 24)
+                if (hour > 18 && hour <= 24)
                     txtSaludo.Text = EnumSaludos.HolaBuenasNoches;
             }
 

@@ -43,7 +43,7 @@ namespace WebBrowserMinimalist.Views.Controls
             var itemSelected = _MainWindow!.lista.SelectedItem as ItemModel;
             if(itemSelected != null)
             {
-                _VM!.Navegar(collection);
+                _VM!.Navegar(collection, itemSelected!.Tab!.webview);
             }
         }
 
