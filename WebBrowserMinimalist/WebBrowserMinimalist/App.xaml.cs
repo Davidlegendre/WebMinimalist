@@ -40,16 +40,19 @@ namespace WebBrowserMinimalist
 
                 services.AddSingleton<GlobalService>();
                 services.AddSingleton<CollectionsDBA>();
+                
                 services.AddSingleton<CollectionService>();
                 services.AddSingleton<OperacionesService>();
                 services.AddSingleton<MensajeService>();
                 services.AddSingleton<ErrorsPageService>();
                 services.AddSingleton<AdblockService>();
+                
 
                 // Main window with navigation
                 services.AddScoped<Views.Windows.MainWindow>();
                 
                 services.AddSingleton<HistoryServices>();
+                services.AddSingleton<HIstorialDBA>();
 
                 // Configuration
                 services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));

@@ -48,7 +48,10 @@ namespace WebBrowserMinimalist.Views.Windows
         }
         private void MainWindow_Closing(object? sender, CancelEventArgs e)
         {
-            _globalService.DisposeTimeHour();
+            if (_maensajeService.ShowDialog("Desea Cerrar el Navegador?", "Saliendo", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                _globalService.DisposeTimeHour();
+            else
+                e.Cancel = true;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -177,12 +180,12 @@ namespace WebBrowserMinimalist.Views.Windows
             if (lista.Items.Count != 1)
             {
                 var button = (Wpf.Ui.Controls.Button)e.Source;
-                ItemModel? ctx = (button.DataContext.GetType() == typeof(ItemModel))? (ItemModel)button.DataContext : null;
+                ItemModel? ctx = (button.DataContext.GetType() == typeof(ItemModel)) ? (ItemModel)button.DataContext : null;
                 var current = lista.SelectedItem as ItemModel;
                 if (ctx != null)
                 {
                     var index = lista.Items.IndexOf(ctx);
-                    if(lista.SelectedIndex == index)
+                    if (lista.SelectedIndex == index)
                     {
                         if (lista.Items.Count > 1)
                         {
@@ -195,22 +198,26 @@ namespace WebBrowserMinimalist.Views.Windows
                     _viewmodel!.DeleteItemCommand.Execute(ctx!.UID);
                 }
                 else
-                {      
+                {
                     if (lista.Items.Count > 1)
                     {
                         if (lista.SelectedIndex != 0)
                             lista.SelectedIndex -= 1;
                         else if (lista.SelectedIndex != lista.Items.Count - 1)
                             lista.SelectedIndex += 1;
-                    }             
+                    }
                     _viewmodel!.DeleteItemCommand.Execute(current!.UID);
-                   
+
                 }
                 //tratar de liminar el contexto
                 //sino eliminar el seleccionado
-               
-                
 
+
+
+            }
+            else
+            {
+                this.Close();
             }
         }
 

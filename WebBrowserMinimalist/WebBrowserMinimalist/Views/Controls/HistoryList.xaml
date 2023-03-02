@@ -24,7 +24,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="Historial"></TextBlock>
-                    <TextBlock Text="Recuerde que esta en permanente Incognito, por lo que el historial real, no se guarda."
+                    <TextBlock Text="Historial de toda la navegacion, puede abrir la pagina de historial de edge o borrar todo directamente."
                                TextWrapping="Wrap"
                                FontSize="14"
                                Opacity="0.7"
@@ -34,23 +34,28 @@
                             <ColumnDefinition Width="auto"></ColumnDefinition>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <ui:Button Command="{Binding ClearAllCommand}" Appearance="Primary">
+                        <ui:Button Command="{Binding openHistoryCommand}" Appearance="Primary">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"></ColumnDefinition>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="auto"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <ui:SymbolIcon Symbol="Eraser20" Filled="True" Foreground="{Binding Foreground,ElementName=tb}" Margin="0,0,7,0"></ui:SymbolIcon>
-                                <TextBlock Name="tb" Text="Borrar Todo" Grid.Column="1"></TextBlock>
+                                <ui:SymbolIcon Symbol="Open16" Filled="True" Foreground="{Binding Foreground,ElementName=tb}" Margin="0,0,7,0"></ui:SymbolIcon>
+                                <TextBlock Name="tb" Text="Abrir Pagina de Historial" Grid.Column="1"></TextBlock>
                             </Grid>
                         </ui:Button>
-                        <ui:Card Grid.Column="1" Margin="7,0,0,0" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Opacity="0.7" HorizontalContentAlignment="Center">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Margin="7,0,0,0" Text="{Binding ListaHistorial.Count}" Grid.Column="2"></TextBlock>
-                                <TextBlock Margin="7,0,7,0" Text="Items" Grid.Column="2"></TextBlock>
-                            </StackPanel>
-                        </ui:Card>
+                        <ui:Button Grid.Column="1" Name="btnClearAll" Command="{Binding DeleteAllCommand}" IsEnabled="{Binding HasItems,ElementName=listResultSearch}" Appearance="Danger" Margin="4,0,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <ui:SymbolIcon Symbol="Delete12" Margin="0,0,7,0"></ui:SymbolIcon>
+                                <TextBlock Name="tb2" Text="Borrar Todo" Grid.Column="1"></TextBlock>
+                            </Grid>
+                        </ui:Button>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -80,9 +85,6 @@
                                     <TextBlock Text="{Binding url}" Opacity="0.5" TextTrimming="CharacterEllipsis" ToolTip="{Binding URL}"></TextBlock>
                                 </StackPanel>
                             </Grid>
-                        </ui:Button>
-                        <ui:Button Grid.Column="1" Appearance="Danger" Name="btnClearItem" Click="btnClearItem_Click" Width="40" VerticalAlignment="Stretch" Margin="5,0,0,0">
-                            <ui:SymbolIcon Symbol="Delete12"></ui:SymbolIcon>
                         </ui:Button>
                     </Grid>
                 </DataTemplate>

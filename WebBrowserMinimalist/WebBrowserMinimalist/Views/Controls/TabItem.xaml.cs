@@ -65,12 +65,6 @@ namespace WebBrowserMinimalist.Views.Controls
             webview.CoreWebView2.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All);
             webview.CoreWebView2.WebResourceRequested += CoreWebView2_WebResourceRequested;
             
-            
-            if (_globalService.GetDefaulProfileFolder() == "")
-                _globalService.SetDefaultProfileFolder(webview.CoreWebView2.Profile.ProfilePath);
-
-            
-
             ModelP.IMg = _tabItemVM!.Image;
             ModelP.Source = _tabItemVM.UrlSource;
             ModelP.TitleDoc = _tabItemVM.TitleDocument;
@@ -178,12 +172,7 @@ namespace WebBrowserMinimalist.Views.Controls
                 URLSearchBar.Visibility = Visibility.Collapsed;
                 IndicatorDocumentPage.Visibility = Visibility.Visible;
 
-                _historyServices!.Insert(new HistoryModel() { 
-                    id = _historyServices.CountHistory() + 1,
-                    title = _tabItemVM.TitleDocument,
-                    url = _tabItemVM.UrlSource,
-                    date = DateTime.Now.ToLongTimeString()
-                });
+                
             }
         }
 
@@ -221,14 +210,8 @@ namespace WebBrowserMinimalist.Views.Controls
                     ModelP.Source = _tabItemVM.UrlSource;
                     ModelP.ProgressVisibility = _tabItemVM.ProgressVisibility;
                     ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
+                    mainWindow.historyList.Actualizar();
 
-                    _historyServices!.Insert(new HistoryModel()
-                    {
-                        id = _historyServices.CountHistory() + 1,
-                        title = _tabItemVM.TitleDocument,
-                        url = _tabItemVM.UrlSource,
-                        date = DateTime.Now.ToLongTimeString()
-                    });
                 }
                 catch (Exception)
                 {
@@ -241,8 +224,9 @@ namespace WebBrowserMinimalist.Views.Controls
         {
             if (_tabItemVM != null)
             {
-                
-                if (_tabItemVM.UrlSource.StartsWith("edge:") && !_tabItemVM.UrlSource.Contains("edge://downloads/all"))
+
+                if (_tabItemVM.UrlSource.StartsWith("edge:") && !_tabItemVM.UrlSource.Contains("edge://downloads/all") && 
+                    !_tabItemVM.UrlSource.Contains("edge://history/all"))
                 {
                     e.Cancel = true;
                 }
@@ -321,12 +305,6 @@ namespace WebBrowserMinimalist.Views.Controls
             }
         }
 
-        private void btnChangeToSearch_Click(object sender, RoutedEventArgs e)
-        {
-            IndicatorDocumentPage.Visibility = Visibility.Collapsed;
-            URLSearchBar.Visibility= Visibility.Visible;
-        }
-
         private void ReturnToIndicator_Click(object sender, RoutedEventArgs e)
         {
             cambiarAIndicador();
@@ -380,6 +358,14 @@ namespace WebBrowserMinimalist.Views.Controls
                    document.getElementById('game-buttons').remove()
                 ");
 
+                if (_tabItemVM.UrlSource.Contains("edge://history"))
+                {
+                    await webview.CoreWebView2.ExecuteScriptAsync(@"
+                   document.getElementById('clear-browsing-data').remove()
+                ");
+                    //clear-browsing-data
+                }
+
             }
             
         }
@@ -415,6 +401,34 @@ namespace WebBrowserMinimalist.Views.Controls
                 _tabItemVM!.Search(item.url, webview);
             }
         }
+        long LastTicks = 0;
 
+        private void TbTitleDocument_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if ((DateTime.Now.Ticks - LastTicks) < 3000000)
+            {
+                IndicatorDocumentPage.Visibility = Visibility.Collapsed;
+                URLSearchBar.Visibility = Visibility.Visible;
+            }
+            LastTicks = DateTime.Now.Ticks;
+        }
+
+        private void btnDownload_Click(object sender, RoutedEventArgs e)
+        {
+           
+            if (!webview.CoreWebView2.IsDefaultDownloadDialogOpen)
+            {
+                webview.CoreWebView2.OpenDefaultDownloadDialog();
+            }
+            else
+            {
+                webview.CoreWebView2.CloseDefaultDownloadDialog();
+            }
+        }
+
+        private void UserControl_GotFocus(object sender, RoutedEventArgs e)
+        {
+            webview.CoreWebView2.CloseDefaultDownloadDialog();
+        }
     }
 }

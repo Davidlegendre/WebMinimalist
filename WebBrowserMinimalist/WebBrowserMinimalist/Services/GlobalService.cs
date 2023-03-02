@@ -16,7 +16,7 @@ namespace WebBrowserMinimalist.Services
 {
     public class GlobalService
     {
-        string? ProfileFolderDefault = "";
+        string? ProfileFolderDefault => AppDomain.CurrentDomain.BaseDirectory + "/WebBrowserMinimalist.exe.WebView2/EBWebView/Default/";
 
         public string GetFolderAppDomain => AppDomain.CurrentDomain.BaseDirectory;
 
@@ -32,10 +32,6 @@ namespace WebBrowserMinimalist.Services
 
         Thread? TimeHour;
         bool IsOnline = true;
-
-        public void SetDefaultProfileFolder(string FolderURl) {
-            ProfileFolderDefault = FolderURl;
-        }
 
         public string? GetDefaulProfileFolder() {
             return ProfileFolderDefault;

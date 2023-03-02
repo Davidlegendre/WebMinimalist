@@ -39,28 +39,29 @@ namespace WebBrowserMinimalist.Views.Controls
 
         private void historyBtn_Click(object sender, RoutedEventArgs e)
         {
-            if(historyListVM != null)
-            {
-                var btn = (Wpf.Ui.Controls.Button)sender;
-                var item = (HistoryModel)btn.DataContext;
-                if(item != null)
-                {
-                    historyListVM.NavegarCommand.Execute(item);
-                }
-            }
-        }
-
-        private void btnClearItem_Click(object sender, RoutedEventArgs e)
-        {
             if (historyListVM != null)
             {
                 var btn = (Wpf.Ui.Controls.Button)sender;
                 var item = (HistoryModel)btn.DataContext;
                 if (item != null)
                 {
-                    historyListVM.ClearHistorialCommand.Execute(item);
+                    historyListVM.NavegarCommand.Execute(item);
                 }
             }
+
         }
+
+        //private void btnClearItem_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (historyListVM != null)
+        //    {
+        //        var btn = (Wpf.Ui.Controls.Button)sender;
+        //        var item = (HistoryModel)btn.DataContext;
+        //        if (item != null)
+        //        {
+        //            historyListVM.ClearHistorialCommand.Execute(item);
+        //        }
+        //    }
+        //}
     }
 }

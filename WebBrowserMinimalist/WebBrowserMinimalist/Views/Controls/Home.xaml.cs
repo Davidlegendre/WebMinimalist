@@ -87,8 +87,8 @@ namespace WebBrowserMinimalist.Views.Controls
     }
 
     static internal class EnumSaludos {
-        public static string HolaBuenosDías = "Buenos Días, usuario < " + Environment.UserName + " />";
-        public static string HolaBuenasTardes = "Buenas Tardes, usuario < " + Environment.UserName + " />";
-        public static string HolaBuenasNoches = "Buenas Noches, usuario < " + Environment.UserName + " />";
+        public static string HolaBuenosDías = "Buenos Días";
+        public static string HolaBuenasTardes = "Buenas Tardes";
+        public static string HolaBuenasNoches = "Buenas Noches";
     }
 }
