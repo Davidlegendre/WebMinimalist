@@ -88,7 +88,7 @@
                                             <Border.BorderBrush>
                                                 <SolidColorBrush Color="Black" Opacity="0.15"/>
                                             </Border.BorderBrush>
-                                            <ListView Name="listResultSearch" SelectedIndex="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding ResultItems,Mode=OneWay}" SelectionMode="Single">
+                                            <ListView Name="listResultSearch" MaxHeight="370" SelectedIndex="0" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding ResultItems,Mode=OneWay}" SelectionMode="Single">
                                                 <ListView.ItemsPanel>
                                                     <ItemsPanelTemplate>
                                                         <UniformGrid Columns="1"></UniformGrid>
