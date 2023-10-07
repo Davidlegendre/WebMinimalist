@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,21 +26,21 @@ namespace WebBrowserMinimalist.Views.Windows
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : UiWindow
     {
         public MainWindowViewModel? _viewmodel { get; }
         readonly OperacionesService _operaciones;
         readonly MensajeService _maensajeService;
         readonly GlobalService _globalService;
         public MainWindow()
-        {       
+        {
             InitializeComponent();
+            Watcher.Watch(this);
             _operaciones = App.GetService<OperacionesService>();
             _maensajeService = App.GetService<MensajeService>();
             _globalService = App.GetService<GlobalService>();
             _viewmodel = this.DataContext as MainWindowViewModel;
-            changeThicknes();           
-            Watcher.Watch(this, BackgroundType.Mica, true, true);
+
             this.Loaded += MainWindow_Loaded;
             this.Closing += MainWindow_Closing;
             //SetPageService(pageService);
@@ -60,59 +61,48 @@ namespace WebBrowserMinimalist.Views.Windows
             //new pruebas().Show();
         }
 
-        void CargaArchivosExternos() {
+        void CargaArchivosExternos()
+        {
+            //if (Environment.CommandLine.Contains("¬[incognit]"))
+            //{
+            //    _globalService.IsInPrivateMode = true;
+            //}
+            var item = new ItemModel();
+            //_maensajeService.ShowDialog(Environment.CommandLine);
 
             try
             {
+                //_globalService.IsInPrivateMode = item.Tab.webview.CreationProperties.IsInPrivateModeEnabled.Value;
+       
+                
+                //btnOpenWithIncognit.Visibility = Visibility.Collapsed;
+                btnHistorialOpen.Visibility = item.Tab.webview.CreationProperties.IsInPrivateModeEnabled.Value ? Visibility.Collapsed : Visibility.Visible;
 
                 if (Environment.CommandLine.Split(" ").Length > 2)
                 {
 
                     var pre = (Environment.CommandLine.Contains('"') ?
-                        Environment.CommandLine.Split(" " + '"')[1] 
+                        Environment.CommandLine.Split(" " + '"')[1]
                         : Environment.CommandLine.Split(" ")[1]);
                     var ruta = pre.EndsWith('"') ? pre.Remove(pre.Length - 1) : pre;
-                    var item = new ItemModel();
+                    item.Tab!.webview.Margin = new Thickness(7, 0, 7, 7);
                     item!.Tab!._tabItemVM!.Search("file:///" + ruta, item.Tab.webview);
                     _viewmodel!.Items!.Add(item);
                 }
                 else
                 {
-                    var item = new ItemModel();
+                    item.Tab!.webview.Margin = new Thickness(7, 0, 7, 7);
                     _viewmodel!.Items!.Add(item);
                 }
             }
             catch (Exception ex)
             {
-                _maensajeService.ShowDialog(ex.Message);
-                var item = new ItemModel();
+                //_maensajeService.ShowDialog(ex.Message);
+                item.Tab!.webview.Margin = new Thickness(7, 0, 7, 7);
                 _viewmodel!.Items!.Add(item);
             }
-            
+
         }
-
-
-        #region INavigationWindow methods
-
-        //public Frame GetFrame()
-        //    => RootFrame;
-
-        //public INavigation GetNavigation()
-        //    => RootNavigation;
-
-        //public bool Navigate(Type pageType)
-        //    => RootNavigation.Navigate(pageType);
-
-        //public void SetPageService(IPageService pageService)
-        //    => RootNavigation.PageService = pageService;
-
-        public void ShowWindow()
-            => Show();
-
-        public void CloseWindow()
-            => Close();
-
-        #endregion INavigationWindow methods
 
         /// <summary>
         /// Raises the closed event.
@@ -125,53 +115,23 @@ namespace WebBrowserMinimalist.Views.Windows
             Application.Current.Shutdown();
         }
 
-        public Frame GetFrame()
-        {
-            throw new NotImplementedException();
-        }
-
-        public INavigation GetNavigation()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Navigate(Type pageType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetPageService(IPageService pageService)
-        {
-            throw new NotImplementedException();
-        }
-
         private void Window_StateChanged(object sender, EventArgs e)
         {
-            changeThicknes();
-        }
 
-        void changeThicknes() {
-            if (this.WindowState == WindowState.Maximized)
-            {
-                _viewmodel!.MarginWindowState = new Thickness(7);
-            }
-            else
-            {
-                _viewmodel!.MarginWindowState = new Thickness(0);
-            }
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var selectItem = lista.SelectedItem as ItemModel;
-           if(selectItem != null) {
+            if (selectItem != null)
+            {
                 if (content.Children.Count > 0)
                 {
                     content.Children.Clear();
                 }
                 content.Children.Add(selectItem.Tab);
                 lista.ScrollIntoView(selectItem);
-                
+
             }
         }
 
@@ -224,13 +184,13 @@ namespace WebBrowserMinimalist.Views.Windows
 
         public void addbutton_Click(object sender, RoutedEventArgs e)
         {
-            var newItem = new ItemModel();
+            var newItem = new ItemModel();            
             _viewmodel!.Items!.Add(newItem);
             lista.SelectedItem = newItem;
             lista.ScrollIntoView(newItem);
             historyList.Visibility = Visibility.Collapsed;
             lista.Visibility = Visibility.Visible;
-           
+
         }
 
         private void btnDescargasOpen_Click(object sender, RoutedEventArgs e)
@@ -277,7 +237,7 @@ namespace WebBrowserMinimalist.Views.Windows
             {
                 historyList.Visibility = Visibility.Collapsed;
                 lista.Visibility = Visibility.Visible;
-                btnAtras.Visibility = Visibility.Collapsed;                
+                btnAtras.Visibility = Visibility.Collapsed;
                 Wpf.Ui.Animations.Transitions.ApplyTransition(lista, Wpf.Ui.Animations.TransitionType.SlideLeft, 400);
             }
         }
@@ -290,7 +250,7 @@ namespace WebBrowserMinimalist.Views.Windows
                 Colecciones.Visibility = Visibility.Visible;
                 flyoutPanel.IsOpen = false;
                 //lista.Visibility = Visibility.Collapsed;
-                Wpf.Ui.Animations.Transitions.ApplyTransition(Colecciones, Wpf.Ui.Animations.TransitionType.FadeInWithSlide, 400);
+                Wpf.Ui.Animations.Transitions.ApplyTransition(Colecciones, Wpf.Ui.Animations.TransitionType.FadeIn, 300);
             }
             else
             {
@@ -314,6 +274,11 @@ namespace WebBrowserMinimalist.Views.Windows
             {
                 Colecciones.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private void btnOpenWithIncognit_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(AppDomain.CurrentDomain.BaseDirectory + Application.ResourceAssembly.GetName().Name!.ToString() + ".exe", "¬[incognit]");
         }
     }
 }

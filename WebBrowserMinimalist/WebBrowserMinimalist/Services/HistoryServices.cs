@@ -41,7 +41,7 @@ namespace WebBrowserMinimalist.Services
          
         public List<HistoryModel>? FindHistories(string filter)
         {
-            return _historial.Where(x => x.title!.ToLower().Contains(filter.ToLower())).ToList();
+            return _historial.Where(x => x.title!.ToLower().Contains(filter.ToLower())).Take(10).ToList();
         }
 
         public async Task<List<HistoryModel>> GetAllHistories() {

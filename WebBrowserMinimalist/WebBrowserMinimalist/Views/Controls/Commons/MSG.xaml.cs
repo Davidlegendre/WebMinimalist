@@ -32,8 +32,7 @@ namespace WebBrowserMinimalist.Views.Controls.Commons
         }
 
         private void MSG_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
-        {
-         
+        {         
             this.DialogResult = true;
         }
 

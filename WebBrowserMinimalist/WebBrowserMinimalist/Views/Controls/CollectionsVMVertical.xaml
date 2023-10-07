@@ -7,16 +7,16 @@
              xmlns:context="clr-namespace:WebBrowserMinimalist.ViewModels"
              xmlns:handy="https://handyorg.github.io/handycontrol"
              mc:Ignorable="d" 
-             d:DesignHeight="450" Width="340">
+             d:DesignHeight="554">
     <UserControl.DataContext>
         <context:CollectionVM></context:CollectionVM>
     </UserControl.DataContext>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <ui:Card Margin="5">
+    <Grid Margin="3" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <ui:Card x:Name="cardcol" Padding="10" Margin="0" >
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -37,7 +37,7 @@
                                Opacity="0.7"
                                ></TextBlock>
                     <StackPanel Orientation="Horizontal" Margin="0,7,0,0">
-                        <ui:Button Name="btnAddCollection" Click="btnAddCollection_Click" VerticalAlignment="Stretch" Appearance="Primary" >
+                        <ui:Button x:Name="btnAddCollection" Click="btnAddCollection_Click" VerticalAlignment="Stretch" Appearance="Primary" >
                             <StackPanel Orientation="Horizontal">
                                 <ui:SymbolIcon Symbol="CollectionsAdd24" Foreground="{Binding Foreground, ElementName=tb}" Margin="0,0,7,0"></ui:SymbolIcon>
                                 <TextBlock x:Name="tb" Text="Crear"></TextBlock>
@@ -47,34 +47,17 @@
                 </StackPanel>
             </Grid>
         </ui:Card>
-        <ListView Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding Collections, Mode=OneWay}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-            <ListView.ItemsPanel>
+        <ui:VirtualizingItemsControl Margin="7,0,7,0" Height="{Binding ActualHeight,ElementName=cardcol}" VerticalAlignment="Top" Grid.Column="1" ItemsSource="{Binding Collections, Mode=OneWay}" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+            <ui:VirtualizingItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <handy:UniformSpacingPanel Orientation="Vertical"></handy:UniformSpacingPanel>
+                    <UniformGrid Rows="1" VerticalAlignment="Stretch" HorizontalAlignment="Left"></UniformGrid>
                 </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
-            <ListView.ItemTemplate>
+            </ui:VirtualizingItemsControl.ItemsPanel>
+            <ui:VirtualizingItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <ui:CardExpander Grid.ColumnSpan="2"  Background="{Binding Background}" VerticalAlignment="Top" IsExpanded="{Binding HasItems,ElementName=listaContents,Mode=OneWay}" HorizontalAlignment="Stretch" >
-                        <ui:CardExpander.ContextMenu>
-                            <ContextMenu>
-                                <ContextMenu.BorderBrush>
-                                    <SolidColorBrush Color="Black" Opacity="0.3"></SolidColorBrush>
-                                </ContextMenu.BorderBrush>
-                                <MenuItem Header="Editar Coleccion" Tag="{Binding}" Click="btnEditCollection_Click">
-                                    <MenuItem.Icon>
-                                        <ui:SymbolIcon Symbol="Edit24" ></ui:SymbolIcon>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="Eliminar Coleccion" Tag="{Binding}" Click="btnDelteCollection_Click">
-                                    <MenuItem.Icon>
-                                        <ui:SymbolIcon Symbol="Delete24" ></ui:SymbolIcon>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </ContextMenu>
-                        </ui:CardExpander.ContextMenu>
-                        <ui:CardExpander.Header>
-                            <Grid>
+                    <Grid x:Name="content">
+                        <ui:CardAction x:Name="cardAction" VerticalAlignment="Stretch" Tag="{Binding ElementName=listacolecciones}" Click="CardAction_Click">
+                            <Grid MinWidth="170">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="*"/>
@@ -86,47 +69,67 @@
                                         <ColumnDefinition Width="*"></ColumnDefinition>
                                         <ColumnDefinition Width="auto"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding TituloColeccion}" ToolTip="{Binding TituloColeccion}" TextTrimming="CharacterEllipsis"  VerticalAlignment="Center" Margin="7,0,0,0"></TextBlock>
+                                    <TextBlock Text="{Binding TituloColeccion}"  ToolTip="{Binding TituloColeccion}" TextTrimming="CharacterEllipsis"  VerticalAlignment="Center" Margin="7,0,0,0"></TextBlock>
                                     <TextBlock Grid.Column="1" Margin="5" Text="{Binding Items.Count,ElementName=listaContents}"></TextBlock>
 
                                 </Grid>
                                 <ui:Button Name="btnAddContentItem" Grid.Column="2" Margin="0,0,7,0" Tag="{Binding}" Click="btnAddContentItem_Click" >
-                                    <ui:SymbolIcon Symbol="Add12" ></ui:SymbolIcon>
-                                </ui:Button>
-
+                                    <ui:SymbolIcon Symbol="Add12"  ></ui:SymbolIcon>
+                                </ui:Button>                             
                             </Grid>
-                        </ui:CardExpander.Header>
-                        <ItemsControl Name="listaContents" ItemsSource="{Binding ContentCollection, Mode=OneWay}" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="1" ></UniformGrid>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <ui:Button Name="btnLinkContentColectionItem" Margin="2" Tag="{Binding}" HorizontalAlignment="Stretch" Click="btnLinkContentColectionItem_Click" Height="38">
-                                        <ui:Button.ContextMenu>
-                                            
-                                            <ContextMenu>
-                                                <ContextMenu.BorderBrush>
-                                                    <SolidColorBrush Color="Black" Opacity="0.3"></SolidColorBrush>
-                                                </ContextMenu.BorderBrush>
-                                                <MenuItem Name="EliminarContent" Click="EliminarContent_Click" Tag="{Binding}" Header="Eliminar">
-                                                    <MenuItem.Icon>
-                                                        <ui:SymbolIcon Symbol="Delete24" ></ui:SymbolIcon>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                            </ContextMenu>
-                                        </ui:Button.ContextMenu>
-                                        <TextBlock Text="{Binding TituloDocumento}" ToolTip="{Binding TituloDocumento}" TextTrimming="CharacterEllipsis"></TextBlock>
-                                    </ui:Button>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ui:CardExpander>
+                            <ui:CardAction.ContextMenu>
+                                <ContextMenu>
+                                    <ContextMenu.BorderBrush>
+                                        <SolidColorBrush Color="Black" Opacity="0.3"></SolidColorBrush>
+                                    </ContextMenu.BorderBrush>
+                                    <MenuItem Header="Editar Coleccion" Tag="{Binding}" Click="btnEditCollection_Click">
+                                        <MenuItem.Icon>
+                                            <ui:SymbolIcon Symbol="Edit24" ></ui:SymbolIcon>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Eliminar Coleccion" Tag="{Binding}" Click="btnDelteCollection_Click">
+                                        <MenuItem.Icon>
+                                            <ui:SymbolIcon Symbol="Delete24" ></ui:SymbolIcon>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </ui:CardAction.ContextMenu>
+                        </ui:CardAction>
+                        <ui:SymbolIcon FontSize="36" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,-8,0,0" Symbol="Bookmark32" Foreground="{Binding Background}" Filled="True"></ui:SymbolIcon>
+                        <ui:Flyout x:Name="listacolecciones" VerticalAlignment="Top">
+                            <ui:VirtualizingItemsControl MaxHeight="270" Width="{Binding ActualWidth,ElementName=cardAction}" ItemsSource="{Binding ContentCollection, Mode=OneWay}" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                                <ui:VirtualizingItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid VerticalAlignment="Top" Columns="1" ></UniformGrid>
+                                    </ItemsPanelTemplate>
+                                </ui:VirtualizingItemsControl.ItemsPanel>
+                                <ui:VirtualizingItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <ui:Button Name="btnLinkContentColectionItem" Margin="2" Tag="{Binding}" HorizontalAlignment="Stretch" Click="btnLinkContentColectionItem_Click" Height="38">
+                                            <ui:Button.ContextMenu>
+
+                                                <ContextMenu>
+                                                    <ContextMenu.BorderBrush>
+                                                        <SolidColorBrush Color="Black" Opacity="0.3"></SolidColorBrush>
+                                                    </ContextMenu.BorderBrush>
+                                                    <MenuItem Name="EliminarContent" Click="EliminarContent_Click" Tag="{Binding}" Header="Eliminar">
+                                                        <MenuItem.Icon>
+                                                            <ui:SymbolIcon Symbol="Delete24" ></ui:SymbolIcon>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                </ContextMenu>
+                                            </ui:Button.ContextMenu>
+                                            <TextBlock Text="{Binding TituloDocumento}" ToolTip="{Binding TituloDocumento}" TextTrimming="CharacterEllipsis"></TextBlock>
+                                        </ui:Button>
+                                    </DataTemplate>
+                                </ui:VirtualizingItemsControl.ItemTemplate>
+                            </ui:VirtualizingItemsControl>
+
+                        </ui:Flyout>
+                    </Grid>                  
                 </DataTemplate>
-            </ListView.ItemTemplate>
+            </ui:VirtualizingItemsControl.ItemTemplate>
             
-        </ListView>
+        </ui:VirtualizingItemsControl>
     </Grid>
 </UserControl>

@@ -64,6 +64,7 @@
                     </ui:Card>
                 </DockPanel>
             </DockPanel>
+            
             <UniformGrid Columns="1" Margin="7"  Grid.Column="1" VerticalAlignment="Top">
                 <ui:Button Name="btnAddOrMod" Click="btnAddOrMod_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="68">
                     <StackPanel>

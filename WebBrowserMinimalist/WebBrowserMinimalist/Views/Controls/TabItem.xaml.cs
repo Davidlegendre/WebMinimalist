@@ -1,10 +1,13 @@
 ﻿using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WebBrowserMinimalist.Models;
@@ -48,13 +51,29 @@ namespace WebBrowserMinimalist.Views.Controls
             btnCloseTab.Click += mainWindow!.btnClose_Click;
             txtCountTabs.DataContext = mainWindow!.lista;
             _previewState = mainWindow.WindowState;
+            
             InitialWebView2();
             ModelP = modelP;
         }
-
         async void InitialWebView2() {
-
+            //if (_globalService.IsInPrivateMode)
+            //{
+            //    var options = new CoreWebView2EnvironmentOptions("-inprivate");
+            //    var webView2Environment = await CoreWebView2Environment.CreateAsync(options: options);
+            //    webview.CreationProperties.IsInPrivateModeEnabled = true;
+            //    _msn.ShowDialog("pase");
+            //    await webview.EnsureCoreWebView2Async(webView2Environment);                
+            //}
+            //else
+            //{
+              
+            //}
             await webview.EnsureCoreWebView2Async();
+            //Binding bind = new Binding();
+            //bind.Source = _tabItemVM;
+            //bind.Path = new PropertyPath("Url");
+            //webview.SetBinding(WebView2.SourceProperty, bind);
+
             webview.CoreWebView2.ContainsFullScreenElementChanged += CoreWebView2_ContainsFullScreenElementChanged;
             webview.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
             webview.CoreWebView2.NavigationCompleted += CoreWebView2_NavigationCompleted;
@@ -108,24 +127,21 @@ namespace WebBrowserMinimalist.Views.Controls
                 if (webview.CoreWebView2.ContainsFullScreenElement)
                 {
                     _previewState = mainWindow.WindowState;
-                    toolBar.Visibility = Visibility.Collapsed;
-                    mainWindow.Visibility = Visibility.Collapsed;
-                    mainWindow.WindowStyle = WindowStyle.None;
-                    mainWindow.ResizeMode = ResizeMode.NoResize;
+                    toolBar.Visibility = Visibility.Collapsed;                   
                     mainWindow.WindowState = WindowState.Maximized;
-                    mainWindow!._viewmodel!.MarginWindowState = new Thickness(0);
-                    mainWindow.Visibility = Visibility.Visible;
+                    mainWindow.ResizeMode = ResizeMode.NoResize;
+                    webview.Margin = new Thickness(0);
+                    mainWindow.titlebar.CanMaximize = false;
                     webview.Focus();
                 }
                 else
                 {
                     toolBar.Visibility = Visibility.Visible;
-                    mainWindow.WindowStyle = WindowStyle.SingleBorderWindow;
+                    mainWindow.titlebar.CanMaximize = true;
                     mainWindow.ResizeMode = ResizeMode.CanResize;
                     mainWindow.WindowState = _previewState;
-                    mainWindow.Visibility = Visibility.Visible;
+                    webview.Margin = new Thickness(7,0,7,7);
                     Wpf.Ui.Animations.Transitions.ApplyTransition(toolBar, Wpf.Ui.Animations.TransitionType.FadeInWithSlide, 300);
-                    mainWindow!._viewmodel!.MarginWindowState = _previewState == WindowState.Maximized ? new Thickness(7) : new Thickness(0);
                     webview.Focus();
                 }
             }

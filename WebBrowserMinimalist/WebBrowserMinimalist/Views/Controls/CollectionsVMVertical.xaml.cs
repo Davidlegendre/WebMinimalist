@@ -118,5 +118,12 @@ namespace WebBrowserMinimalist.Views.Controls
                 await _VM!.DeleteOneContentCollection(collection.IDContent);
             }
         }
+
+        private void CardAction_Click(object sender, RoutedEventArgs e)
+        {
+            var cardaction = (Wpf.Ui.Controls.CardAction)sender;
+            var flyout = (Wpf.Ui.Controls.Flyout)cardaction.Tag;
+            flyout.Show();
+        }
     }
 }

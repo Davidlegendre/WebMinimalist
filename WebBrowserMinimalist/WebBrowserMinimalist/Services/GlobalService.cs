@@ -19,7 +19,7 @@ namespace WebBrowserMinimalist.Services
         string? ProfileFolderDefault => AppDomain.CurrentDomain.BaseDirectory + "/WebBrowserMinimalist.exe.WebView2/EBWebView/Default/";
 
         public string GetFolderAppDomain => AppDomain.CurrentDomain.BaseDirectory;
-
+        public bool IsInPrivateMode = false;
         public string FondoDeWindows
         {
             get

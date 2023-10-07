@@ -10,7 +10,7 @@
     <UserControl.DataContext>
         <context:SettingsVM></context:SettingsVM>
     </UserControl.DataContext>
-    <ui:Card Margin="2">
+    <ui:Card Margin="10">
         <StackPanel >
             <Grid>
                 <Grid.ColumnDefinitions>

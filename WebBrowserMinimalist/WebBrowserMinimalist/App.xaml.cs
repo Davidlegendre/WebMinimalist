@@ -49,7 +49,7 @@ namespace WebBrowserMinimalist
                 
 
                 // Main window with navigation
-                services.AddScoped<Views.Windows.MainWindow>();
+                services.AddTransient<Views.Windows.MainWindow>();
                 
                 services.AddSingleton<HistoryServices>();
                 services.AddSingleton<HIstorialDBA>();
