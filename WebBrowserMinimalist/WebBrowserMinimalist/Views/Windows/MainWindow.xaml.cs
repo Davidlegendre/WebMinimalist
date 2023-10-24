@@ -49,15 +49,19 @@ namespace WebBrowserMinimalist.Views.Windows
         }
         private void MainWindow_Closing(object? sender, CancelEventArgs e)
         {
-            if (_maensajeService.ShowDialog("Desea Cerrar el Navegador?", "Saliendo", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                _globalService.DisposeTimeHour();
-            else
-                e.Cancel = true;
+            //if (_maensajeService.ShowDialog("Desea Cerrar el Navegador?", "Saliendo", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                
+            //else
+            //    e.Cancel = true;
+            _globalService.DisposeTimeHour();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             CargaArchivosExternos();
+            this.ResizeMode = ResizeMode.NoResize;
+            WindowState = WindowState.Maximized;
+            this.ResizeMode = ResizeMode.CanResize;
             //new pruebas().Show();
         }
 
@@ -85,20 +89,20 @@ namespace WebBrowserMinimalist.Views.Windows
                         Environment.CommandLine.Split(" " + '"')[1]
                         : Environment.CommandLine.Split(" ")[1]);
                     var ruta = pre.EndsWith('"') ? pre.Remove(pre.Length - 1) : pre;
-                    item.Tab!.webview.Margin = new Thickness(7, 0, 7, 7);
+                    item.Tab!.webview.Margin = new Thickness(7, 2, 7, 7);
                     item!.Tab!._tabItemVM!.Search("file:///" + ruta, item.Tab.webview);
                     _viewmodel!.Items!.Add(item);
                 }
                 else
                 {
-                    item.Tab!.webview.Margin = new Thickness(7, 0, 7, 7);
+                    item.Tab!.webview.Margin = new Thickness(7, 2, 7, 7);
                     _viewmodel!.Items!.Add(item);
                 }
             }
             catch (Exception ex)
             {
                 //_maensajeService.ShowDialog(ex.Message);
-                item.Tab!.webview.Margin = new Thickness(7, 0, 7, 7);
+                item.Tab!.webview.Margin = new Thickness(7, 2, 7, 7);
                 _viewmodel!.Items!.Add(item);
             }
 
@@ -130,6 +134,7 @@ namespace WebBrowserMinimalist.Views.Windows
                     content.Children.Clear();
                 }
                 content.Children.Add(selectItem.Tab);
+                _viewmodel?.SelectItem(selectItem);
                 lista.ScrollIntoView(selectItem);
 
             }
@@ -188,7 +193,7 @@ namespace WebBrowserMinimalist.Views.Windows
             _viewmodel!.Items!.Add(newItem);
             lista.SelectedItem = newItem;
             lista.ScrollIntoView(newItem);
-            historyList.Visibility = Visibility.Collapsed;
+            //historyList.Visibility = Visibility.Collapsed;
             lista.Visibility = Visibility.Visible;
 
         }
@@ -204,13 +209,13 @@ namespace WebBrowserMinimalist.Views.Windows
 
         private void btnHistorialOpen_Click(object sender, RoutedEventArgs e)
         {
-            if (historyList.Visibility != Visibility.Visible)
-            {
-                btnAtras.Visibility = Visibility.Visible;
-                historyList.Visibility = Visibility.Visible;
-                lista.Visibility = Visibility.Collapsed;
-                Wpf.Ui.Animations.Transitions.ApplyTransition(historyList, Wpf.Ui.Animations.TransitionType.SlideRight, 400);
-            }
+            //if (historyList.Visibility != Visibility.Visible)
+            //{
+            //    btnAtras.Visibility = Visibility.Visible;
+            //    historyList.Visibility = Visibility.Visible;
+            //    lista.Visibility = Visibility.Collapsed;
+            //    Wpf.Ui.Animations.Transitions.ApplyTransition(historyList, Wpf.Ui.Animations.TransitionType.SlideRight, 400);
+            //}
         }
 
         private void menuItemCerrarMenosEste_Click(object sender, RoutedEventArgs e)
@@ -235,9 +240,9 @@ namespace WebBrowserMinimalist.Views.Windows
         {
             if (lista.Visibility != Visibility.Visible)
             {
-                historyList.Visibility = Visibility.Collapsed;
+                //historyList.Visibility = Visibility.Collapsed;
                 lista.Visibility = Visibility.Visible;
-                btnAtras.Visibility = Visibility.Collapsed;
+                //btnAtras.Visibility = Visibility.Collapsed;
                 Wpf.Ui.Animations.Transitions.ApplyTransition(lista, Wpf.Ui.Animations.TransitionType.SlideLeft, 400);
             }
         }
@@ -248,14 +253,14 @@ namespace WebBrowserMinimalist.Views.Windows
             {
                 //btnAtras.Visibility = Visibility.Visible;
                 Colecciones.Visibility = Visibility.Visible;
-                flyoutPanel.IsOpen = false;
+                menutabs.Visibility = Visibility.Collapsed;
                 //lista.Visibility = Visibility.Collapsed;
                 Wpf.Ui.Animations.Transitions.ApplyTransition(Colecciones, Wpf.Ui.Animations.TransitionType.FadeIn, 300);
             }
             else
             {
                 Colecciones.Visibility = Visibility.Collapsed;
-                flyoutPanel.IsOpen = false;
+                
             }
         }
 
@@ -273,12 +278,39 @@ namespace WebBrowserMinimalist.Views.Windows
             if (Colecciones.Visibility == Visibility.Visible)
             {
                 Colecciones.Visibility = Visibility.Collapsed;
+                menutabs.Visibility = Visibility.Visible;
             }
         }
 
         private void btnOpenWithIncognit_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(AppDomain.CurrentDomain.BaseDirectory + Application.ResourceAssembly.GetName().Name!.ToString() + ".exe", "¬[incognit]");
+        }
+
+        private void btnclosemenu_Click(object sender, RoutedEventArgs e)
+        {
+            menutabs.Visibility = Visibility.Collapsed;
+        }
+        private void card_MouseEnter(object sender, MouseEventArgs e)
+        {
+            var grid = (Grid)sender;
+            var btn = (Wpf.Ui.Controls.Button)grid.Tag;
+            var context = btn.DataContext as ItemModel;
+            if (btn != null && context != null)
+            {
+                btn.Opacity = 1;
+            }
+        }
+
+        private void card_MouseLeave(object sender, MouseEventArgs e)
+        {
+            var grid = (Grid)sender;
+            var btn = (Wpf.Ui.Controls.Button)grid.Tag;
+            var context = btn.DataContext as ItemModel;
+            if (btn != null && context != null)
+            {
+                btn.Opacity = 0;
+            }
         }
     }
 }

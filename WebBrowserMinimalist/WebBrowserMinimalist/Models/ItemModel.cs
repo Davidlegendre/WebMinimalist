@@ -45,5 +45,10 @@ namespace WebBrowserMinimalist.Models
 
         [ObservableProperty]
         Visibility _progressVisibility = Visibility.Collapsed;
+
+        [ObservableProperty]
+        double _opacity = 0.4;
+
+
     }
 }

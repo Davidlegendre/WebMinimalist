@@ -109,6 +109,7 @@ namespace WebBrowserMinimalist.DBA
                     var collections = await con.QueryAsync<CollectionsModel>("select ID, TituloColeccion, Background  from collections");
                     
                     collections.ToList().ForEach(async x => {
+                        x.VisibleBookMark = x.Background == "#0FFFFFFF" ? Visibility.Collapsed: Visibility.Visible;
                         var countContent = await con.ExecuteScalarAsync<int>("select count(IDContent) from ContentCollection where IDCollection = '" + x.ID + "'");
                         if (countContent > 0)
                         {

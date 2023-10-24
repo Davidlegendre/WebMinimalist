@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace WebBrowserMinimalist.Models
@@ -16,10 +17,15 @@ namespace WebBrowserMinimalist.Models
     {
         [ObservableProperty]
         string? _ID;
+
         [ObservableProperty]
         string? _TituloColeccion;
+
         [ObservableProperty]
         string? _Background;
+
+        [ObservableProperty]
+        Visibility _VisibleBookMark = Visibility.Visible;
 
         [ObservableProperty]
         ObservableCollection<ContentColletionModel> _ContentCollection = new ObservableCollection<ContentColletionModel>();

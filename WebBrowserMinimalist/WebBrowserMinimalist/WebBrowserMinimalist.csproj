@@ -7,12 +7,12 @@
     <LangVersion>10.0</LangVersion>
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>appIcon.ico</ApplicationIcon>
+    <ApplicationIcon>appicon2.ico</ApplicationIcon>
     <PackageIcon>icons8-internet-48.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="appIcon.ico" />
+    <Content Include="appicon2.ico" />
   </ItemGroup>
 
   <ItemGroup>

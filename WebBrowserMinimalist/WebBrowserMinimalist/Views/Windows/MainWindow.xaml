@@ -15,8 +15,7 @@
     WindowBackdropType="Mica"    
     d:DesignHeight="650"      
     mc:Ignorable="d"
-    WindowStartupLocation="CenterScreen"  StateChanged="Window_StateChanged"
-     Icon="/Views/Windows/icons8-internet-48.png" >
+    WindowStartupLocation="CenterScreen"  StateChanged="Window_StateChanged" Icon="/Views/Windows/icons8-internet-48.png" >
     <Window.DataContext>
         <VM:MainWindowViewModel></VM:MainWindowViewModel>
     </Window.DataContext>
@@ -26,152 +25,134 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Rectangle Visibility="{Binding Visibility,ElementName=Colecciones}" Fill="{Binding Foreground,ElementName=titlebar}" Grid.Row="0" Opacity="0.07"></Rectangle>
-        <Rectangle Grid.ColumnSpan="5" Fill="{Binding Foreground,ElementName=symbol}" VerticalAlignment="Top" Height="39" Grid.Row="2" Opacity="0.07"></Rectangle>
-        <Rectangle Grid.ColumnSpan="5" Stroke="{Binding Foreground,ElementName=symbol}" VerticalAlignment="Top" StrokeThickness="0,0,0,1.2" Height="38" Grid.Row="2" Opacity="0.1"></Rectangle>
+        <Rectangle Visibility="{Binding Visibility,ElementName=menutabs}" Fill="{Binding Background,ElementName=btnclosemenu}" Grid.Row="0"  Opacity="0.12"></Rectangle>
 
+        <Rectangle Visibility="{Binding Visibility,ElementName=Colecciones}" Fill="{Binding Background,ElementName=btnclosemenu}" Grid.Row="0" Opacity="0.12"></Rectangle>
+        <Rectangle Grid.ColumnSpan="5" Fill="{Binding Background,ElementName=btnclosemenu}" VerticalAlignment="Top" Height="34" Grid.Row="2" Opacity="0.12"></Rectangle>
+     
         <ui:TitleBar x:Name="titlebar" Grid.ColumnSpan="2" Grid.RowSpan="2" Title=""></ui:TitleBar>
+
+        <Grid x:Name="menutabs" Background="{x:Null}" HorizontalAlignment="Left" Visibility="Collapsed">
+            
+            <Grid Margin="7,5,5,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="38"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <UniformGrid x:Name="panelbuttonsprincipales" Visibility="{Binding Visibility,ElementName=lista}" Rows="1" HorizontalAlignment="Left"  Margin="0">
+                    <ui:Button Name="btnclosemenu" Icon="ArrowStepBack16" Padding="5" Click="btnclosemenu_Click" Appearance="Primary" Margin="2"  >
+                        
+                    </ui:Button>
+                    <ui:Button Name="addBtn" Appearance="Secondary" Padding="5" Margin="2"  Click="addbutton_Click" WindowChrome.IsHitTestVisibleInChrome="True" HorizontalAlignment="Stretch" >
+                        <ui:SymbolIcon  Symbol="Add12"></ui:SymbolIcon>
+                    </ui:Button>
+                    <ui:Button Name="btnDescargasOpen" Padding="5" Appearance="Secondary"  Margin="2" HorizontalAlignment="Stretch" Click="btnDescargasOpen_Click" ToolTip="Pagina de Descargas de Edge" WindowChrome.IsHitTestVisibleInChrome="True" >
+                        <ui:SymbolIcon Symbol="ArrowDownload16"></ui:SymbolIcon>
+                    </ui:Button>
+                    <ui:Button Name="btnOpenWithIncognit" Padding="5" Visibility="Collapsed" Appearance="Secondary"  Margin="2" HorizontalAlignment="Stretch" Click="btnOpenWithIncognit_Click" ToolTip="Abrir en modo incognito" WindowChrome.IsHitTestVisibleInChrome="True" >
+                        <ui:SymbolIcon Symbol="Incognito20"></ui:SymbolIcon>
+                    </ui:Button>
+                    <ui:Button Name="btnHistorialOpen" Padding="5" Appearance="Secondary" Margin="2" HorizontalAlignment="Stretch" Click="btnHistorialOpen_Click" ToolTip="Pagina de Historial de Edge" WindowChrome.IsHitTestVisibleInChrome="True" >
+                        <ui:SymbolIcon Symbol="History16"></ui:SymbolIcon>
+                    </ui:Button>
+                    <ui:Button Name="btnCollectionsOpen" Padding="5" Appearance="Secondary" Margin="2" HorizontalAlignment="Stretch" Click="btnCollectionsOpen_Click" ToolTip="Colecciones" WindowChrome.IsHitTestVisibleInChrome="True" >
+                        <ui:SymbolIcon Symbol="Collections24"></ui:SymbolIcon>
+                    </ui:Button>
+                </UniformGrid>
+                <!--<ui:Button Name="btnAtras" Visibility="Collapsed" Appearance="Secondary" Margin="2" Click="btnAtras_Click" WindowChrome.IsHitTestVisibleInChrome="True"  >
+                    <ui:SymbolIcon Symbol="ArrowStepBack16"></ui:SymbolIcon>
+                </ui:Button>
+                <controls:HistoryList x:Name="historyList" Visibility="Collapsed" Grid.Row="1"></controls:HistoryList>-->
+                <Grid Grid.Row="1" Visibility="{Binding  Visibility,ElementName=lista, Mode=OneWay}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <ui:VirtualizingGridView Name="lista"
+                                             Margin="0"
+                                                                 SelectionMode="Single"
+                                             ScrollViewer.HorizontalScrollBarVisibility="Auto"                    Grid.Row="1"
+                                             ScrollViewer.VerticalScrollBarVisibility="Disabled" Grid.Column="1" ItemsSource="{Binding Items, Mode=OneWay}" SelectedIndex="0" SelectionChanged="ListBox_SelectionChanged">
+                        <ui:VirtualizingGridView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel HorizontalAlignment="Left"></WrapPanel>
+                            </ItemsPanelTemplate>
+                        </ui:VirtualizingGridView.ItemsPanel>
+                        <ui:VirtualizingGridView.ItemTemplate>
+                            <DataTemplate >
+                                <Grid Name="card" MaxWidth="270"  Margin="0" Tag="{Binding ElementName=btnClose}" MouseEnter="card_MouseEnter" MouseLeave="card_MouseLeave">
+                                    <Grid.ContextMenu>
+                                        <ContextMenu BorderThickness="1">
+                                            <ContextMenu.BorderBrush>
+                                                <SolidColorBrush Color="Black" Opacity="0.3"></SolidColorBrush>
+                                            </ContextMenu.BorderBrush>
+                                            <MenuItem Name="menuItemCerrarMenosEste" Click="menuItemCerrarMenosEste_Click" Header="Cerrar todos menos este">
+                                            </MenuItem>
+                                            <MenuItem Name="menuItemCerrarTodosAbajo" Click="menuItemCerrarTodosAbajo_Click" Header="Cerrar todos hacia abajo"></MenuItem>
+                                        </ContextMenu>
+                                    </Grid.ContextMenu>
+                                    <Rectangle Fill="{ui:ThemeResource}" RadiusX="4" RadiusY="4" Opacity="{Binding Opacity}"></Rectangle>
+                                    <Border Padding="4" CornerRadius="4" Margin="0,0,0,0">
+                                        
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                                            <Grid>
+                                                <Rectangle Fill="White" RadiusX="4" RadiusY="4" Width="22" Height="22"></Rectangle>
+                                                <Image Source="{Binding IMg}" Margin="0,1,0,0" Width="16" Height="16" Stretch="Uniform"></Image>
+                                                <ui:ProgressRing Visibility="{Binding ProgressVisibility, Mode=OneWay}"  IsVisibleChanged="ProgressRing_IsVisibleChanged"  Height="22" Width="22"></ui:ProgressRing>
+                                           </Grid>
+                                            <!--<ui:SymbolIcon Grid.Row="1" Symbol="{Binding ShieldIcon}" Margin="7,0,0,0" Filled="True" FontSize="14" ></ui:SymbolIcon>-->
+
+                                            <ui:SymbolIcon Grid.Row="2" Visibility="{Binding SoundVisibility,Mode=OneWay}" Margin="7,0,0,0" Symbol="Speaker224" FontSize="14"></ui:SymbolIcon>
+                                            <!--Visibility="{Binding SoundVisibility,Mode=OneWay}"-->
+                                            <Grid Grid.Row="1" Margin="7,0,7,0" MaxWidth="170">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="auto"></RowDefinition>
+                                                    <RowDefinition Height="auto"></RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock  Text="{Binding TitleDoc}" TextTrimming="CharacterEllipsis" FontWeight="SemiBold" FontSize="12"></TextBlock>
+
+                                                <TextBlock ToolTip="{Binding Source}" Grid.Row="1" Text="{Binding Source}" Margin="0,-3,0,0" TextTrimming="CharacterEllipsis" Opacity="0.5" FontWeight="SemiBold" FontSize="12" ></TextBlock>
+
+                                            </Grid>
+                                            <ui:Button Name="btnClose" 
+                                                       Icon="Dismiss20"
+                                                       Appearance="Transparent"
+                                                       BorderBrush="Transparent"
+                                                       Cursor="Hand"
+                                                       Opacity="0"
+                                                                   Padding="5"
+                                                                   Margin="-3" 
+                                                                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="btnClose_Click" >
+                                                
+                                            </ui:Button>
+                                        </StackPanel>
+                                       
+                                    </Border>
+                                    
+                                </Grid>
+                            </DataTemplate>
+                        </ui:VirtualizingGridView.ItemTemplate>
+                    </ui:VirtualizingGridView>
+                </Grid>
+
+            </Grid>           
+        </Grid>
 
         <Grid x:Name="Colecciones" Visibility="Collapsed">
 
-            <Grid Margin="10">
+            <Grid Margin="7,5,5,5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <ui:Button Name="btnCloseCollections" Appearance="Secondary" Margin="3,3,5,5" Click="btnCloseCollections_Click" WindowChrome.IsHitTestVisibleInChrome="True"  >
-                    <ui:SymbolIcon Symbol="ArrowStepBack16"></ui:SymbolIcon>
+                <ui:Button Name="btnCloseCollections" Icon="ArrowStepBack16" Padding="5" Appearance="Primary" Margin="3,3,5,5" Click="btnCloseCollections_Click" WindowChrome.IsHitTestVisibleInChrome="True"  >
+               
                 </ui:Button>
+                <TextBlock Text="Colecciones" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="40,-2,0,0" FontWeight="SemiBold"></TextBlock>
                 <controls:CollectionsVMVertical Grid.Row="1"></controls:CollectionsVMVertical>
 
             </Grid>
-        </Grid>
-        <Grid Grid.Column="1" Grid.Row="1">
-            <Grid Height="38" VerticalAlignment="Top">               
-                <Popup  Name="flyoutPanel"
-                                          AllowsTransparency="true" 
-                                          Placement="Top"  
-                                          StaysOpen="False"
-                                          
-                                          PopupAnimation="Fade" HorizontalOffset="5" VerticalOffset="5">
-                    <Border Margin="0"  Padding="7" Background="{ui:ThemeResource}" CornerRadius="10" BorderThickness="1" >
-                        <Border.BorderBrush>
-                            <SolidColorBrush Color="Black" Opacity="0.13"/>
-                        </Border.BorderBrush>
-                        <Grid>
-                            <Border x:Name="optionsBrowser">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="38"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-                                    <UniformGrid x:Name="panelbuttonsprincipales" Visibility="{Binding Visibility,ElementName=lista}" Rows="1"  Margin="0">
-
-                                        <ui:Button Name="addBtn" Appearance="Secondary" Margin="5,0,0,0"  Click="addbutton_Click" WindowChrome.IsHitTestVisibleInChrome="True" HorizontalAlignment="Stretch" >
-                                            <ui:SymbolIcon  Symbol="Add12"></ui:SymbolIcon>
-                                        </ui:Button>
-                                        <ui:Button Name="btnDescargasOpen" Appearance="Secondary"  Margin="5,0,5,0" HorizontalAlignment="Stretch" Click="btnDescargasOpen_Click" ToolTip="Pagina de Descargas de Edge" WindowChrome.IsHitTestVisibleInChrome="True" >
-                                            <ui:SymbolIcon Symbol="ArrowDownload16"></ui:SymbolIcon>
-                                        </ui:Button>
-                                        <ui:Button Name="btnOpenWithIncognit" Visibility="Collapsed" Appearance="Secondary"  Margin="0,0,5,0" HorizontalAlignment="Stretch" Click="btnOpenWithIncognit_Click" ToolTip="Abrir en modo incognito" WindowChrome.IsHitTestVisibleInChrome="True" >
-                                            <ui:SymbolIcon Symbol="Incognito20"></ui:SymbolIcon>
-                                        </ui:Button>
-                                        <ui:Button Name="btnHistorialOpen" Appearance="Secondary" Margin="0,0,5,0" HorizontalAlignment="Stretch" Click="btnHistorialOpen_Click" ToolTip="Pagina de Historial de Edge" WindowChrome.IsHitTestVisibleInChrome="True" >
-                                            <ui:SymbolIcon Symbol="History16"></ui:SymbolIcon>
-                                        </ui:Button>
-                                        <ui:Button Name="btnCollectionsOpen" Appearance="Secondary" Margin="0,0,5,0" HorizontalAlignment="Stretch" Click="btnCollectionsOpen_Click" ToolTip="Colecciones" WindowChrome.IsHitTestVisibleInChrome="True" >
-                                            <ui:SymbolIcon Symbol="Collections24"></ui:SymbolIcon>
-                                        </ui:Button>
-                                    </UniformGrid>
-                                    <ui:Button Name="btnAtras" Visibility="Collapsed" Appearance="Secondary" Margin="5,0,0,0" Click="btnAtras_Click" WindowChrome.IsHitTestVisibleInChrome="True"  >
-                                        <ui:SymbolIcon Symbol="ArrowStepBack16"></ui:SymbolIcon>
-                                    </ui:Button>
-                                    <controls:HistoryList x:Name="historyList" Visibility="Collapsed" Grid.Row="1"></controls:HistoryList>
-                                    <Grid Grid.Row="1" Visibility="{Binding  Visibility,ElementName=lista, Mode=OneWay}">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"></RowDefinition>
-                                            <RowDefinition Height="*"></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <ui:Card Margin="5,0" Padding="5" HorizontalContentAlignment="Center">
-                                            <StackPanel Orientation="Horizontal">
-                                                <ui:SymbolIcon x:Name="symbol" Symbol="LayerDiagonal20" Margin="0,0,5,0"></ui:SymbolIcon>
-                                                <TextBlock VerticalAlignment="Center" Foreground="{Binding Foreground,ElementName=symbol}" FontSize="12" Text="{Binding Items.Count, ElementName=lista,Mode=OneWay}"></TextBlock>
-                                                <TextBlock VerticalAlignment="Center" Foreground="{Binding Foreground,ElementName=symbol}" FontSize="12" Text=" Tabs"></TextBlock>
-                                            </StackPanel>
-                                        </ui:Card>
-
-                                        <ListView Name="lista" SelectionMode="Single" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Column="1" ItemsSource="{Binding Items, Mode=OneWay}" SelectedIndex="0" SelectionChanged="ListBox_SelectionChanged">
-                                            <ListView.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <UniformGrid Columns="1" VerticalAlignment="Top"></UniformGrid>
-                                                </ItemsPanelTemplate>
-                                            </ListView.ItemsPanel>
-                                            <ListView.ItemTemplate>
-                                                <DataTemplate >
-                                                    <ui:Card Name="card" Margin="0" Padding="5" Height="80" Width="270" VerticalAlignment="Stretch">
-                                                        <ui:Card.ContextMenu>
-                                                            <ContextMenu BorderThickness="1">
-                                                                <ContextMenu.BorderBrush>
-                                                                    <SolidColorBrush Color="Black" Opacity="0.3"></SolidColorBrush>
-                                                                </ContextMenu.BorderBrush>
-                                                                <MenuItem Name="menuItemCerrarMenosEste" Click="menuItemCerrarMenosEste_Click" Header="Cerrar todos menos este">
-                                                                </MenuItem>
-                                                                <MenuItem Name="menuItemCerrarTodosAbajo" Click="menuItemCerrarTodosAbajo_Click" Header="Cerrar todos hacia abajo"></MenuItem>
-                                                            </ContextMenu>
-                                                        </ui:Card.ContextMenu>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="auto"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <Grid Margin="5">
-                                                                <Grid.RowDefinitions>
-                                                                    <RowDefinition Height="auto">
-
-                                                                    </RowDefinition>
-                                                                    <RowDefinition Height="*">
-
-                                                                    </RowDefinition>
-                                                                </Grid.RowDefinitions>
-                                                                <StackPanel Orientation="Horizontal">
-                                                                    <ui:ProgressRing Visibility="{Binding ProgressVisibility, Mode=OneWay}" IsVisibleChanged="ProgressRing_IsVisibleChanged"  Height="16" Width="16"></ui:ProgressRing>
-                                                                    <Image Source="{Binding IMg}" Visibility="{Binding }" Width="18" Height="18" Stretch="Uniform"></Image>
-
-                                                                    <ui:SymbolIcon Grid.Row="1" Symbol="{Binding ShieldIcon}" Margin="7,0,0,0" Filled="True" FontSize="14" ></ui:SymbolIcon>
-
-                                                                    <ui:SymbolIcon Grid.Row="2" Visibility="{Binding SoundVisibility,Mode=OneWay}" Margin="7,0,0,0" Symbol="Speaker224" FontSize="14"></ui:SymbolIcon>
-                                                                    <!--Visibility="{Binding SoundVisibility,Mode=OneWay}"-->
-
-                                                                </StackPanel>
-                                                                <Grid Grid.Row="1" Margin="0,7,0,0">
-                                                                    <Grid.RowDefinitions>
-                                                                        <RowDefinition Height="auto"></RowDefinition>
-                                                                        <RowDefinition Height="auto"></RowDefinition>
-                                                                    </Grid.RowDefinitions>
-                                                                    <TextBlock Text="{Binding TitleDoc}" TextTrimming="CharacterEllipsis" FontFamily="Segoe UI Semibold" FontSize="14" Opacity="0.8"></TextBlock>
-
-                                                                    <TextBlock ToolTip="{Binding Source}" Grid.Row="1" Text="{Binding Source}" Margin="0,0,0,0" TextTrimming="CharacterEllipsis" Opacity="0.5" FontFamily="Segoe UI Semibold" FontSize="12" ></TextBlock>
-
-                                                                </Grid>
-                                                            </Grid>
-                                                            <ui:Button Name="btnClose" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="btnClose_Click" >
-                                                                <ui:SymbolIcon Symbol="Delete12"></ui:SymbolIcon>
-                                                            </ui:Button>
-                                                        </Grid>
-                                                    </ui:Card>
-                                                </DataTemplate>
-                                            </ListView.ItemTemplate>
-                                        </ListView>
-                                    </Grid>
-                                  
-                                </Grid>
-                            </Border>
-                        </Grid>
-                    </Border>
-                </Popup>
-            </Grid>
-           
         </Grid>
         <Grid Name="content" Grid.Row="1" Grid.Column="1" ></Grid>
 

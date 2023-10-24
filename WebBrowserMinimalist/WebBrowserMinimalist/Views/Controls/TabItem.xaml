@@ -21,8 +21,17 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <Border x:Name="toolBar" VerticalAlignment="Stretch" Height="38" BorderThickness="0,0,0,0" >
+        <Grid Name="navegador" Margin="0" Grid.Row="1">
+            <web:WebView2 Name="webview" Source="{Binding Url}" Margin="7,2,7,7">
+                <web:WebView2.CreationProperties>
+                    <web:CoreWebView2CreationProperties IsInPrivateModeEnabled="True"></web:CoreWebView2CreationProperties>
+                </web:WebView2.CreationProperties>
+            </web:WebView2>
+            <local:Home x:Name="home" Visibility="Collapsed">
+            </local:Home>
+        </Grid>
+        <Separator VerticalAlignment="Bottom" Margin="0,0,0,-1"></Separator>
+        <Border x:Name="toolBar" VerticalAlignment="Stretch" Height="33" BorderThickness="0,2,0,0" >
             <Grid ClipToBounds="True">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -30,29 +39,29 @@
                     <ColumnDefinition Width="145"/>
                 </Grid.ColumnDefinitions>
               
-                <StackPanel Orientation="Horizontal" Margin="2,4,8,4">
-                    <ui:Button WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding BackCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding CanGoBack,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                <StackPanel Orientation="Horizontal" Margin="2,0,6,0">
+                    <ui:Button WindowChrome.IsHitTestVisibleInChrome="True" Padding="0" Width="30" Appearance="Transparent" Command="{Binding BackCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding CanGoBack,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                         <ui:SymbolIcon Symbol="ChevronLeft12" ></ui:SymbolIcon>
                     </ui:Button>
                     <Grid>
-                        <ui:Button Name="btnRefresh" HorizontalAlignment="Stretch" Visibility="Visible" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding RefreshCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
+                        <ui:Button Name="btnRefresh" Padding="0" Width="30" HorizontalAlignment="Stretch" Visibility="Visible" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding RefreshCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
                             <ui:SymbolIcon Symbol="ArrowClockwise20" FontSize="16" Filled="True"></ui:SymbolIcon>
                         </ui:Button>
-                        <ui:Button Name="btnStop" Visibility="Collapsed" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding StopCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
+                        <ui:Button Name="btnStop" Padding="0" Width="30" Visibility="Collapsed" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding StopCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
                             <ui:SymbolIcon Symbol="Square12" Filled="True"></ui:SymbolIcon>
                         </ui:Button>
                     </Grid>
-                    <ui:Button WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" Command="{Binding LeftCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding  CanGoForward,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                    <ui:Button WindowChrome.IsHitTestVisibleInChrome="True" Padding="0" Width="30" Appearance="Transparent" BorderThickness="0" Command="{Binding LeftCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding  CanGoForward,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                         <ui:SymbolIcon Symbol="ChevronRight12" ></ui:SymbolIcon>
                     </ui:Button>
                 </StackPanel>
-                <Rectangle Fill="{Binding Foreground,ElementName=symbol}" Width="4" Height="4" HorizontalAlignment="Right" RadiusX="10" RadiusY="10" Margin="0,15,0,15"></Rectangle>
+                <Rectangle Fill="{Binding Foreground,ElementName=symbol}" Width="4" Height="4" HorizontalAlignment="Right" RadiusX="10" RadiusY="10" Margin="0,0,0,0"></Rectangle>
                 <Grid Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"  Margin="0,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="1" MaxWidth="420">
+                    <Grid Grid.Column="1" MaxWidth="450">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"></ColumnDefinition>
                             <ColumnDefinition Width="*"/>
@@ -142,7 +151,7 @@
                                     </ui:Badge>
 
                                 </Grid>
-                                <ui:Badge x:Name="IndicatorDocumentPage" Margin="0,0,0,0"  Background="Transparent" Grid.Column="1" Padding="0" Height="28" >
+                                <ui:Badge x:Name="IndicatorDocumentPage" Margin="0,0,0,0"  Background="Transparent" Grid.Column="1" Padding="0" Height="26" >
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="auto"/>
@@ -178,7 +187,7 @@
                                             <ui:ProgressRing Name="progressring" Grid.Column="1"  IsIndeterminate="{Binding IsVisible,ElementName=progressring}" Progress="0" Visibility="{Binding ProgressVisibility}" Height="16" Width="16"></ui:ProgressRing>
 
                                             <Image Name="img" Source="{Binding Image, Mode=OneWay}" Visibility="{Binding ImgVisible}" Grid.Column="1" Height="15" Width="15" Stretch="Uniform"></Image>
-                                            <TextBlock Background="Transparent" Name="TbTitleDocument" MouseLeftButtonDown="TbTitleDocument_MouseLeftButtonDown" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="{Binding TitleDocument}" FontSize="14" Grid.Column="2" Foreground="{Binding Foreground, ElementName=symbol, Mode=OneWay}" HorizontalAlignment="Stretch" Opacity="1" FontStretch="ExtraExpanded" Text="{Binding TitleDocument}" Margin="7,-2,0,0" Padding="0" TextTrimming="CharacterEllipsis" FontFamily="Segoe UI Semibold" >
+                                            <TextBlock Background="Transparent" Name="TbTitleDocument" MouseLeftButtonDown="TbTitleDocument_MouseLeftButtonDown" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="{Binding TitleDocument}" FontSize="14" Grid.Column="2" Foreground="{Binding Foreground, ElementName=symbol, Mode=OneWay}" HorizontalAlignment="Stretch" Opacity="1" Text="{Binding TitleDocument}" Margin="7,-2,0,0" Padding="0" TextTrimming="CharacterEllipsis" FontWeight="SemiBold" >
 
                                             </TextBlock>
 
@@ -193,16 +202,14 @@
                         </ui:Button>
                     </Grid>
                     
-                    <StackPanel Orientation="Horizontal" Margin="4,0,5,0">
-                        <ui:Button Name="menubtn" Width="38" Click="menubtn_Click" Height="{Binding ActualHeight,ElementName=btnRefresh}" Grid.Column="0" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                    <StackPanel Orientation="Horizontal" Margin="0,0,5,0">
+                        <ui:Button Name="menubtn" Width="30" Padding="0,0,0,0" Click="menubtn_Click" Height="{Binding ActualHeight,ElementName=btnRefresh}" Grid.Column="0" Margin="2,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                             <ui:SymbolIcon Name="symbol" Symbol="LayerDiagonal20" FontSize="18" Filled="True" ></ui:SymbolIcon>
                         </ui:Button>
-                        <ui:SymbolIcon Margin="2,0,7,0" Visibility="{Binding CreationProperties.IsInPrivateModeEnabled,ElementName=webview,Converter={StaticResource convertToVisibility}}" Symbol="Incognito24" Filled="True"></ui:SymbolIcon>
-
-                        <Rectangle Width="1" Height="10" Fill="{Binding Foreground,ElementName=symbol}"></Rectangle>
-                        <Grid Margin="2,0,0,0">
-                            <TextBlock x:Name="txtCountTabs" Foreground="{Binding Foreground,ElementName=symbol}" VerticalAlignment="Center" FontSize="12" Margin="5,-1,5,0" Text="{Binding Items.Count,Mode=OneWay}"></TextBlock>
-                        </Grid>
+                        <ui:SymbolIcon Margin="0,0,7,0" Visibility="{Binding CreationProperties.IsInPrivateModeEnabled,ElementName=webview,Converter={StaticResource convertToVisibility}}" Symbol="Incognito24" Filled="True"></ui:SymbolIcon>
+                           <ui:Badge Padding="4,0,4,0" Margin="0,5,0,5">
+                                <TextBlock x:Name="txtCountTabs" VerticalAlignment="Center" FontSize="11" Margin="0" Text="{Binding Items.Count,Mode=OneWay}"></TextBlock>
+                           </ui:Badge>
                     </StackPanel>
                 </Grid>
             </Grid>
@@ -210,14 +217,6 @@
         </Border>
 
 
-        <Grid Name="navegador" Margin="0" Grid.Row="1">
-            <web:WebView2 Name="webview" Source="{Binding Url}" Margin="7,0,7,7">
-                <web:WebView2.CreationProperties>
-                    <web:CoreWebView2CreationProperties IsInPrivateModeEnabled="True"></web:CoreWebView2CreationProperties>
-                </web:WebView2.CreationProperties>
-            </web:WebView2>
-            <local:Home x:Name="home" Visibility="Collapsed">
-            </local:Home>
-        </Grid>
+       
     </Grid>
 </UserControl>

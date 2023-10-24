@@ -83,6 +83,7 @@ namespace WebBrowserMinimalist.Views.Controls
              webview.CoreWebView2.PermissionRequested += CoreWebView2_PermissionRequested;
             webview.CoreWebView2.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All);
             webview.CoreWebView2.WebResourceRequested += CoreWebView2_WebResourceRequested;
+           
             
             ModelP.IMg = _tabItemVM!.Image;
             ModelP.Source = _tabItemVM.UrlSource;
@@ -140,7 +141,7 @@ namespace WebBrowserMinimalist.Views.Controls
                     mainWindow.titlebar.CanMaximize = true;
                     mainWindow.ResizeMode = ResizeMode.CanResize;
                     mainWindow.WindowState = _previewState;
-                    webview.Margin = new Thickness(7,0,7,7);
+                    webview.Margin = new Thickness(7,2,7,7);
                     Wpf.Ui.Animations.Transitions.ApplyTransition(toolBar, Wpf.Ui.Animations.TransitionType.FadeInWithSlide, 300);
                     webview.Focus();
                 }
@@ -207,7 +208,12 @@ namespace WebBrowserMinimalist.Views.Controls
                     ModelP.Source = _tabItemVM.UrlSource;
                     ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
                     webview.Focus();
-
+                    if (_tabItemVM.UrlSource.Contains("https://sg.sdasystems.org"))
+                    {
+                        var functionString = "var link = document.createElement('link'); link.rel = 'stylesheet'; link.type = 'text/css';  link.href = 'https://hyms-front.vercel.app/img/main.css'; document.getElementsByTagName('head')[0].appendChild(link); ";
+                        //var script = "alert('hola')";
+                        var result = await webview.ExecuteScriptAsync(functionString);
+                    }
                     await Task.Run(async () => await _tabItemVM.geticon(sender!));
                     if (_tabItemVM.UrlSource == "about:blank")
                     {
@@ -226,7 +232,7 @@ namespace WebBrowserMinimalist.Views.Controls
                     ModelP.Source = _tabItemVM.UrlSource;
                     ModelP.ProgressVisibility = _tabItemVM.ProgressVisibility;
                     ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
-                    mainWindow.historyList.Actualizar();
+                    //mainWindow.historyList.Actualizar();
 
                 }
                 catch (Exception)
@@ -262,6 +268,8 @@ namespace WebBrowserMinimalist.Views.Controls
                     {
                         webview.DefaultBackgroundColor = System.Drawing.Color.Transparent;
                     }
+
+                    
                
 
 
@@ -308,16 +316,16 @@ namespace WebBrowserMinimalist.Views.Controls
 
         private void menubtn_Click(object sender, RoutedEventArgs e)
         {
-            if (!mainWindow!.flyoutPanel.IsOpen)
+            if (mainWindow!.menutabs.Visibility == Visibility.Collapsed)
             {
                 //mainWindow.optionsBrowser.Visibility = Visibility.Visible;
-                mainWindow.flyoutPanel.IsOpen = true;
+                mainWindow.menutabs.Visibility = Visibility.Visible;
                 mainWindow.lista.Visibility = Visibility.Visible;
-                mainWindow.historyList.Visibility = Visibility.Collapsed;
-                mainWindow.btnAtras.Visibility = Visibility.Collapsed;                
-                Wpf.Ui.Animations.Transitions.ApplyTransition(mainWindow.flyoutPanel,
-                Wpf.Ui.Animations.TransitionType.FadeInWithSlide, 400);
-                mainWindow.historyList.Actualizar();
+                //mainWindow.historyList.Visibility = Visibility.Collapsed;
+                //mainWindow.btnAtras.Visibility = Visibility.Collapsed;                
+                Wpf.Ui.Animations.Transitions.ApplyTransition(mainWindow.menutabs,
+                Wpf.Ui.Animations.TransitionType.FadeIn, 400);
+                //mainWindow.historyList.Actualizar();
             }
         }
 
@@ -444,7 +452,8 @@ namespace WebBrowserMinimalist.Views.Controls
 
         private void UserControl_GotFocus(object sender, RoutedEventArgs e)
         {
-            webview.CoreWebView2.CloseDefaultDownloadDialog();
+            if (webview.CoreWebView2 != null)
+                webview.CoreWebView2.CloseDefaultDownloadDialog();
         }
     }
 }

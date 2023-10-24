@@ -78,17 +78,6 @@ namespace WebBrowserMinimalist.Services
 
         List<descargaModel> descargad { get; set; } = new List<descargaModel>();
 
-        static pruebas? pruebas;
-        public void OpenWindow() {
-            if (pruebas == null)
-            {
-                pruebas = new pruebas();
-                pruebas.Show();
-            }
-            else
-                pruebas.Activate();
-        }
-
         public void SetDescarga(descargaModel descargaModel, Guid? id)
         {
             if (descargad.Count(x => x.id == id) > 0 && id != null)

@@ -23,7 +23,7 @@ namespace WebBrowserMinimalist.ViewModels
     {
         private bool _isInitialized = false;
 
-        static Uri _DefaultUriImg => new Uri("/Assets/applicationIcon-256.png", UriKind.RelativeOrAbsolute);
+        static Uri _DefaultUriImg => new Uri("/Assets/icons8-internet-48.png", UriKind.RelativeOrAbsolute);
 
         public bool IsFullScreen { get; set; } = false;
 
@@ -51,6 +51,13 @@ namespace WebBrowserMinimalist.ViewModels
         [ObservableProperty]
         ObservableCollection<ItemModel>? _items = new ObservableCollection<ItemModel>();
 
+       
+        public void SelectItem(ItemModel model)
+        {
+            if (Items == null) return;
+            Items.ToList().ForEach(x => x.Opacity = 0.4);
+            Items.First(x => x.UID == model.UID).Opacity=1;
+        }
        
         [RelayCommand]
         void DeleteItem(Guid id) {

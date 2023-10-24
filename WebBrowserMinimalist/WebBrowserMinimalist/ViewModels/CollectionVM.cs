@@ -60,6 +60,7 @@ namespace WebBrowserMinimalist.ViewModels
                         old.ContentCollection = ColNew.ContentCollection;
                         old.TituloColeccion = ColNew.TituloColeccion;
                         old.Background = ColNew.Background;
+                        old.VisibleBookMark = ColNew.VisibleBookMark;
                         break;
                     case TypeOperation.Eliminar:
                         Collections.Remove(Collections.First(x => x.ID == IDCollection));

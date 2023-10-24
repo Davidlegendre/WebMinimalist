@@ -7,75 +7,58 @@
              xmlns:context="clr-namespace:WebBrowserMinimalist.ViewModels"
              xmlns:handy="https://handyorg.github.io/handycontrol"
              mc:Ignorable="d" 
-             d:DesignHeight="554">
+             d:DesignHeight="554" Background="{x:Null}">
     <UserControl.DataContext>
         <context:CollectionVM></context:CollectionVM>
     </UserControl.DataContext>
-    <Grid Margin="3" >
+    <Grid Margin="3,3,3,-5" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ui:Card x:Name="cardcol" Padding="10" Margin="0" >
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Colecciones"></TextBlock>
-                        <TextBlock Text="{Binding Collections.Count}" Grid.Column="1" Margin="7,0,0,0"></TextBlock>
-                    </Grid>
-                    <TextBlock Text="Puede guardar las paginas por grupos personalizados"
-                               TextWrapping="Wrap"
-                               FontSize="14"
-                               Opacity="0.7"
-                               ></TextBlock>
-                    <StackPanel Orientation="Horizontal" Margin="0,7,0,0">
-                        <ui:Button x:Name="btnAddCollection" Click="btnAddCollection_Click" VerticalAlignment="Stretch" Appearance="Primary" >
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="CollectionsAdd24" Foreground="{Binding Foreground, ElementName=tb}" Margin="0,0,7,0"></ui:SymbolIcon>
-                                <TextBlock x:Name="tb" Text="Crear"></TextBlock>
-                            </StackPanel>
-                        </ui:Button>
-                    </StackPanel>
-                </StackPanel>
-            </Grid>
-        </ui:Card>
-        <ui:VirtualizingItemsControl Margin="7,0,7,0" Height="{Binding ActualHeight,ElementName=cardcol}" VerticalAlignment="Top" Grid.Column="1" ItemsSource="{Binding Collections, Mode=OneWay}" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+        <ui:Button x:Name="btnAddCollection" Padding="5" Click="btnAddCollection_Click" VerticalAlignment="Stretch" Appearance="Primary" >
+            <StackPanel Orientation="Horizontal" Height="20" VerticalAlignment="Center">
+                <ui:SymbolIcon Symbol="CollectionsAdd24" Foreground="{Binding Foreground, ElementName=tb}" Margin="0,0,7,0"></ui:SymbolIcon>
+                <TextBlock x:Name="tb" VerticalAlignment="Center" Text="Crear"></TextBlock>
+            </StackPanel>
+        </ui:Button>
+        <ui:VirtualizingItemsControl Background="{x:Null}" Margin="7,0,7,0" VerticalAlignment="Top" Grid.Column="1" ItemsSource="{Binding Collections, Mode=OneWay}" ScrollViewer.HorizontalScrollBarVisibility="Auto">
             <ui:VirtualizingItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Rows="1" VerticalAlignment="Stretch" HorizontalAlignment="Left"></UniformGrid>
+                    <UniformGrid Rows="1" Background="{x:Null}" VerticalAlignment="Stretch" HorizontalAlignment="Left"></UniformGrid>
                 </ItemsPanelTemplate>
             </ui:VirtualizingItemsControl.ItemsPanel>
             <ui:VirtualizingItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid x:Name="content">
-                        <ui:CardAction x:Name="cardAction" VerticalAlignment="Stretch" Tag="{Binding ElementName=listacolecciones}" Click="CardAction_Click">
-                            <Grid MinWidth="170">
+                        <ui:CardAction x:Name="cardAction" Height="33" Margin="0,0,7,0" IsChevronVisible="False" Padding="5" VerticalAlignment="Stretch" Tag="{Binding ElementName=listacolecciones}" Click="CardAction_Click">
+                            <Grid MinWidth="180">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
-                                <ui:SymbolIcon Symbol="Collections24" FontSize="24"></ui:SymbolIcon>
                                 <Grid Grid.Column="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"></ColumnDefinition>
                                         <ColumnDefinition Width="auto"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding TituloColeccion}"  ToolTip="{Binding TituloColeccion}" TextTrimming="CharacterEllipsis"  VerticalAlignment="Center" Margin="7,0,0,0"></TextBlock>
-                                    <TextBlock Grid.Column="1" Margin="5" Text="{Binding Items.Count,ElementName=listaContents}"></TextBlock>
+                                    <TextBlock Text="{Binding TituloColeccion}" FontWeight="SemiBold" ToolTip="{Binding TituloColeccion}" TextTrimming="CharacterEllipsis"  VerticalAlignment="Center" Margin="7,0,0,0"></TextBlock>
+                                    <ui:Badge HorizontalAlignment="Right" Margin="0,0,4,0" Padding="4,0,4,0">
+                                        <TextBlock Grid.Column="1"  Text="{Binding Items.Count,ElementName=listaContents}"></TextBlock>
+                                    </ui:Badge>
+                                </Grid>
+                                <Grid  Grid.Column="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ui:Button Name="btnAddContentItem" Padding="2" Tag="{Binding}" Click="btnAddContentItem_Click" >
+                                        <ui:SymbolIcon Symbol="Add12" FontSize="12" ></ui:SymbolIcon>
+                                    </ui:Button>
+                                    <ui:SymbolIcon FontSize="38" VerticalAlignment="Top"  Grid.Column="2" Margin="0,-16,-10,-10" Symbol="Bookmark32" Visibility="{Binding VisibleBookMark,Mode=OneWay}" Foreground="{Binding Background}" Filled="True"></ui:SymbolIcon>
 
                                 </Grid>
-                                <ui:Button Name="btnAddContentItem" Grid.Column="2" Margin="0,0,7,0" Tag="{Binding}" Click="btnAddContentItem_Click" >
-                                    <ui:SymbolIcon Symbol="Add12"  ></ui:SymbolIcon>
-                                </ui:Button>                             
                             </Grid>
                             <ui:CardAction.ContextMenu>
                                 <ContextMenu>
@@ -95,9 +78,9 @@
                                 </ContextMenu>
                             </ui:CardAction.ContextMenu>
                         </ui:CardAction>
-                        <ui:SymbolIcon FontSize="36" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,-8,0,0" Symbol="Bookmark32" Foreground="{Binding Background}" Filled="True"></ui:SymbolIcon>
+                        
                         <ui:Flyout x:Name="listacolecciones" VerticalAlignment="Top">
-                            <ui:VirtualizingItemsControl MaxHeight="270" Width="{Binding ActualWidth,ElementName=cardAction}" ItemsSource="{Binding ContentCollection, Mode=OneWay}" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                            <ui:VirtualizingItemsControl Name="listaContents" MaxHeight="270" Width="{Binding ActualWidth,ElementName=cardAction}" ItemsSource="{Binding ContentCollection, Mode=OneWay}" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
                                 <ui:VirtualizingItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid VerticalAlignment="Top" Columns="1" ></UniformGrid>
