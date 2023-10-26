@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -98,16 +99,6 @@ namespace WebBrowserMinimalist.Views.Controls
             }
         }
 
-        private void btnAddCollection_Click(object sender, RoutedEventArgs e)
-        {
-            if (_MainWindow != null && _VM != null)
-            {
-                var agregarModWin = new AgregarColeccionWindow(_MainWindow, _VM);
-                agregarModWin.ShowDialog();
-                
-            }
-        }
-
 
         private async void EliminarContent_Click(object sender, RoutedEventArgs e)
         {
@@ -124,6 +115,47 @@ namespace WebBrowserMinimalist.Views.Controls
             var cardaction = (Wpf.Ui.Controls.CardAction)sender;
             var flyout = (Wpf.Ui.Controls.Flyout)cardaction.Tag;
             flyout.Show();
+        }
+
+        private void btnleft_Click(object sender, RoutedEventArgs e)
+        {
+            var _scrollviewer = VisualTreeHelper.GetChild(lista, 0) as ScrollViewer;
+            if (_scrollviewer != null)
+            {
+                _scrollviewer.ScrollToHorizontalOffset(_scrollviewer.HorizontalOffset - 70);
+            }
+        }
+
+        private void btnrigth_Click(object sender, RoutedEventArgs e)
+        {
+            var _scrollviewer = VisualTreeHelper.GetChild(lista, 0) as ScrollViewer;
+            if (_scrollviewer != null)
+            {
+                _scrollviewer.ScrollToHorizontalOffset(_scrollviewer.HorizontalOffset + 70);
+            }
+        }
+
+        private void lista_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var _scrollviewer = VisualTreeHelper.GetChild(lista, 0) as ScrollViewer;
+            var oj = _scrollviewer?.Content as ItemsPresenter;
+            if (oj != null)
+                if (oj.ActualWidth > lista.ActualWidth)
+                {
+                    if (btnleft.Visibility != Visibility.Visible)
+                    {
+                        btnleft.Visibility = Visibility.Visible;
+                        btnrigth.Visibility = Visibility.Visible;
+                    }
+                }
+                else
+                {
+                    if (btnleft.Visibility != Visibility.Collapsed)
+                    {
+                        btnleft.Visibility = Visibility.Collapsed;
+                        btnrigth.Visibility = Visibility.Collapsed;
+                    }
+                }
         }
     }
 }

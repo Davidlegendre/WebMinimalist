@@ -16,13 +16,13 @@ using WebBrowserMinimalist.Services;
 using WebBrowserMinimalist.ViewModels;
 using Wpf.Ui.Controls.Interfaces;
 using Wpf.Ui.Mvvm.Contracts;
-
+using Wpf.Ui.Controls;
 namespace WebBrowserMinimalist.Views.Controls.Collections_Windows
 {
     /// <summary>
     /// Lógica de interacción para AgregarColeccionWindow.xaml
     /// </summary>
-    public partial class AgregarColeccionWindow : INavigationWindow
+    public partial class AgregarColeccionWindow : UiWindow
     {
         readonly CollectionVM _collectionVm;
         readonly MensajeService _msg;
@@ -52,37 +52,6 @@ namespace WebBrowserMinimalist.Views.Controls.Collections_Windows
                     break;
             }
         }
-
-        public void CloseWindow()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Frame GetFrame()
-        {
-            throw new NotImplementedException();
-        }
-
-        public INavigation GetNavigation()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Navigate(Type pageType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetPageService(IPageService pageService)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ShowWindow()
-        {
-            throw new NotImplementedException();
-        }
-
         private void btnCancelar_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -142,6 +111,7 @@ namespace WebBrowserMinimalist.Views.Controls.Collections_Windows
             }
             return result;
         }
+
     }
 
     public enum TypeDataTranfered

@@ -9,13 +9,16 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using WebBrowserMinimalist.Models;
 using WebBrowserMinimalist.Services;
 using WebBrowserMinimalist.ViewModels;
+using WebBrowserMinimalist.Views.Controls.Collections_Windows;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Controls.Interfaces;
@@ -28,6 +31,10 @@ namespace WebBrowserMinimalist.Views.Windows
     /// </summary>
     public partial class MainWindow : UiWindow
     {
+        [STAThread]
+        [DllImport("Kernel32.dll", EntryPoint = "SetProcessWorkingSetSize", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
+        private static extern int SetProcessWorkingSetSize(IntPtr process, int minimumWorkingSize, int maximumWorkingSetSize);
+
         public MainWindowViewModel? _viewmodel { get; }
         readonly OperacionesService _operaciones;
         readonly MensajeService _maensajeService;
@@ -136,7 +143,7 @@ namespace WebBrowserMinimalist.Views.Windows
                 content.Children.Add(selectItem.Tab);
                 _viewmodel?.SelectItem(selectItem);
                 lista.ScrollIntoView(selectItem);
-
+                Alzeimer();
             }
         }
 
@@ -311,6 +318,68 @@ namespace WebBrowserMinimalist.Views.Windows
             {
                 btn.Opacity = 0;
             }
+        }
+
+        private void btnrigth_Click(object sender, RoutedEventArgs e)
+        {
+            var objeto = VisualTreeHelper.GetChild(lista, 0);
+            var _scrollviewer = VisualTreeHelper.GetChild(objeto, 0) as ScrollViewer;
+            if (_scrollviewer != null)
+            {
+                _scrollviewer.ScrollToHorizontalOffset(_scrollviewer.HorizontalOffset + 70);
+            }
+        }
+
+        private void btnleft_Click(object sender, RoutedEventArgs e)
+        {
+            var objeto = VisualTreeHelper.GetChild(lista, 0);
+            var _scrollviewer = VisualTreeHelper.GetChild(objeto, 0) as ScrollViewer;
+            if (_scrollviewer != null)
+            {
+                _scrollviewer.ScrollToHorizontalOffset(_scrollviewer.HorizontalOffset - 70);
+            }
+        }
+
+        private void lista_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var objeto = VisualTreeHelper.GetChild(lista, 0);
+            var _scrollviewer = VisualTreeHelper.GetChild(objeto, 0) as ScrollViewer;
+            var oj = _scrollviewer?.Content as ItemsPresenter;
+            if (oj != null)
+                if (oj.ActualWidth > lista.ActualWidth)
+                {
+                    if (btnleft.Visibility != Visibility.Visible)
+                    {
+                        btnleft.Visibility = Visibility.Visible;
+                        btnrigth.Visibility = Visibility.Visible;
+                    }
+                }
+                else
+                {
+                    if (btnleft.Visibility != Visibility.Collapsed)
+                    {
+                        btnleft.Visibility = Visibility.Collapsed;
+                        btnrigth.Visibility = Visibility.Collapsed;
+                    }
+                }
+        }
+
+        private void btnAddCollection_Click(object sender, RoutedEventArgs e)
+        {
+            var _vmcollection = collections.DataContext as CollectionVM;
+            if (_vmcollection != null)
+            {
+                var agregarModWin = new AgregarColeccionWindow(this, _vmcollection);
+                agregarModWin.ShowDialog();
+
+            }
+        }
+
+        public void Alzeimer()
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, -1, -1);
         }
     }
 }

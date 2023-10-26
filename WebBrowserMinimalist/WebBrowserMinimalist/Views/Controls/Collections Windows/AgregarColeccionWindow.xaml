@@ -10,7 +10,10 @@
         WindowCornerPreference="Round"
         WindowBackdropType="Mica"
         ResizeMode="NoResize"
-        Title="Crear Coleccion" Height="386" Width="464" WindowStartupLocation="CenterOwner" Background="{ui:ThemeResource}" Icon="/Views/Windows/icons8-internet-48.png">
+        Title="Crear Coleccion" Height="386" Width="464"
+             WindowStartupLocation="CenterOwner" 
+             Background="{ui:ThemeResource}" 
+             Icon="/Views/Windows/icons8-internet-48.png">
     <Grid Margin="17">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>

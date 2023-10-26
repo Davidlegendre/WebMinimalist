@@ -21,6 +21,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Separator VerticalAlignment="Bottom" Margin="0,0,0,-1"></Separator>
         <Grid Name="navegador" Margin="0" Grid.Row="1">
             <web:WebView2 Name="webview" Source="{Binding Url}" Margin="7,2,7,7">
                 <web:WebView2.CreationProperties>
@@ -30,7 +31,6 @@
             <local:Home x:Name="home" Visibility="Collapsed">
             </local:Home>
         </Grid>
-        <Separator VerticalAlignment="Bottom" Margin="0,0,0,-1"></Separator>
         <Border x:Name="toolBar" VerticalAlignment="Stretch" Height="33" BorderThickness="0,2,0,0" >
             <Grid ClipToBounds="True">
                 <Grid.ColumnDefinitions>
@@ -67,12 +67,9 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal">
-                            <ui:Button x:Name="btnAddPage"  Padding="0" Width="28" Height="27" Margin="0,0,2,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
-                                <ui:SymbolIcon Symbol="Add12" FontSize="14" ></ui:SymbolIcon>
-                            </ui:Button>
-                           
-                        </StackPanel>
+                        <ui:Button x:Name="btnAddPage" Icon="Add12"  Padding="0" Width="28" Height="27" Margin="0,0,2,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                            
+                        </ui:Button>
                         <ui:Card Grid.Column="1" ClipToBounds="True" Padding="0" >
                             <Grid>
                                 <Grid Name="URLSearchBar"  Visibility="Collapsed" Grid.Column="1" >
@@ -125,9 +122,9 @@
                                                 </Border>
                                             </Popup>
 
-                                            <ui:Button Name="ReturnToIndicator" ToolTip="Cerrar Barra de Busqueda"
+                                            <ui:Button Name="ReturnToIndicator" Icon="ArrowRight12" IconFilled="True" ToolTip="Cerrar Barra de Busqueda"
                                            Click="ReturnToIndicator_Click" HorizontalContentAlignment="Center" Padding="5,3,5,5" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
-                                                <ui:SymbolIcon Symbol="ArrowRight12" Filled="True" FontSize="16"></ui:SymbolIcon>
+                                               
                                             </ui:Button>
                                             <ui:Button Name="btnSettingEngines" ToolTip="Configuracion de Motor de Busqueda" HorizontalAlignment="Right" Click="btnSettingEngines_Click" WindowChrome.IsHitTestVisibleInChrome="True" Padding="5,3,5,5" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                                                 <Grid>
@@ -173,6 +170,7 @@
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
+                                            
                                         </StackPanel>
                                         <ui:Button Name="btnDownload" Click="btnDownload_Click" Padding="5" Width="28" Grid.Column="3" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
                                             <ui:SymbolIcon Symbol="ArrowDownload16" Filled="True" FontSize="14"></ui:SymbolIcon>
@@ -193,12 +191,13 @@
 
 
                                         </Grid>
+                                       
                                     </Grid>
                                 </ui:Badge>
                             </Grid>
                         </ui:Card>
-                       <ui:Button Name="btnCloseTab" Padding="0" Width="28" Height="27" Grid.Column="2" Margin="2,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
-                            <ui:SymbolIcon Symbol="Delete12" FontSize="14" ></ui:SymbolIcon>
+                        <ui:Button Name="btnCloseTab" Padding="0" IconFilled="True" Icon="Dismiss20" Width="28" Height="27" Grid.Column="2" Margin="2,0,0,0" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+
                         </ui:Button>
                     </Grid>
                     

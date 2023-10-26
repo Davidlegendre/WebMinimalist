@@ -11,27 +11,23 @@
     <UserControl.DataContext>
         <context:CollectionVM></context:CollectionVM>
     </UserControl.DataContext>
-    <Grid Margin="3,3,3,-5" >
+    <Grid Margin="0,5,0,5" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <ui:Button x:Name="btnAddCollection" Padding="5" Click="btnAddCollection_Click" VerticalAlignment="Stretch" Appearance="Primary" >
-            <StackPanel Orientation="Horizontal" Height="20" VerticalAlignment="Center">
-                <ui:SymbolIcon Symbol="CollectionsAdd24" Foreground="{Binding Foreground, ElementName=tb}" Margin="0,0,7,0"></ui:SymbolIcon>
-                <TextBlock x:Name="tb" VerticalAlignment="Center" Text="Crear"></TextBlock>
-            </StackPanel>
-        </ui:Button>
-        <ui:VirtualizingItemsControl Background="{x:Null}" Margin="7,0,7,0" VerticalAlignment="Top" Grid.Column="1" ItemsSource="{Binding Collections, Mode=OneWay}" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+       
+        <ui:VirtualizingItemsControl Name="lista"  Background="{x:Null}" Margin="0" Grid.Column="1" ItemsSource="{Binding Collections, Mode=OneWay}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" SizeChanged="lista_SizeChanged">
             <ui:VirtualizingItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Rows="1" Background="{x:Null}" VerticalAlignment="Stretch" HorizontalAlignment="Left"></UniformGrid>
+                    <WrapPanel HorizontalAlignment="Left"></WrapPanel>
                 </ItemsPanelTemplate>
             </ui:VirtualizingItemsControl.ItemsPanel>
             <ui:VirtualizingItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid x:Name="content">
-                        <ui:CardAction x:Name="cardAction" Height="33" Margin="0,0,7,0" IsChevronVisible="False" Padding="5" VerticalAlignment="Stretch" Tag="{Binding ElementName=listacolecciones}" Click="CardAction_Click">
+                        <ui:CardAction x:Name="cardAction" Margin="0,0,7,0" IsChevronVisible="False" Padding="5" VerticalAlignment="Stretch" Tag="{Binding ElementName=listacolecciones}" Click="CardAction_Click">
                             <Grid MinWidth="180">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
@@ -114,5 +110,12 @@
             </ui:VirtualizingItemsControl.ItemTemplate>
             
         </ui:VirtualizingItemsControl>
+        <Separator Visibility="{Binding Visibility,ElementName=btnleft}" Margin="0,-2,0,-2" HorizontalAlignment="Right"></Separator>
+        <Separator Visibility="{Binding Visibility,ElementName=btnleft}" Margin="0,-2,0,-2" Grid.Column="2" HorizontalAlignment="Left"></Separator>
+        <ui:Button Padding="5" Name="btnleft" IconFilled="True"  BorderBrush="Transparent" Appearance="Transparent" Click="btnleft_Click" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="0,-2,2,-3" Icon="ChevronLeft20">
+
+        </ui:Button>
+        <ui:Button Grid.Column="2" Padding="5" IconFilled="True" BorderBrush="Transparent" Appearance="Transparent" Name="btnrigth" Click="btnrigth_Click" Margin="2,-2,7,-3" VerticalAlignment="Stretch" HorizontalAlignment="Right" Icon="ChevronRight20"></ui:Button>
+
     </Grid>
 </UserControl>

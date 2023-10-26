@@ -214,6 +214,9 @@ namespace WebBrowserMinimalist.Views.Controls
                         //var script = "alert('hola')";
                         var result = await webview.ExecuteScriptAsync(functionString);
                     }
+                    var script = "document.GetElementById('masthead-ad').style.Display = 'none';";
+                    await webview.ExecuteScriptAsync(script);
+
                     await Task.Run(async () => await _tabItemVM.geticon(sender!));
                     if (_tabItemVM.UrlSource == "about:blank")
                     {
