@@ -13,7 +13,7 @@ using Wpf.Ui.Common;
 
 namespace WebBrowserMinimalist.Models
 {
-    public partial class ItemModel : ObservableObject
+    public partial class ItemModel : ObservableObject, IDisposable
     { 
        
         public ItemModel() {
@@ -24,6 +24,12 @@ namespace WebBrowserMinimalist.Models
         public Guid UID { get; }
 
         public TabItem? Tab { get => _tabitem; }
+
+        public void Dispose()
+        {
+            _tabitem?.DisposeBrowser();
+            _tabitem = null;
+        }
 
         [ObservableProperty]
         string? _titleDoc = "";

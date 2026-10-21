@@ -22,7 +22,7 @@ namespace WebBrowserMinimalist.Views.Controls.Collections_Windows
     /// <summary>
     /// Lógica de interacción para AgregarColeccionWindow.xaml
     /// </summary>
-    public partial class AgregarColeccionWindow : UiWindow
+        public partial class AgregarColeccionWindow : UiWindow
     {
         readonly CollectionVM _collectionVm;
         readonly MensajeService _msg;

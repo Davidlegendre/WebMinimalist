@@ -1,0 +1,22 @@
+<ui:UiWindow x:Class="WebBrowserMinimalist.Views.Windows.HistoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:controls="clr-namespace:WebBrowserMinimalist.Views.Controls"
+        Title="Historial"
+        Width="500"
+        Height="680"
+        MinWidth="400"
+        MinHeight="450"
+        WindowStartupLocation="CenterOwner"
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica"
+        ResizeMode="NoResize"
+             
+        Background="{ui:ThemeResource}">
+    <Grid>
+        <ui:TitleBar x:Name="titlebar" Title="Historial" CanMaximize="False" ShowMaximize="false"></ui:TitleBar>
+
+        <controls:HistoryList x:Name="historyList" Margin="0 50 0 0" HorizontalAlignment="Stretch"/>
+    </Grid>
+</ui:UiWindow>

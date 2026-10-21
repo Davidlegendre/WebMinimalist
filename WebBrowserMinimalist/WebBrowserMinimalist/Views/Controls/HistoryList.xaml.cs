@@ -46,6 +46,7 @@ namespace WebBrowserMinimalist.Views.Controls
                 if (item != null)
                 {
                     historyListVM.NavegarCommand.Execute(item);
+                    Window.GetWindow(this)?.Close();
                 }
             }
 

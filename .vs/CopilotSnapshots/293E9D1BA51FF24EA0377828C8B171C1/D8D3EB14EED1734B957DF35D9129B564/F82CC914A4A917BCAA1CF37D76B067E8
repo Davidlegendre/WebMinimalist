@@ -1,0 +1,165 @@
+﻿using Microsoft.Web.WebView2.Core;
+using System;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using WebBrowserMinimalist.Services;
+using Wpf.Ui.Controls;
+
+namespace WebBrowserMinimalist.Views.Windows
+{
+    public partial class BrowserExtensionsWindow : UiWindow
+    {
+        private readonly CoreWebView2Profile _profile;
+        private readonly BrowserExtensionService _extensionService;
+        private readonly ObservableCollection<CoreWebView2BrowserExtension> _extensions = new();
+
+        public BrowserExtensionsWindow(CoreWebView2Profile profile, BrowserExtensionService extensionService)
+        {
+            InitializeComponent();
+            _profile = profile;
+            _extensionService = extensionService;
+            ExtensionsListBox.ItemsSource = _extensions;
+            Loaded += async (_, _) => await RefreshExtensionsAsync();
+        }
+
+        private async void Import_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(ExtensionSourceTextBox.Text))
+            {
+                StatusTextBlock.Text = "Introduce una URL o un ID de Chrome Web Store.";
+                return;
+            }
+
+            string extensionId;
+            try
+            {
+                extensionId = BrowserExtensionService.ParseExtensionId(ExtensionSourceTextBox.Text);
+            }
+            catch (ArgumentException exception)
+            {
+                StatusTextBlock.Text = $"URL o ID no válido: {exception.Message}";
+                return;
+            }
+
+            SetBusy(true);
+            StatusTextBlock.Text = $"ID reconocido ({extensionId}). Descargando y validando la extensión…";
+            try
+            {
+                var extension = await _extensionService.InstallFromChromeWebStoreAsync(_profile, extensionId);
+                StatusTextBlock.Text = $"Extensión instalada: {extension.Name}. Si no aparece en una página ya abierta, vuelve a cargarla.";
+                ExtensionSourceTextBox.Clear();
+                await RefreshExtensionsAsync();
+            }
+            catch (Exception exception)
+            {
+                StatusTextBlock.Text = $"No se pudo instalar la extensión: {exception.Message}";
+            }
+            finally
+            {
+                SetBusy(false);
+            }
+        }
+
+        private async void Toggle_Click(object sender, RoutedEventArgs e)
+        {
+            if (ExtensionsListBox.SelectedItem is not CoreWebView2BrowserExtension extension)
+                return;
+
+            SetBusy(true);
+            try
+            {
+                await extension.EnableAsync(!extension.IsEnabled);
+                StatusTextBlock.Text = extension.IsEnabled ? "Extensión activada." : "Extensión desactivada.";
+                await RefreshExtensionsAsync();
+            }
+            catch (Exception exception)
+            {
+                StatusTextBlock.Text = $"No se pudo cambiar el estado: {exception.Message}";
+            }
+            finally
+            {
+                SetBusy(false);
+            }
+        }
+
+        private async void Remove_Click(object sender, RoutedEventArgs e)
+        {
+            if (ExtensionsListBox.SelectedItem is not CoreWebView2BrowserExtension extension)
+                return;
+
+            var result = System.Windows.MessageBox.Show(
+                $"¿Quieres quitar la extensión «{extension.Name}»?",
+                "Quitar extensión",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            SetBusy(true);
+            try
+            {
+                await extension.RemoveAsync();
+                StatusTextBlock.Text = "Extensión quitada.";
+                await RefreshExtensionsAsync();
+            }
+            catch (Exception exception)
+            {
+                StatusTextBlock.Text = $"No se pudo quitar la extensión: {exception.Message}";
+            }
+            finally
+            {
+                SetBusy(false);
+            }
+        }
+
+        private void ExtensionsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selected = ExtensionsListBox.SelectedItem as CoreWebView2BrowserExtension;
+            ToggleButton.IsEnabled = selected is not null;
+            RemoveButton.IsEnabled = selected is not null;
+            if (selected is not null)
+                ToggleButton.Content = selected.IsEnabled ? "Desactivar" : "Activar";
+        }
+
+        private async Task RefreshExtensionsAsync()
+        {
+            try
+            {
+                var selectedId = (ExtensionsListBox.SelectedItem as CoreWebView2BrowserExtension)?.Id;
+                var extensions = await _extensionService.GetInstalledExtensionsAsync(_profile);
+                _extensions.Clear();
+                foreach (var extension in extensions)
+                    _extensions.Add(extension);
+
+                if (selectedId is not null)
+                {
+                    foreach (var extension in _extensions)
+                    {
+                        if (extension.Id == selectedId)
+                        {
+                            ExtensionsListBox.SelectedItem = extension;
+                            break;
+                        }
+                    }
+                }
+
+                if (_extensions.Count == 0)
+                    StatusTextBlock.Text = "No hay extensiones instaladas.";
+            }
+            catch (Exception exception)
+            {
+                StatusTextBlock.Text = $"No se pudo leer la lista de extensiones: {exception.Message}";
+            }
+        }
+
+        private void SetBusy(bool isBusy)
+        {
+            ExtensionSourceTextBox.IsEnabled = !isBusy;
+            ExtensionsListBox.IsEnabled = !isBusy;
+            ToggleButton.IsEnabled = !isBusy && ExtensionsListBox.SelectedItem is not null;
+            RemoveButton.IsEnabled = !isBusy && ExtensionsListBox.SelectedItem is not null;
+        }
+    }
+}

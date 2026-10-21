@@ -62,7 +62,10 @@ namespace WebBrowserMinimalist.ViewModels
         [RelayCommand]
         void DeleteItem(Guid id) {
             var item = _items.FirstOrDefault(x => x.UID == id);
-            item.Tab.webview.Dispose();
+            if (item == null)
+                return;
+
+            item.Dispose();
             _items.Remove(item);
         }
 
@@ -76,7 +79,7 @@ namespace WebBrowserMinimalist.ViewModels
                 {
                     if (items2[i].UID != item.UID)
                     {
-                        items2[i].Tab.webview.Dispose();
+                        items2[i].Dispose();
                         items2[i] = null;
                     }
                 }
@@ -96,7 +99,7 @@ namespace WebBrowserMinimalist.ViewModels
                 {
                     if (items2[i].UID != item.UID)
                     {
-                        items2[i].Tab.webview.Dispose();
+                        items2[i].Dispose();
                         items2[i] = null;
                     }
                 }

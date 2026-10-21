@@ -1,0 +1,346 @@
+using Microsoft.Web.WebView2.Core;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace WebBrowserMinimalist.Services
+{
+    public sealed class BrowserExtensionService
+    {
+        private const int MaxPackageSize = 100 * 1024 * 1024;
+        private const int MaxExpandedSize = 250 * 1024 * 1024;
+        private const int MaxArchiveEntries = 20_000;
+        private static readonly Regex ExtensionIdPattern = new("^[a-p]{32}$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+        private static readonly HttpClient HttpClient = new(new HttpClientHandler
+        {
+            AllowAutoRedirect = false,
+            AutomaticDecompression = DecompressionMethods.All
+        })
+        {
+            Timeout = TimeSpan.FromMinutes(2)
+        };
+
+        private readonly string _extensionsFolder = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "WebBrowserMinimalist",
+            "Extensions");
+
+        public async Task<CoreWebView2BrowserExtension> InstallFromChromeWebStoreAsync(
+            CoreWebView2Profile profile,
+            string idOrUrl,
+            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(profile);
+            var extensionId = ParseExtensionId(idOrUrl);
+            Directory.CreateDirectory(_extensionsFolder);
+
+            var stagingFolder = Path.Combine(_extensionsFolder, "staging-" + Guid.NewGuid().ToString("N"));
+            string? installedFolder = null;
+
+            try
+            {
+                var package = await DownloadPackageAsync(extensionId, cancellationToken);
+                ExtractCrx(package, stagingFolder);
+                ValidateManifest(stagingFolder);
+
+                installedFolder = Path.Combine(_extensionsFolder, extensionId + "-" + Guid.NewGuid().ToString("N"));
+                Directory.Move(stagingFolder, installedFolder);
+
+                var extension = await profile.AddBrowserExtensionAsync(installedFolder);
+                RemoveOldExtensionFolders(extensionId, installedFolder);
+                return extension;
+            }
+            catch
+            {
+                TryDeleteDirectory(stagingFolder);
+                if (installedFolder is not null)
+                    TryDeleteDirectory(installedFolder);
+                throw;
+            }
+        }
+
+        public Task<IReadOnlyList<CoreWebView2BrowserExtension>> GetInstalledExtensionsAsync(CoreWebView2Profile profile)
+        {
+            ArgumentNullException.ThrowIfNull(profile);
+            return profile.GetBrowserExtensionsAsync();
+        }
+
+        public string? GetInstalledExtensionIconPath(string extensionId)
+        {
+            if (!ExtensionIdPattern.IsMatch(extensionId) || !Directory.Exists(_extensionsFolder))
+                return null;
+
+            foreach (var extensionFolder in Directory.EnumerateDirectories(_extensionsFolder, extensionId + "-*")
+                         .OrderByDescending(Directory.GetLastWriteTimeUtc))
+            {
+                try
+                {
+                    var manifestPath = Path.Combine(extensionFolder, "manifest.json");
+                    using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
+                    if (!document.RootElement.TryGetProperty("icons", out var icons)
+                        || icons.ValueKind != JsonValueKind.Object)
+                    {
+                        continue;
+                    }
+
+                    var root = Path.GetFullPath(extensionFolder) + Path.DirectorySeparatorChar;
+                    foreach (var icon in icons.EnumerateObject()
+                                 .Select(property => new
+                                 {
+                                     Size = int.TryParse(property.Name, out var size) ? size : 0,
+                                     Path = property.Value.ValueKind == JsonValueKind.String ? property.Value.GetString() : null
+                                 })
+                                 .Where(icon => !string.IsNullOrWhiteSpace(icon.Path))
+                                 .OrderByDescending(icon => icon.Size))
+                    {
+                        var iconPath = Path.GetFullPath(Path.Combine(extensionFolder, icon.Path!));
+                        if (iconPath.StartsWith(root, StringComparison.OrdinalIgnoreCase) && File.Exists(iconPath))
+                            return iconPath;
+                    }
+                }
+                catch (IOException)
+                {
+                }
+                catch (UnauthorizedAccessException)
+                {
+                }
+                catch (JsonException)
+                {
+                }
+            }
+
+            return null;
+        }
+
+        public static string ParseExtensionId(string idOrUrl)
+        {
+            if (string.IsNullOrWhiteSpace(idOrUrl))
+                throw new ArgumentException("Introduce un ID o una URL de Chrome Web Store.", nameof(idOrUrl));
+
+            var value = idOrUrl.Trim();
+            if (ExtensionIdPattern.IsMatch(value))
+                return value;
+
+            if (!Uri.TryCreate(value, UriKind.Absolute, out var uri)
+                || !string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)
+                || !uri.IsDefaultPort
+                || !string.IsNullOrEmpty(uri.UserInfo)
+                || (!string.Equals(uri.Host, "chromewebstore.google.com", StringComparison.OrdinalIgnoreCase)
+                    && !string.Equals(uri.Host, "chrome.google.com", StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new ArgumentException("La URL debe pertenecer a Chrome Web Store y usar HTTPS.", nameof(idOrUrl));
+            }
+
+            var pathSegments = uri.AbsolutePath
+                .Split('/', StringSplitOptions.RemoveEmptyEntries)
+                .Select(Uri.UnescapeDataString)
+                .ToArray();
+            var detailIndex = Array.FindIndex(
+                pathSegments,
+                segment => string.Equals(segment, "detail", StringComparison.OrdinalIgnoreCase));
+            var extensionId = detailIndex >= 0
+                ? pathSegments.Skip(detailIndex + 1).FirstOrDefault(segment => ExtensionIdPattern.IsMatch(segment))
+                : null;
+
+            if (extensionId is null)
+                throw new ArgumentException("No se encontró un ID de extensión válido en la URL.", nameof(idOrUrl));
+
+            return extensionId;
+        }
+
+        private static async Task<byte[]> DownloadPackageAsync(string extensionId, CancellationToken cancellationToken)
+        {
+            var productVersion = CoreWebView2Environment.GetAvailableBrowserVersionString();
+            var requestUri = new Uri(
+                "https://clients2.google.com/service/update2/crx"
+                + "?response=redirect&prodversion=" + Uri.EscapeDataString(productVersion)
+                + "&acceptformat=crx2,crx3&x=id%3D"
+                + extensionId
+                + "%26installsource%3Dondemand%26uc");
+
+            var currentUri = requestUri;
+            for (var redirectCount = 0; redirectCount <= 5; redirectCount++)
+            {
+                using var response = await HttpClient.GetAsync(currentUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                if ((int)response.StatusCode is >= 300 and < 400)
+                {
+                    if (redirectCount == 5 || response.Headers.Location is null)
+                        throw new InvalidDataException("La descarga contiene demasiadas redirecciones o no indica su destino.");
+
+                    var redirectUri = response.Headers.Location.IsAbsoluteUri
+                        ? response.Headers.Location
+                        : new Uri(currentUri, response.Headers.Location);
+                    if (!IsAllowedDownloadUri(redirectUri))
+                        throw new InvalidDataException("La redirección no apunta a un host HTTPS permitido de Google.");
+
+                    currentUri = redirectUri;
+                    continue;
+                }
+
+                response.EnsureSuccessStatusCode();
+                if (!IsAllowedDownloadUri(currentUri))
+                    throw new InvalidDataException("La descarga no procede de un host HTTPS permitido de Google.");
+
+                if (response.Content.Headers.ContentLength is > MaxPackageSize)
+                    throw new InvalidDataException("El paquete supera el límite de 100 MB.");
+
+                await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                using var memory = new MemoryStream();
+                var buffer = new byte[81920];
+                int read;
+                while ((read = await stream.ReadAsync(buffer, cancellationToken)) > 0)
+                {
+                    if (memory.Length + read > MaxPackageSize)
+                        throw new InvalidDataException("El paquete supera el límite de 100 MB.");
+                    await memory.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
+                }
+
+                var package = memory.ToArray();
+                if (package.Length == 0)
+                    throw new InvalidDataException(
+                        $"Chrome Web Store devolvió una respuesta vacía (HTTP {(int)response.StatusCode}).");
+
+                return package;
+            }
+
+            throw new InvalidDataException("No se pudo descargar el paquete de la extensión.");
+        }
+
+        private static bool IsAllowedDownloadUri(Uri uri) =>
+            uri.Scheme == Uri.UriSchemeHttps
+            && (uri.Host == "clients2.google.com"
+                || uri.Host.EndsWith(".googleusercontent.com", StringComparison.OrdinalIgnoreCase));
+
+        private static void ExtractCrx(byte[] package, string destinationFolder)
+        {
+            if (package.Length < 12
+                || package[0] != (byte)'C'
+                || package[1] != (byte)'r'
+                || package[2] != (byte)'2'
+                || package[3] != (byte)'4')
+            {
+                throw new InvalidDataException("La respuesta de Chrome Web Store no es un paquete CRX válido.");
+            }
+
+            var version = BitConverter.ToUInt32(package, 4);
+            int zipOffset;
+            if (version == 3)
+            {
+                var headerSize = BitConverter.ToUInt32(package, 8);
+                if (headerSize > 1024 * 1024 || 12L + headerSize >= package.Length)
+                    throw new InvalidDataException("La cabecera del paquete CRX3 no es válida.");
+                zipOffset = checked(12 + (int)headerSize);
+            }
+            else if (version == 2)
+            {
+                if (package.Length < 16)
+                    throw new InvalidDataException("La cabecera del paquete CRX2 no es válida.");
+
+                var publicKeySize = BitConverter.ToUInt32(package, 8);
+                var signatureSize = BitConverter.ToUInt32(package, 12);
+                var offset = 16L + publicKeySize + signatureSize;
+                if (offset >= package.Length)
+                    throw new InvalidDataException("La cabecera del paquete CRX2 no es válida.");
+                zipOffset = checked((int)offset);
+            }
+            else
+            {
+                throw new InvalidDataException("La versión del paquete CRX no es compatible.");
+            }
+
+            Directory.CreateDirectory(destinationFolder);
+            using var zipStream = new MemoryStream(package, zipOffset, package.Length - zipOffset, writable: false);
+            using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+            if (archive.Entries.Count > MaxArchiveEntries)
+                throw new InvalidDataException("El paquete contiene demasiados archivos.");
+
+            var root = Path.GetFullPath(destinationFolder) + Path.DirectorySeparatorChar;
+            long expandedSize = 0;
+            foreach (var entry in archive.Entries)
+            {
+                if (string.IsNullOrEmpty(entry.FullName) || Path.IsPathRooted(entry.FullName))
+                    throw new InvalidDataException("El paquete contiene una ruta no válida.");
+
+                var targetPath = Path.GetFullPath(Path.Combine(destinationFolder, entry.FullName));
+                if (!targetPath.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidDataException("El paquete intenta escribir fuera de su carpeta.");
+
+                var unixFileType = (entry.ExternalAttributes >> 16) & 0xF000;
+                if (unixFileType == 0xA000)
+                    throw new InvalidDataException("No se permiten enlaces simbólicos en la extensión.");
+
+                expandedSize += entry.Length;
+                if (expandedSize > MaxExpandedSize)
+                    throw new InvalidDataException("El contenido extraído supera el límite de 250 MB.");
+
+                if (entry.FullName.EndsWith("/", StringComparison.Ordinal))
+                {
+                    Directory.CreateDirectory(targetPath);
+                    continue;
+                }
+
+                var parent = Path.GetDirectoryName(targetPath);
+                if (parent is not null)
+                    Directory.CreateDirectory(parent);
+
+                using var entryStream = entry.Open();
+                using var output = new FileStream(targetPath, FileMode.CreateNew, FileAccess.Write, FileShare.None);
+                entryStream.CopyTo(output);
+            }
+        }
+
+        private static void ValidateManifest(string extensionFolder)
+        {
+            var manifestPath = Path.Combine(extensionFolder, "manifest.json");
+            if (!File.Exists(manifestPath))
+                throw new InvalidDataException("El paquete no contiene manifest.json en su raíz.");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
+            var root = document.RootElement;
+            if (!root.TryGetProperty("manifest_version", out var version)
+                || !version.TryGetInt32(out var manifestVersion)
+                || manifestVersion is not (2 or 3))
+            {
+                throw new InvalidDataException("Solo se admiten extensiones con manifest v2 o v3.");
+            }
+
+            if (!root.TryGetProperty("name", out var name) || name.ValueKind != JsonValueKind.String
+                || !root.TryGetProperty("version", out var extensionVersion) || extensionVersion.ValueKind != JsonValueKind.String)
+            {
+                throw new InvalidDataException("El manifiesto no contiene un nombre y una versión válidos.");
+            }
+        }
+
+        private void RemoveOldExtensionFolders(string extensionId, string keepFolder)
+        {
+            foreach (var folder in Directory.EnumerateDirectories(_extensionsFolder, extensionId + "-*"))
+            {
+                if (!string.Equals(folder, keepFolder, StringComparison.OrdinalIgnoreCase))
+                    TryDeleteDirectory(folder);
+            }
+        }
+
+        private static void TryDeleteDirectory(string path)
+        {
+            try
+            {
+                if (Directory.Exists(path))
+                    Directory.Delete(path, recursive: true);
+            }
+            catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+        }
+    }
+}

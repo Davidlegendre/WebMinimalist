@@ -1,0 +1,94 @@
+﻿<UserControl x:Class="WebBrowserMinimalist.Views.Controls.HistoryList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:local="clr-namespace:WebBrowserMinimalist.Views.Controls"
+             xmlns:context="clr-namespace:WebBrowserMinimalist.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" Width="370">
+    <UserControl.DataContext>
+        <context:HistoryListVM></context:HistoryListVM>
+    </UserControl.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ui:Card Margin="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Historial"></TextBlock>
+                    <TextBlock Text="Historial de toda la navegacion, puede abrir la pagina de historial de edge o borrar todo directamente."
+                               TextWrapping="Wrap"
+                               FontSize="14"
+                               Opacity="0.7"
+                               ></TextBlock>
+                    <Grid Margin="0,7,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:Button Command="{Binding openHistoryCommand}" Appearance="Primary">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <ui:SymbolIcon Symbol="Open16" Filled="True" Foreground="{Binding Foreground,ElementName=tb}" Margin="0,0,7,0"></ui:SymbolIcon>
+                                <TextBlock Name="tb" Text="Abrir Pagina de Historial" Grid.Column="1"></TextBlock>
+                            </Grid>
+                        </ui:Button>
+                        <ui:Button Grid.Column="1" Name="btnClearAll" Command="{Binding DeleteAllCommand}" IsEnabled="{Binding HasItems,ElementName=listResultSearch}" Appearance="Danger" Margin="4,0,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <ui:SymbolIcon Symbol="Delete12" Margin="0,0,7,0"></ui:SymbolIcon>
+                                <TextBlock Name="tb2" Text="Borrar Todo" Grid.Column="1"></TextBlock>
+                            </Grid>
+                        </ui:Button>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </ui:Card>
+        <ListView Name="listResultSearch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Row="1" ItemsSource="{Binding ListaHistorial, Mode=OneWay}" SelectionMode="Single">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="1"></UniformGrid>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:Button Name="historyBtn" Height="58" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="historyBtn_Click">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:SymbolIcon Symbol="History16" FontSize="20" Margin="0,0,7,0"></ui:SymbolIcon>
+                                <StackPanel Grid.Column="1" >
+                                    <TextBlock Text="{Binding title}" TextTrimming="CharacterEllipsis" ToolTip="{Binding TitleDocument}"></TextBlock>
+                                    <TextBlock Text="{Binding url}" Opacity="0.5" TextTrimming="CharacterEllipsis" ToolTip="{Binding URL}"></TextBlock>
+                                </StackPanel>
+                            </Grid>
+                        </ui:Button>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>            
+        </ListView>
+    </Grid>
+</UserControl>

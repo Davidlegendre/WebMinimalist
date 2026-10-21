@@ -2,19 +2,19 @@
 using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
-using System.Threading;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WebBrowserMinimalist.Models;
 using WebBrowserMinimalist.Services;
 using WebBrowserMinimalist.ViewModels;
 using WebBrowserMinimalist.Views.Windows;
-using Wpf.Ui.Mvvm.Interfaces;
 
 namespace WebBrowserMinimalist.Views.Controls
 {
@@ -31,19 +31,24 @@ namespace WebBrowserMinimalist.Views.Controls
         WindowState _previewState;
 
         readonly AdblockService _adblock;
+        readonly BrowserEnvironmentService _browserEnvironmentService;
 
         readonly GlobalService _globalService;
 
         readonly ItemModel ModelP;
+        private bool _isBrowserDisposed;
+        private readonly ObservableCollection<BrowserExtensionPanelItem> _browserExtensionItems = new();
         public TabItem(ItemModel modelP)
         {
             InitializeComponent();
+            BrowserExtensionsListBox.ItemsSource = _browserExtensionItems;
             mainWindow = App.Current.MainWindow as MainWindow;
             _tabItemVM = DataContext as TabItemVM;
             _historyServices = App.GetService<HistoryServices>();
             _globalService = App.GetService<GlobalService>();
             _errorPageService = App.GetService<ErrorsPageService>();
             _adblock = App.GetService<AdblockService>();
+            _browserEnvironmentService = App.GetService<BrowserEnvironmentService>();
             _msn = App.GetService<MensajeService>();
            
 
@@ -52,10 +57,155 @@ namespace WebBrowserMinimalist.Views.Controls
             txtCountTabs.DataContext = mainWindow!.lista;
             _previewState = mainWindow.WindowState;
             
-            InitialWebView2();
             ModelP = modelP;
+            _tabItemVM!.PropertyChanged += TabItemVM_PropertyChanged;
+            _ = InitializeWebViewAsync();
         }
-        async void InitialWebView2() {
+
+        private async void ExtensionsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (webview.CoreWebView2 is null)
+            {
+                MessageBox.Show("El navegador todavía se está inicializando. Inténtalo de nuevo en unos segundos.");
+                return;
+            }
+
+            ExtensionsPopup.IsOpen = !ExtensionsPopup.IsOpen;
+            if (ExtensionsPopup.IsOpen)
+                await RefreshBrowserExtensionsAsync();
+        }
+
+        private async void OpenExtensionImporter_Click(object sender, RoutedEventArgs e)
+        {
+            var profile = webview.CoreWebView2?.Profile;
+            var extensionService = App.GetService<BrowserExtensionService>();
+            if (profile is null || extensionService is null)
+            {
+                ExtensionsStatusTextBlock.Text = "El navegador todavía se está inicializando.";
+                return;
+            }
+
+            ExtensionsPopup.IsOpen = false;
+            var importer = new BrowserExtensionsWindow(profile, extensionService)
+            {
+                Owner = Window.GetWindow(this)
+            };
+            importer.ShowDialog();
+
+            ExtensionsPopup.IsOpen = true;
+            await RefreshBrowserExtensionsAsync();
+        }
+
+        private async void ToggleBrowserExtension_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is not BrowserExtensionPanelItem item)
+                return;
+
+            try
+            {
+                ExtensionsStatusTextBlock.Text = "Actualizando extensión…";
+                await item.Extension.EnableAsync(!item.Extension.IsEnabled);
+                await RefreshBrowserExtensionsAsync();
+            }
+            catch (Exception exception)
+            {
+                ExtensionsStatusTextBlock.Text = $"No se pudo cambiar el estado: {exception.Message}";
+            }
+        }
+
+        private async void RemoveBrowserExtension_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is not BrowserExtensionPanelItem item)
+                return;
+
+            var result = MessageBox.Show(
+                $"¿Quieres quitar la extensión «{item.Name}»?",
+                "Quitar extensión",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                ExtensionsStatusTextBlock.Text = "Quitando extensión…";
+                await item.Extension.RemoveAsync();
+                await RefreshBrowserExtensionsAsync();
+            }
+            catch (Exception exception)
+            {
+                ExtensionsStatusTextBlock.Text = $"No se pudo quitar la extensión: {exception.Message}";
+            }
+        }
+
+        private async Task RefreshBrowserExtensionsAsync()
+        {
+            var profile = webview.CoreWebView2?.Profile;
+            var extensionService = App.GetService<BrowserExtensionService>();
+            if (profile is null || extensionService is null)
+            {
+                ExtensionsStatusTextBlock.Text = "El navegador todavía se está inicializando.";
+                return;
+            }
+
+            try
+            {
+                var extensions = await extensionService.GetInstalledExtensionsAsync(profile);
+                _browserExtensionItems.Clear();
+                foreach (var extension in extensions)
+                {
+                    var iconPath = extensionService.GetInstalledExtensionIconPath(extension.Id);
+                    _browserExtensionItems.Add(new BrowserExtensionPanelItem(extension, LoadExtensionIcon(iconPath)));
+                }
+
+                ExtensionsStatusTextBlock.Text = extensions.Count == 0
+                    ? "No hay extensiones instaladas. Usa «Importar» para añadir una."
+                    : $"{extensions.Count} extensión(es) instalada(s).";
+            }
+            catch (Exception exception)
+            {
+                ExtensionsStatusTextBlock.Text = $"No se pudo leer la lista: {exception.Message}";
+            }
+        }
+
+        private static ImageSource? LoadExtensionIcon(string? iconPath)
+        {
+            if (string.IsNullOrWhiteSpace(iconPath) || !File.Exists(iconPath))
+                return null;
+
+            try
+            {
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = new Uri(iconPath, UriKind.Absolute);
+                image.EndInit();
+                image.Freeze();
+                return image;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private sealed class BrowserExtensionPanelItem
+        {
+            public BrowserExtensionPanelItem(CoreWebView2BrowserExtension extension, ImageSource? icon)
+            {
+                Extension = extension;
+                Icon = icon;
+            }
+
+            public CoreWebView2BrowserExtension Extension { get; }
+            public string Name => Extension.Name;
+            public string StateText => Extension.IsEnabled ? "Activada" : "Desactivada";
+            public string ToggleText => Extension.IsEnabled ? "Desactivar" : "Activar";
+            public ImageSource? Icon { get; }
+        }
+
+        private async Task InitializeWebViewAsync()
+        {
             //if (_globalService.IsInPrivateMode)
             //{
             //    var options = new CoreWebView2EnvironmentOptions("-inprivate");
@@ -68,7 +218,21 @@ namespace WebBrowserMinimalist.Views.Controls
             //{
               
             //}
-            await webview.EnsureCoreWebView2Async();
+            try
+            {
+                var environment = await _browserEnvironmentService.GetEnvironmentAsync();
+                await webview.EnsureCoreWebView2Async(environment);
+            }
+            catch (Exception)
+            {
+                progressring.IsIndeterminate = false;
+                btnStop.Visibility = Visibility.Collapsed;
+                btnRefresh.Visibility = Visibility.Visible;
+                return;
+            }
+
+            if (_isBrowserDisposed)
+                return;
             //Binding bind = new Binding();
             //bind.Source = _tabItemVM;
             //bind.Path = new PropertyPath("Url");
@@ -80,15 +244,22 @@ namespace WebBrowserMinimalist.Views.Controls
             webview.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
             webview.CoreWebView2.IsDocumentPlayingAudioChanged += CoreWebView2_IsDocumentPlayingAudioChanged;
             webview.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
-             webview.CoreWebView2.PermissionRequested += CoreWebView2_PermissionRequested;
+            webview.CoreWebView2.PermissionRequested += CoreWebView2_PermissionRequested;
             webview.CoreWebView2.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All);
             webview.CoreWebView2.WebResourceRequested += CoreWebView2_WebResourceRequested;
+            webview.CoreWebView2.Navigate(_tabItemVM!.Url.ToString());
            
             
             ModelP.IMg = _tabItemVM!.Image;
             ModelP.Source = _tabItemVM.UrlSource;
             ModelP.TitleDoc = _tabItemVM.TitleDocument;
             ModelP.ShieldIcon = _tabItemVM.ShieldIcon;
+        }
+
+        private void TabItemVM_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(TabItemVM.Url) && webview.CoreWebView2 is not null)
+                webview.CoreWebView2.Navigate(_tabItemVM!.Url.ToString());
         }
 
         #region WebviewEvents
@@ -141,7 +312,6 @@ namespace WebBrowserMinimalist.Views.Controls
                     mainWindow.titlebar.CanMaximize = true;
                     mainWindow.ResizeMode = ResizeMode.CanResize;
                     mainWindow.WindowState = _previewState;
-                    webview.Margin = new Thickness(7,2,7,7);
                     Wpf.Ui.Animations.Transitions.ApplyTransition(toolBar, Wpf.Ui.Animations.TransitionType.FadeInWithSlide, 300);
                     webview.Focus();
                 }
@@ -156,7 +326,7 @@ namespace WebBrowserMinimalist.Views.Controls
                 e.Handled = true;
                 var uri = e.Uri;
                 var newItem = new ItemModel();
-                newItem.Tab._tabItemVM.Search(uri, webview);
+                newItem.Tab!._tabItemVM!.Search(uri, newItem.Tab.webview);
                 mainWindow._viewmodel.Items.Add(newItem);
                 mainWindow.lista.SelectedItem = newItem;
             }
@@ -200,24 +370,21 @@ namespace WebBrowserMinimalist.Views.Controls
                 try
                 {
                     
-                    changePage(e.WebErrorStatus);
+                    await ChangePageAsync(e.WebErrorStatus);
                     CambiarIconoShield(e.WebErrorStatus);
                     _tabItemVM.UrlSource = webview.CoreWebView2.Source;
+                    if (e.IsSuccess && _historyServices != null)
+                        _ = _historyServices.RecordVisitAsync(_tabItemVM.UrlSource, webview.CoreWebView2.DocumentTitle);
                     btnRefresh.Visibility = Visibility.Visible;
                     btnStop.Visibility = Visibility.Collapsed;
                     ModelP.Source = _tabItemVM.UrlSource;
                     ModelP.Refreshvisibility = _tabItemVM.Refreshvisibility;
                     webview.Focus();
-                    if (_tabItemVM.UrlSource.Contains("https://sg.sdasystems.org"))
-                    {
-                        var functionString = "var link = document.createElement('link'); link.rel = 'stylesheet'; link.type = 'text/css';  link.href = 'https://hyms-front.vercel.app/img/main.css'; document.getElementsByTagName('head')[0].appendChild(link); ";
-                        //var script = "alert('hola')";
-                        var result = await webview.ExecuteScriptAsync(functionString);
-                    }
-                    var script = "document.GetElementById('masthead-ad').style.Display = 'none';";
+                    
+                    var script = "document.getElementById('masthead-ad')?.style.setProperty('display', 'none');";
                     await webview.ExecuteScriptAsync(script);
 
-                    await Task.Run(async () => await _tabItemVM.geticon(sender!));
+                    await _tabItemVM.UpdateFaviconAsync((CoreWebView2)sender!);
                     if (_tabItemVM.UrlSource == "about:blank")
                     {
                         _tabItemVM.Image = new BitmapImage(new Uri("/Views/Windows/icons8-internet-48.png", UriKind.RelativeOrAbsolute));
@@ -250,13 +417,14 @@ namespace WebBrowserMinimalist.Views.Controls
             if (_tabItemVM != null)
             {
 
-                if (_tabItemVM.UrlSource.StartsWith("edge:") && !_tabItemVM.UrlSource.Contains("edge://downloads/all") && 
-                    !_tabItemVM.UrlSource.Contains("edge://history/all"))
+                var destination = e.Uri;
+                if (destination.StartsWith("edge:", StringComparison.OrdinalIgnoreCase) && destination != "edge://downloads/all" &&
+                    destination != "edge://history/all")
                 {
                     e.Cancel = true;
                 }
                 else
-                if (_adblock.BlockSites(_tabItemVM.UrlSource))
+                if (_adblock.BlockSites(destination))
                 {
                     e.Cancel = true;
                 }
@@ -377,7 +545,7 @@ namespace WebBrowserMinimalist.Views.Controls
             
         }
 
-       async void changePage(CoreWebView2WebErrorStatus? errorStatus = null) {
+       private async Task ChangePageAsync(CoreWebView2WebErrorStatus? errorStatus = null) {
             if (errorStatus != null)
             {
                 if (errorStatus == CoreWebView2WebErrorStatus.Disconnected)
@@ -457,6 +625,28 @@ namespace WebBrowserMinimalist.Views.Controls
         {
             if (webview.CoreWebView2 != null)
                 webview.CoreWebView2.CloseDefaultDownloadDialog();
+        }
+
+        public void DisposeBrowser()
+        {
+            if (_isBrowserDisposed)
+                return;
+
+            _isBrowserDisposed = true;
+            _tabItemVM!.PropertyChanged -= TabItemVM_PropertyChanged;
+            if (webview.CoreWebView2 != null)
+            {
+                webview.CoreWebView2.ContainsFullScreenElementChanged -= CoreWebView2_ContainsFullScreenElementChanged;
+                webview.CoreWebView2.NavigationStarting -= CoreWebView2_NavigationStarting;
+                webview.CoreWebView2.NavigationCompleted -= CoreWebView2_NavigationCompleted;
+                webview.CoreWebView2.DocumentTitleChanged -= CoreWebView2_DocumentTitleChanged;
+                webview.CoreWebView2.IsDocumentPlayingAudioChanged -= CoreWebView2_IsDocumentPlayingAudioChanged;
+                webview.CoreWebView2.NewWindowRequested -= CoreWebView2_NewWindowRequested;
+                webview.CoreWebView2.PermissionRequested -= CoreWebView2_PermissionRequested;
+                webview.CoreWebView2.WebResourceRequested -= CoreWebView2_WebResourceRequested;
+            }
+
+            webview.Dispose();
         }
     }
 }

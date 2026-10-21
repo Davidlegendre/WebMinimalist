@@ -1,0 +1,221 @@
+﻿<UserControl x:Class="WebBrowserMinimalist.Views.Controls.TabItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WebBrowserMinimalist.Views.Controls"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:context="clr-namespace:WebBrowserMinimalist.ViewModels"
+             xmlns:helpers="clr-namespace:WebBrowserMinimalist.Helpers"
+             xmlns:web="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="484" GotFocus="UserControl_GotFocus">
+    <UserControl.DataContext>
+        <context:TabItemVM ></context:TabItemVM>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="convertToVisibility"></BooleanToVisibilityConverter>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Separator VerticalAlignment="Bottom" Margin="0,0,0,-1"></Separator>
+        <Grid Name="navegador" Margin="0" Grid.Row="1">
+            <web:WebView2 Name="webview" DefaultBackgroundColor="transparent">
+                <web:WebView2.CreationProperties>
+                    <web:CoreWebView2CreationProperties IsInPrivateModeEnabled="False"></web:CoreWebView2CreationProperties>
+                </web:WebView2.CreationProperties>
+            </web:WebView2>
+            <local:Home x:Name="home" Visibility="Collapsed">
+            </local:Home>
+        </Grid>
+        <Border x:Name="toolBar" VerticalAlignment="Stretch" Height="33" BorderThickness="0,2,0,0" >
+            <Grid ClipToBounds="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="145"/>
+                </Grid.ColumnDefinitions>
+              
+                <StackPanel Orientation="Horizontal" Margin="2,0,6,0">
+                    <ui:Button WindowChrome.IsHitTestVisibleInChrome="True" Padding="0" Width="30" Appearance="Transparent" Command="{Binding BackCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding CanGoBack,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                        <ui:SymbolIcon Symbol="ChevronLeft12" ></ui:SymbolIcon>
+                    </ui:Button>
+                    <Grid>
+                        <ui:Button Name="btnRefresh" Padding="0" Width="30" HorizontalAlignment="Stretch" Visibility="Visible" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding RefreshCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
+                            <ui:SymbolIcon Symbol="ArrowClockwise20" FontSize="16" Filled="True"></ui:SymbolIcon>
+                        </ui:Button>
+                        <ui:Button Name="btnStop" Padding="0" Width="30" Visibility="Collapsed" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" Command="{Binding StopCommand}" CommandParameter="{Binding ElementName=webview}" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch">
+                            <ui:SymbolIcon Symbol="Square12" Filled="True"></ui:SymbolIcon>
+                        </ui:Button>
+                    </Grid>
+                    <ui:Button WindowChrome.IsHitTestVisibleInChrome="True" Padding="0" Width="30" Appearance="Transparent" BorderThickness="0" Command="{Binding LeftCommand}" CommandParameter="{Binding ElementName=webview}" Visibility="{Binding  CanGoForward,ElementName=webview,Converter={StaticResource convertToVisibility}}" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                        <ui:SymbolIcon Symbol="ChevronRight12" ></ui:SymbolIcon>
+                    </ui:Button>
+                </StackPanel>
+                <Rectangle Fill="{Binding Foreground,ElementName=symbol}" Width="4" Height="4" HorizontalAlignment="Right" RadiusX="10" RadiusY="10" Margin="0,0,0,0"></Rectangle>
+                <Grid Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"  Margin="0,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="1" MaxWidth="450">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:Button x:Name="btnAddPage" Icon="Add12"  Padding="0" Width="28" Height="27" Margin="0,0,2,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                            
+                        </ui:Button>
+                        <ui:Card Grid.Column="1" ClipToBounds="True" Padding="0" >
+                            <Grid>
+                                <Grid Name="URLSearchBar"  Visibility="Collapsed" Grid.Column="1" >
+                                    <ui:Badge BorderThickness="0" Background="Transparent" Padding="0,0,0,0" Width="{Binding ActualWidth,ElementName=URLSearchBar}" HorizontalContentAlignment="Center" >
+                                        <Grid>
+                                            <ui:TextBox TextChanged="TxtSearch_TextChanged" Foreground="{Binding Foreground,ElementName=symbol, Mode=OneWay}" 
+                                            CaretBrush="{Binding Foreground,ElementName=symbol, Mode=OneWay}" FontFamily="Segoe UI" FontSize="14" 
+                                            
+                                            Icon="Empty" Name="TxtSearch"  Text="{Binding UrlSource}" 
+                                            MouseDoubleClick="TxtSearch_MouseDoubleClick" KeyDown="txtSearch_KeyDown" 
+                                            VerticalAlignment="Stretch" ClearButtonEnabled="False" 
+                                            WindowChrome.IsHitTestVisibleInChrome="True"  BorderThickness="0" 
+                                            Background="Transparent"  PlaceholderText="url or Search" 
+                                            TextAlignment="Center" VerticalContentAlignment="Center" 
+                                            Padding="30,-4,30,0" Height="28" Margin="-1,-1,-1,-1"
+                                            />
+                                            <Popup Name="flyResults"
+                                          AllowsTransparency="true" 
+                                          Placement="Bottom"  
+                                          StaysOpen="False"
+                                          PopupAnimation="Fade" VerticalOffset="10" Width="{Binding ActualWidth,ElementName=URLSearchBar}">
+                                                <Border Padding="0"  Background="{ui:ThemeResource}" CornerRadius="10" BorderThickness="1" >
+                                                    <Border.BorderBrush>
+                                                        <SolidColorBrush Color="Black" Opacity="0.15"/>
+                                                    </Border.BorderBrush>
+                                                    <ListView Name="listResultSearch" MaxHeight="370" SelectedIndex="0" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding ResultItems,Mode=OneWay}" SelectionMode="Single">
+                                                        <ListView.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <UniformGrid Columns="1"></UniformGrid>
+                                                            </ItemsPanelTemplate>
+                                                        </ListView.ItemsPanel>
+                                                        <ListView.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <ui:Button Name="btnItemResultSearch" Height="52" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Click="btnItemResultSearch_Click">
+                                                                    <Grid Margin="0">
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                                            <ColumnDefinition Width="*"/>
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <ui:SymbolIcon Symbol="History16" FontSize="20" Margin="0,0,7,0"></ui:SymbolIcon>
+                                                                        <StackPanel Grid.Column="1" >
+                                                                            <TextBlock Text="{Binding title}" TextTrimming="CharacterEllipsis"></TextBlock>
+                                                                            <TextBlock Text="{Binding url}" Opacity="0.5" TextTrimming="CharacterEllipsis"></TextBlock>
+                                                                        </StackPanel>
+                                                                    </Grid>
+                                                                </ui:Button>
+                                                            </DataTemplate>
+                                                        </ListView.ItemTemplate>
+                                                    </ListView>
+                                                </Border>
+                                            </Popup>
+
+                                            <ui:Button Name="ReturnToIndicator" Icon="ArrowRight12" IconFilled="True" ToolTip="Cerrar Barra de Busqueda"
+                                           Click="ReturnToIndicator_Click" HorizontalContentAlignment="Center" Padding="5,3,5,5" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                                               
+                                            </ui:Button>
+                                            <ui:Button Name="btnSettingEngines" ToolTip="Configuracion de Motor de Busqueda" HorizontalAlignment="Right" Click="btnSettingEngines_Click" WindowChrome.IsHitTestVisibleInChrome="True" Padding="5,3,5,5" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                                                <Grid>
+                                                    <ui:SymbolIcon Symbol="Settings20" FontSize="16"></ui:SymbolIcon>
+                                                    <Popup Name="FlyoutSettingPanel"
+                                          AllowsTransparency="true" 
+                                          Placement="Bottom"  
+                                          StaysOpen="False"
+                                          PopupAnimation="Fade" HorizontalOffset="-80" VerticalOffset="15">
+                                                        <Border Margin="0" Padding="0" Background="{ui:ThemeResource}" CornerRadius="10" BorderThickness="1" >
+                                                            <Border.BorderBrush>
+                                                                <SolidColorBrush Color="{Binding Foreground,ElementName=symbol}" Opacity="0.2"></SolidColorBrush>
+                                                            </Border.BorderBrush>
+                                                            <local:SettingsControls ></local:SettingsControls>
+                                                        </Border>
+                                                    </Popup>
+                                                </Grid>
+                                            </ui:Button>
+
+                                        </Grid>
+                                    </ui:Badge>
+
+                                </Grid>
+                                <ui:Badge x:Name="IndicatorDocumentPage" Margin="0,0,0,0"  Background="Transparent" Grid.Column="1" Padding="0" Height="26" >
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Name="stackiconsPermisos" Orientation="Horizontal" Margin="4,0,0,0">
+                                            <ui:SymbolIcon  Symbol="{Binding ShieldIcon}" Margin="4,0,6,0" Filled="True" FontSize="16"></ui:SymbolIcon>
+                                            <ui:SymbolIcon Visibility="{Binding SoundVisibility,Mode=OneWay}" Symbol="Speaker224" Margin="2,0,6,0" FontSize="16"></ui:SymbolIcon>
+                                            <ItemsControl ItemsSource="{Binding Permisos,Mode=OneWay}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <UniformGrid Rows="1"></UniformGrid>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <ui:SymbolIcon Symbol="{Binding}" Margin="2" FontSize="18"></ui:SymbolIcon>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            
+                                        </StackPanel>
+                                        <ui:Button Name="btnDownload" Click="btnDownload_Click" Padding="5" Width="28" Grid.Column="3" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                                            <ui:SymbolIcon Symbol="ArrowDownload16" Filled="True" FontSize="14"></ui:SymbolIcon>
+                                        </ui:Button>
+                                        <Grid HorizontalAlignment="Center" Grid.Column="1">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                                <ColumnDefinition Width="auto"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <ui:ProgressRing Name="progressring" Grid.Column="1"  IsIndeterminate="{Binding IsVisible,ElementName=progressring}" Progress="0" Visibility="{Binding ProgressVisibility}" Height="16" Width="16"></ui:ProgressRing>
+
+                                            <Image Name="img" Source="{Binding Image, Mode=OneWay}" Visibility="{Binding ImgVisible}" Grid.Column="1" Height="15" Width="15" Stretch="Uniform"></Image>
+                                            <TextBlock Background="Transparent" Name="TbTitleDocument" MouseLeftButtonDown="TbTitleDocument_MouseLeftButtonDown" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="{Binding TitleDocument}" FontSize="14" Grid.Column="2" Foreground="{Binding Foreground, ElementName=symbol, Mode=OneWay}" HorizontalAlignment="Stretch" Opacity="1" Text="{Binding TitleDocument}" Margin="7,-2,0,0" Padding="0" TextTrimming="CharacterEllipsis" FontWeight="SemiBold" >
+
+                                            </TextBlock>
+
+
+                                        </Grid>
+                                       
+                                    </Grid>
+                                </ui:Badge>
+                            </Grid>
+                        </ui:Card>
+                        <ui:Button Name="btnCloseTab" Padding="0" IconFilled="True" Icon="Dismiss20" Width="28" Height="27" Grid.Column="2" Margin="2,0,0,0" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+
+                        </ui:Button>
+                    </Grid>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="0,0,5,0">
+                        <ui:Button Name="menubtn" Width="30" Padding="0,0,0,0" Click="menubtn_Click" Height="{Binding ActualHeight,ElementName=btnRefresh}" Grid.Column="0" Margin="2,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" Appearance="Transparent" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" >
+                            <ui:SymbolIcon Name="symbol" Symbol="LayerDiagonal20" FontSize="18" Filled="True" ></ui:SymbolIcon>
+                        </ui:Button>
+                        <ui:SymbolIcon Margin="0,0,7,0" Visibility="{Binding CreationProperties.IsInPrivateModeEnabled,ElementName=webview,Converter={StaticResource convertToVisibility}}" Symbol="Incognito24" Filled="True"></ui:SymbolIcon>
+                           <ui:Badge Padding="4,0,4,0" Margin="0,5,0,5">
+                                <TextBlock x:Name="txtCountTabs" VerticalAlignment="Center" FontSize="11" Margin="0" Text="{Binding Items.Count,Mode=OneWay}"></TextBlock>
+                           </ui:Badge>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        
+        </Border>
+
+
+       
+    </Grid>
+</UserControl>

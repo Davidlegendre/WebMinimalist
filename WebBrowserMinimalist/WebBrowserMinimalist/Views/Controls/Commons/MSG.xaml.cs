@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WebBrowserMinimalist.Models;
 using Wpf.Ui.Controls.Interfaces;
+using Wpf.Ui.Controls;
 using Wpf.Ui.Mvvm.Contracts;
 
 namespace WebBrowserMinimalist.Views.Controls.Commons
@@ -20,7 +21,7 @@ namespace WebBrowserMinimalist.Views.Controls.Commons
     /// <summary>
     /// Lógica de interacción para MSG.xaml
     /// </summary>
-    public partial class MSG : INavigationWindow
+    public partial class MSG : UiWindow, INavigationWindow
     {
         MSNModel _msnmodel;
         public MSG(MSNModel mSNModel)

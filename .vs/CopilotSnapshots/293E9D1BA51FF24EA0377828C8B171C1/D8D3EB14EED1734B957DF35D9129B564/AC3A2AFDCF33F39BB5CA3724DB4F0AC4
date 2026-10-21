@@ -1,0 +1,56 @@
+﻿<ui:UiWindow x:Class="WebBrowserMinimalist.Views.Windows.BrowserExtensionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Width="500"
+        Height="680"
+        MinWidth="400"
+        MinHeight="450"
+        WindowStartupLocation="CenterOwner"
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica"
+        ResizeMode="NoResize"
+             
+        Background="{ui:ThemeResource}">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<TextBlock Text="Importar desde Chrome Web Store" FontSize="18" FontWeight="SemiBold" />
+		<TextBlock Grid.Row="1" Margin="0,6,0,10" TextWrapping="Wrap"
+                   Text="Pega la URL de la extensión o su ID. WebView2 solo admite extensiones compatibles con su API y las instala como paquetes locales." />
+		<Grid Grid.Row="2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<TextBox x:Name="ExtensionSourceTextBox" Height="34" VerticalContentAlignment="Center"
+                     ToolTip="URL de Chrome Web Store o ID de 32 caracteres" />
+			<Button Grid.Column="1" Margin="8,0,0,0" Padding="14,5" Content="Importar"
+                    Click="Import_Click" />
+		</Grid>
+		<TextBlock x:Name="StatusTextBlock" Grid.Row="3" Margin="0,8,0,8" TextWrapping="Wrap" />
+		<ListBox x:Name="ExtensionsListBox" Grid.Row="4" Margin="0,0,0,10"
+                 SelectionChanged="ExtensionsListBox_SelectionChanged">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<StackPanel Margin="4">
+						<TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+						<TextBlock Text="{Binding Id}" Opacity="0.65" FontSize="11" />
+					</StackPanel>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+		<StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button x:Name="ToggleButton" Content="Activar / desactivar" Padding="12,6" IsEnabled="False"
+                    Click="Toggle_Click" />
+			<Button x:Name="RemoveButton" Content="Quitar" Margin="8,0,0,0" Padding="12,6" IsEnabled="False"
+                    Click="Remove_Click" />
+		</StackPanel>
+	</Grid>
+</ui:UiWindow>

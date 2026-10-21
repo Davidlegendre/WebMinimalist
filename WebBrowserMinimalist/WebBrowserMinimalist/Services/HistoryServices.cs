@@ -1,54 +1,57 @@
-﻿using Microsoft.Web.WebView2.Core;
-using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using WebBrowserMinimalist.DBA;
 using WebBrowserMinimalist.Models;
 
 namespace WebBrowserMinimalist.Services
 {
-    public class HistoryServices
+    public sealed class HistoryServices
     {
-        readonly HIstorialDBA _history;
-        List<HistoryModel> _historial = new List<HistoryModel>();
+        private readonly HIstorialDBA _history;
+        private List<HistoryModel> _historial = new();
+
         public HistoryServices(HIstorialDBA history)
         {
             _history = history;
         }
 
-        //public void ClearAll()
-        //{
-        //   _historial.Clear();
-        //   _history.DeleteAll();
-        //}
+        public int CountHistory() => _historial.Count;
 
-        //public void ClearOne(HistoryModel? historyModel)
-        //{
-        //    if (historyModel != null)
-        //    {
-        //       _historial.Remove(historyModel);
-        //        _history.deleteOne(historyModel);
-        //    }
-        //}
-
-        public int CountHistory() {
-            return _historial.Count();
-        }
-         
-        public List<HistoryModel>? FindHistories(string filter)
+        public List<HistoryModel> FindHistories(string filter)
         {
-            return _historial.Where(x => x.title!.ToLower().Contains(filter.ToLower())).Take(10).ToList();
+            if (string.IsNullOrWhiteSpace(filter))
+                return new List<HistoryModel>();
+
+            return _historial
+                .Where(item => (item.title?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false)
+                    || (item.url?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false))
+                .Take(10)
+                .ToList();
         }
 
-        public async Task<List<HistoryModel>> GetAllHistories() {
-            var result =await  _history.ObtenerDatos();
-            _historial = result.ToList();
+        public async Task RecordVisitAsync(string url, string title)
+        {
+            await _history.RecordVisitAsync(url, title);
+            await RefreshCacheAsync();
+        }
+
+        public async Task<List<HistoryModel>> GetAllHistoriesAsync()
+        {
+            await RefreshCacheAsync();
             return _historial;
         }
 
+        public async Task ClearAllAsync()
+        {
+            await _history.DeleteAllAsync();
+            _historial.Clear();
+        }
+
+        private async Task RefreshCacheAsync()
+        {
+            _historial = (await _history.GetRecentAsync()).ToList();
+        }
     }
 }

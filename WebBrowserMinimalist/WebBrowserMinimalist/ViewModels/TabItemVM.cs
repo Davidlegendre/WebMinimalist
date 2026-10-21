@@ -75,7 +75,7 @@ namespace WebBrowserMinimalist.ViewModels
 
         [RelayCommand]
         void Refresh(WebView2? webView2) {
-            if (webView2 != null)
+            if (webView2?.CoreWebView2 != null)
             {
                 webView2.CoreWebView2.Reload();
                 UrlSource = webView2.CoreWebView2.Source;
@@ -85,14 +85,14 @@ namespace WebBrowserMinimalist.ViewModels
         [RelayCommand]
         void Stop(WebView2? webView2)
         {
-            if (webView2 != null)
+            if (webView2?.CoreWebView2 != null)
                 webView2.CoreWebView2.Stop();
         }
 
         [RelayCommand]
         void Back(WebView2? webView2)
         {
-            if (webView2 != null)
+            if (webView2?.CoreWebView2 != null)
             {
                 webView2.CoreWebView2.GoBack();
             }
@@ -101,7 +101,7 @@ namespace WebBrowserMinimalist.ViewModels
         [RelayCommand]
         void Left(WebView2? webView2)
         {
-            if (webView2 != null)
+            if (webView2?.CoreWebView2 != null)
             {
                 webView2.CoreWebView2.GoForward();
             }
@@ -143,25 +143,21 @@ namespace WebBrowserMinimalist.ViewModels
 
        
 
-       public async Task geticon(object sender)
+       public async Task UpdateFaviconAsync(CoreWebView2 browser)
         {
             try
             {
-                var browser = (Microsoft.Web.WebView2.Core.CoreWebView2)sender;
-                Thread.Sleep(1000);
-                await Application.Current.Dispatcher.Invoke(async () =>
-                {
-                    var icon = await browser?.GetFaviconAsync(Microsoft.Web.WebView2.Core.CoreWebView2FaviconImageFormat.Png);
-
-                    Image = _operacionesService.GetBitmap(icon);
-                    var main = App.Current.MainWindow as MainWindow;
-                    ProgressVisibility = Visibility.Collapsed;
-                    ImgVisible = Visibility.Visible;
-                });
+                await Task.Delay(TimeSpan.FromMilliseconds(150));
+                var icon = await browser.GetFaviconAsync(CoreWebView2FaviconImageFormat.Png);
+                Image = _operacionesService.GetBitmap(icon);
             }
             catch (Exception)
             {
+            }
+            finally
+            {
                 ProgressVisibility = Visibility.Collapsed;
+                ImgVisible = Visibility.Visible;
             }
             
         }

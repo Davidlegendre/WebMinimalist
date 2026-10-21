@@ -7,7 +7,7 @@
              xmlns:local="clr-namespace:WebBrowserMinimalist.Views.Controls"
              xmlns:context="clr-namespace:WebBrowserMinimalist.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="450" Width="370">
+             d:DesignHeight="450" d:DesignWidth="370">
     <UserControl.DataContext>
         <context:HistoryListVM></context:HistoryListVM>
     </UserControl.DataContext>
@@ -63,7 +63,7 @@
         <ListView Name="listResultSearch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Row="1" ItemsSource="{Binding ListaHistorial, Mode=OneWay}" SelectionMode="Single">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Columns="1"></UniformGrid>
+                    <UniformGrid Columns="1" VerticalAlignment="Top"></UniformGrid>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>

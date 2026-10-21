@@ -9,12 +9,12 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shell;
 using WebBrowserMinimalist.Models;
 using WebBrowserMinimalist.Services;
 using WebBrowserMinimalist.ViewModels;
@@ -31,10 +31,6 @@ namespace WebBrowserMinimalist.Views.Windows
     /// </summary>
     public partial class MainWindow : UiWindow
     {
-        [STAThread]
-        [DllImport("Kernel32.dll", EntryPoint = "SetProcessWorkingSetSize", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
-        private static extern int SetProcessWorkingSetSize(IntPtr process, int minimumWorkingSize, int maximumWorkingSetSize);
-
         public MainWindowViewModel? _viewmodel { get; }
         readonly OperacionesService _operaciones;
         readonly MensajeService _maensajeService;
@@ -42,6 +38,10 @@ namespace WebBrowserMinimalist.Views.Windows
         public MainWindow()
         {
             InitializeComponent();
+            var windowChrome = WindowChrome.GetWindowChrome(this);
+            if (windowChrome is not null)
+                windowChrome.ResizeBorderThickness = new Thickness(8);
+
             Watcher.Watch(this);
             _operaciones = App.GetService<OperacionesService>();
             _maensajeService = App.GetService<MensajeService>();
@@ -61,10 +61,13 @@ namespace WebBrowserMinimalist.Views.Windows
             //else
             //    e.Cancel = true;
             _globalService.DisposeTimeHour();
+            foreach (var item in _viewmodel?.Items?.ToList() ?? Enumerable.Empty<ItemModel>())
+                item.Dispose();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            _ = App.GetService<HistoryServices>()?.GetAllHistoriesAsync();
             CargaArchivosExternos();
             this.ResizeMode = ResizeMode.NoResize;
             WindowState = WindowState.Maximized;
@@ -102,14 +105,11 @@ namespace WebBrowserMinimalist.Views.Windows
                 }
                 else
                 {
-                    item.Tab!.webview.Margin = new Thickness(7, 2, 7, 7);
                     _viewmodel!.Items!.Add(item);
                 }
             }
             catch (Exception ex)
             {
-                //_maensajeService.ShowDialog(ex.Message);
-                item.Tab!.webview.Margin = new Thickness(7, 2, 7, 7);
                 _viewmodel!.Items!.Add(item);
             }
 
@@ -143,7 +143,6 @@ namespace WebBrowserMinimalist.Views.Windows
                 content.Children.Add(selectItem.Tab);
                 _viewmodel?.SelectItem(selectItem);
                 lista.ScrollIntoView(selectItem);
-                Alzeimer();
             }
         }
 
@@ -216,13 +215,9 @@ namespace WebBrowserMinimalist.Views.Windows
 
         private void btnHistorialOpen_Click(object sender, RoutedEventArgs e)
         {
-            //if (historyList.Visibility != Visibility.Visible)
-            //{
-            //    btnAtras.Visibility = Visibility.Visible;
-            //    historyList.Visibility = Visibility.Visible;
-            //    lista.Visibility = Visibility.Collapsed;
-            //    Wpf.Ui.Animations.Transitions.ApplyTransition(historyList, Wpf.Ui.Animations.TransitionType.SlideRight, 400);
-            //}
+            var historyWindow = new HistoryWindow { Owner = this };
+            historyWindow.Actualizar();
+            historyWindow.ShowDialog();
         }
 
         private void menuItemCerrarMenosEste_Click(object sender, RoutedEventArgs e)
@@ -375,11 +370,5 @@ namespace WebBrowserMinimalist.Views.Windows
             }
         }
 
-        public void Alzeimer()
-        {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, -1, -1);
-        }
     }
 }

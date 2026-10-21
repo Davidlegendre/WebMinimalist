@@ -14,6 +14,8 @@ namespace WebBrowserMinimalist.Models
         public Int64 id { get; set; }
         public string? title { get; set; }
         public string? url { get; set; }
+        public long visitCount { get; set; }
+        public DateTime lastVisitedUtc { get; set; }
 
     }
 
