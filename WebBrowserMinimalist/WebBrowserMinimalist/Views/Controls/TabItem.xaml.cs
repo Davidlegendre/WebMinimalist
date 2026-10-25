@@ -2,7 +2,6 @@
 using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
@@ -37,11 +36,9 @@ namespace WebBrowserMinimalist.Views.Controls
 
         readonly ItemModel ModelP;
         private bool _isBrowserDisposed;
-        private readonly ObservableCollection<BrowserExtensionPanelItem> _browserExtensionItems = new();
         public TabItem(ItemModel modelP)
         {
             InitializeComponent();
-            BrowserExtensionsListBox.ItemsSource = _browserExtensionItems;
             mainWindow = App.Current.MainWindow as MainWindow;
             _tabItemVM = DataContext as TabItemVM;
             _historyServices = App.GetService<HistoryServices>();
@@ -54,7 +51,6 @@ namespace WebBrowserMinimalist.Views.Controls
 
             btnAddPage.Click += mainWindow!.addbutton_Click;
             btnCloseTab.Click += mainWindow!.btnClose_Click;
-            txtCountTabs.DataContext = mainWindow!.lista;
             _previewState = mainWindow.WindowState;
             
             ModelP = modelP;
@@ -70,139 +66,10 @@ namespace WebBrowserMinimalist.Views.Controls
                 return;
             }
 
-            ExtensionsPopup.IsOpen = !ExtensionsPopup.IsOpen;
-            if (ExtensionsPopup.IsOpen)
-                await RefreshBrowserExtensionsAsync();
+            await mainWindow!.ShowBrowserExtensionsPanelAsync(webview.CoreWebView2.Profile);
         }
 
-        private async void OpenExtensionImporter_Click(object sender, RoutedEventArgs e)
-        {
-            var profile = webview.CoreWebView2?.Profile;
-            var extensionService = App.GetService<BrowserExtensionService>();
-            if (profile is null || extensionService is null)
-            {
-                ExtensionsStatusTextBlock.Text = "El navegador todavía se está inicializando.";
-                return;
-            }
-
-            ExtensionsPopup.IsOpen = false;
-            var importer = new BrowserExtensionsWindow(profile, extensionService)
-            {
-                Owner = Window.GetWindow(this)
-            };
-            importer.ShowDialog();
-
-            ExtensionsPopup.IsOpen = true;
-            await RefreshBrowserExtensionsAsync();
-        }
-
-        private async void ToggleBrowserExtension_Click(object sender, RoutedEventArgs e)
-        {
-            if ((sender as FrameworkElement)?.DataContext is not BrowserExtensionPanelItem item)
-                return;
-
-            try
-            {
-                ExtensionsStatusTextBlock.Text = "Actualizando extensión…";
-                await item.Extension.EnableAsync(!item.Extension.IsEnabled);
-                await RefreshBrowserExtensionsAsync();
-            }
-            catch (Exception exception)
-            {
-                ExtensionsStatusTextBlock.Text = $"No se pudo cambiar el estado: {exception.Message}";
-            }
-        }
-
-        private async void RemoveBrowserExtension_Click(object sender, RoutedEventArgs e)
-        {
-            if ((sender as FrameworkElement)?.DataContext is not BrowserExtensionPanelItem item)
-                return;
-
-            var result = MessageBox.Show(
-                $"¿Quieres quitar la extensión «{item.Name}»?",
-                "Quitar extensión",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-            if (result != MessageBoxResult.Yes)
-                return;
-
-            try
-            {
-                ExtensionsStatusTextBlock.Text = "Quitando extensión…";
-                await item.Extension.RemoveAsync();
-                await RefreshBrowserExtensionsAsync();
-            }
-            catch (Exception exception)
-            {
-                ExtensionsStatusTextBlock.Text = $"No se pudo quitar la extensión: {exception.Message}";
-            }
-        }
-
-        private async Task RefreshBrowserExtensionsAsync()
-        {
-            var profile = webview.CoreWebView2?.Profile;
-            var extensionService = App.GetService<BrowserExtensionService>();
-            if (profile is null || extensionService is null)
-            {
-                ExtensionsStatusTextBlock.Text = "El navegador todavía se está inicializando.";
-                return;
-            }
-
-            try
-            {
-                var extensions = await extensionService.GetInstalledExtensionsAsync(profile);
-                _browserExtensionItems.Clear();
-                foreach (var extension in extensions)
-                {
-                    var iconPath = extensionService.GetInstalledExtensionIconPath(extension.Id);
-                    _browserExtensionItems.Add(new BrowserExtensionPanelItem(extension, LoadExtensionIcon(iconPath)));
-                }
-
-                ExtensionsStatusTextBlock.Text = extensions.Count == 0
-                    ? "No hay extensiones instaladas. Usa «Importar» para añadir una."
-                    : $"{extensions.Count} extensión(es) instalada(s).";
-            }
-            catch (Exception exception)
-            {
-                ExtensionsStatusTextBlock.Text = $"No se pudo leer la lista: {exception.Message}";
-            }
-        }
-
-        private static ImageSource? LoadExtensionIcon(string? iconPath)
-        {
-            if (string.IsNullOrWhiteSpace(iconPath) || !File.Exists(iconPath))
-                return null;
-
-            try
-            {
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.UriSource = new Uri(iconPath, UriKind.Absolute);
-                image.EndInit();
-                image.Freeze();
-                return image;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        private sealed class BrowserExtensionPanelItem
-        {
-            public BrowserExtensionPanelItem(CoreWebView2BrowserExtension extension, ImageSource? icon)
-            {
-                Extension = extension;
-                Icon = icon;
-            }
-
-            public CoreWebView2BrowserExtension Extension { get; }
-            public string Name => Extension.Name;
-            public string StateText => Extension.IsEnabled ? "Activada" : "Desactivada";
-            public string ToggleText => Extension.IsEnabled ? "Desactivar" : "Activar";
-            public ImageSource? Icon { get; }
-        }
+        public void SetExtensionsButtonEnabled(bool enabled) => btnExtensions.IsEnabled = enabled;
 
         private async Task InitializeWebViewAsync()
         {
@@ -388,6 +255,7 @@ namespace WebBrowserMinimalist.Views.Controls
                     if (_tabItemVM.UrlSource == "about:blank")
                     {
                         _tabItemVM.Image = new BitmapImage(new Uri("/Views/Windows/icons8-internet-48.png", UriKind.RelativeOrAbsolute));
+                        _tabItemVM.ImgVisible = Visibility.Collapsed;
                         //webview.Visibility = Visibility.Collapsed;
                         _tabItemVM.ShieldIcon = Wpf.Ui.Common.SymbolRegular.Home12;
                         webview.DefaultBackgroundColor = System.Drawing.Color.Transparent;
@@ -395,6 +263,10 @@ namespace WebBrowserMinimalist.Views.Controls
                         _tabItemVM.TitleDocument = "Home";
                         home.Visibility = Visibility.Visible;
                         Wpf.Ui.Animations.Transitions.ApplyTransition(home, Wpf.Ui.Animations.TransitionType.FadeIn, 400);
+                    }
+                    else
+                    {
+                        _tabItemVM.ImgVisible = Visibility.Visible;
                     }
 
                     ModelP.TitleDoc = _tabItemVM.TitleDocument;
