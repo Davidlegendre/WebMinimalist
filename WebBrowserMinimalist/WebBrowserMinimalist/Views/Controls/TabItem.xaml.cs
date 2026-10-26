@@ -29,7 +29,6 @@ namespace WebBrowserMinimalist.Views.Controls
         readonly MensajeService _msn;
         WindowState _previewState;
 
-        readonly AdblockService _adblock;
         readonly BrowserEnvironmentService _browserEnvironmentService;
 
         readonly GlobalService _globalService;
@@ -44,7 +43,6 @@ namespace WebBrowserMinimalist.Views.Controls
             _historyServices = App.GetService<HistoryServices>();
             _globalService = App.GetService<GlobalService>();
             _errorPageService = App.GetService<ErrorsPageService>();
-            _adblock = App.GetService<AdblockService>();
             _browserEnvironmentService = App.GetService<BrowserEnvironmentService>();
             _msn = App.GetService<MensajeService>();
            
@@ -112,8 +110,6 @@ namespace WebBrowserMinimalist.Views.Controls
             webview.CoreWebView2.IsDocumentPlayingAudioChanged += CoreWebView2_IsDocumentPlayingAudioChanged;
             webview.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
             webview.CoreWebView2.PermissionRequested += CoreWebView2_PermissionRequested;
-            webview.CoreWebView2.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All);
-            webview.CoreWebView2.WebResourceRequested += CoreWebView2_WebResourceRequested;
             webview.CoreWebView2.Navigate(_tabItemVM!.Url.ToString());
            
             
@@ -130,13 +126,6 @@ namespace WebBrowserMinimalist.Views.Controls
         }
 
         #region WebviewEvents
-
-        private void CoreWebView2_WebResourceRequested(object? sender, CoreWebView2WebResourceRequestedEventArgs e)
-        {
-            _adblock.BlockYoutubeAds(webview, e);
-            _adblock.BlockAds(webview, e);
-           
-        }
 
         private void CoreWebView2_PermissionRequested(object? sender, CoreWebView2PermissionRequestedEventArgs e)
         {
@@ -292,11 +281,6 @@ namespace WebBrowserMinimalist.Views.Controls
                 var destination = e.Uri;
                 if (destination.StartsWith("edge:", StringComparison.OrdinalIgnoreCase) && destination != "edge://downloads/all" &&
                     destination != "edge://history/all")
-                {
-                    e.Cancel = true;
-                }
-                else
-                if (_adblock.BlockSites(destination))
                 {
                     e.Cancel = true;
                 }
@@ -515,7 +499,6 @@ namespace WebBrowserMinimalist.Views.Controls
                 webview.CoreWebView2.IsDocumentPlayingAudioChanged -= CoreWebView2_IsDocumentPlayingAudioChanged;
                 webview.CoreWebView2.NewWindowRequested -= CoreWebView2_NewWindowRequested;
                 webview.CoreWebView2.PermissionRequested -= CoreWebView2_PermissionRequested;
-                webview.CoreWebView2.WebResourceRequested -= CoreWebView2_WebResourceRequested;
             }
 
             webview.Dispose();

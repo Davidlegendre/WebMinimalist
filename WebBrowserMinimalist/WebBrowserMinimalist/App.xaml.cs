@@ -45,7 +45,6 @@ namespace WebBrowserMinimalist
                 services.AddSingleton<OperacionesService>();
                 services.AddSingleton<MensajeService>();
                 services.AddSingleton<ErrorsPageService>();
-                services.AddSingleton<AdblockService>();
                 services.AddSingleton<BrowserEnvironmentService>();
                 services.AddSingleton<BrowserExtensionService>();
                 
