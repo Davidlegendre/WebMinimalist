@@ -32,7 +32,7 @@
         <Rectangle Visibility="Visible" Fill="{Binding Background,ElementName=btnclosemenu}" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Top" Height="39" Opacity="0.12"></Rectangle>
 
 
-        <ui:TitleBar x:Name="titlebar" Grid.ColumnSpan="2" Grid.RowSpan="2" Title="" Margin="0,4,0,0"></ui:TitleBar>
+        <ui:TitleBar x:Name="titlebar" Grid.ColumnSpan="2" Grid.RowSpan="2" Title=""></ui:TitleBar>
 
         <Grid x:Name="menutabs" Background="{x:Null}" HorizontalAlignment="Left" Visibility="Collapsed">
 
