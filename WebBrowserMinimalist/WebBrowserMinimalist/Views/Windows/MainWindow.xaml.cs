@@ -4,11 +4,9 @@ using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -17,7 +15,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 using WebBrowserMinimalist.Models;
 using WebBrowserMinimalist.Services;
@@ -39,12 +36,10 @@ namespace WebBrowserMinimalist.Views.Windows
         readonly OperacionesService _operaciones;
         readonly MensajeService _maensajeService;
         readonly GlobalService _globalService;
-        private readonly ObservableCollection<BrowserExtensionPanelItem> _browserExtensionItems = new();
-        private CoreWebView2Profile? _browserExtensionProfile;
+        private BrowserExtensionsManagerWindow? _browserExtensionsManagerWindow;
         public MainWindow()
         {
             InitializeComponent();
-            BrowserExtensionsListBox.ItemsSource = _browserExtensionItems;
             var windowChrome = WindowChrome.GetWindowChrome(this);
             if (windowChrome is not null)
                 windowChrome.ResizeBorderThickness = new Thickness(8);
@@ -150,152 +145,32 @@ namespace WebBrowserMinimalist.Views.Windows
                 content.Children.Add(selectItem.Tab);
                 _viewmodel?.SelectItem(selectItem);
                 lista.ScrollIntoView(selectItem);
-                SetExtensionButtonsEnabled(BrowserExtensionsPanel.Visibility != Visibility.Visible);
             }
         }
 
-        public async Task ShowBrowserExtensionsPanelAsync(CoreWebView2Profile profile)
-        {
-            _browserExtensionProfile = profile;
-            BrowserExtensionsPanel.Visibility = Visibility.Visible;
-            SetExtensionButtonsEnabled(false);
-            await RefreshBrowserExtensionsAsync();
-        }
-
-        private void CloseBrowserExtensionsPanel_Click(object sender, RoutedEventArgs e)
-        {
-            BrowserExtensionsPanel.Visibility = Visibility.Collapsed;
-            SetExtensionButtonsEnabled(true);
-        }
-
-        private void SetExtensionButtonsEnabled(bool enabled)
-        {
-            foreach (var item in _viewmodel?.Items?.ToList() ?? Enumerable.Empty<ItemModel>())
-                item.Tab?.SetExtensionsButtonEnabled(enabled);
-        }
-
-        private async void OpenExtensionImporter_Click(object sender, RoutedEventArgs e)
+        public Task ShowBrowserExtensionsManagerAsync(CoreWebView2Profile profile)
         {
             var extensionService = App.GetService<BrowserExtensionService>();
-            if (_browserExtensionProfile is null || extensionService is null)
+            if (extensionService is null)
             {
-                ExtensionsStatusTextBlock.Text = "El navegador todavía se está inicializando.";
-                return;
+                System.Windows.MessageBox.Show(this, "No se pudo iniciar el administrador de extensiones.",
+                    "Extensiones", MessageBoxButton.OK, MessageBoxImage.Error);
+                return Task.CompletedTask;
             }
 
-            var importer = new BrowserExtensionsWindow(_browserExtensionProfile, extensionService)
+            if (_browserExtensionsManagerWindow is { IsVisible: true })
+            {
+                _browserExtensionsManagerWindow.Activate();
+                return Task.CompletedTask;
+            }
+
+            _browserExtensionsManagerWindow = new BrowserExtensionsManagerWindow(profile, extensionService)
             {
                 Owner = this
             };
-            importer.ShowDialog();
-            await RefreshBrowserExtensionsAsync();
-        }
-
-        private async void ToggleBrowserExtension_Click(object sender, RoutedEventArgs e)
-        {
-            if ((sender as FrameworkElement)?.DataContext is not BrowserExtensionPanelItem item)
-                return;
-
-            try
-            {
-                ExtensionsStatusTextBlock.Text = "Actualizando extensión…";
-                await item.Extension.EnableAsync(!item.Extension.IsEnabled);
-                await RefreshBrowserExtensionsAsync();
-            }
-            catch (Exception exception)
-            {
-                ExtensionsStatusTextBlock.Text = $"No se pudo cambiar el estado: {exception.Message}";
-            }
-        }
-
-        private async void RemoveBrowserExtension_Click(object sender, RoutedEventArgs e)
-        {
-            if ((sender as FrameworkElement)?.DataContext is not BrowserExtensionPanelItem item)
-                return;
-
-            var result = System.Windows.MessageBox.Show(
-                $"¿Quieres quitar la extensión «{item.Name}»?",
-                "Quitar extensión",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-            if (result != MessageBoxResult.Yes)
-                return;
-
-            try
-            {
-                ExtensionsStatusTextBlock.Text = "Quitando extensión…";
-                await item.Extension.RemoveAsync();
-                await RefreshBrowserExtensionsAsync();
-            }
-            catch (Exception exception)
-            {
-                ExtensionsStatusTextBlock.Text = $"No se pudo quitar la extensión: {exception.Message}";
-            }
-        }
-
-        private async Task RefreshBrowserExtensionsAsync()
-        {
-            var extensionService = App.GetService<BrowserExtensionService>();
-            if (_browserExtensionProfile is null || extensionService is null)
-            {
-                ExtensionsStatusTextBlock.Text = "El navegador todavía se está inicializando.";
-                return;
-            }
-
-            try
-            {
-                var extensions = await extensionService.GetInstalledExtensionsAsync(_browserExtensionProfile);
-                _browserExtensionItems.Clear();
-                foreach (var extension in extensions)
-                {
-                    var iconPath = extensionService.GetInstalledExtensionIconPath(extension.Id);
-                    _browserExtensionItems.Add(new BrowserExtensionPanelItem(extension, LoadExtensionIcon(iconPath)));
-                }
-
-                ExtensionsStatusTextBlock.Text = extensions.Count == 0
-                    ? "No hay extensiones instaladas. Usa «Importar» para añadir una."
-                    : $"{extensions.Count} extensión(es) instalada(s).";
-            }
-            catch (Exception exception)
-            {
-                ExtensionsStatusTextBlock.Text = $"No se pudo leer la lista: {exception.Message}";
-            }
-        }
-
-        private static ImageSource? LoadExtensionIcon(string? iconPath)
-        {
-            if (string.IsNullOrWhiteSpace(iconPath) || !File.Exists(iconPath))
-                return null;
-
-            try
-            {
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.UriSource = new Uri(iconPath, UriKind.Absolute);
-                image.EndInit();
-                image.Freeze();
-                return image;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        private sealed class BrowserExtensionPanelItem
-        {
-            public BrowserExtensionPanelItem(CoreWebView2BrowserExtension extension, ImageSource? icon)
-            {
-                Extension = extension;
-                Icon = icon;
-            }
-
-            public CoreWebView2BrowserExtension Extension { get; }
-            public string Name => Extension.Name;
-            public string StateText => Extension.IsEnabled ? "Activada" : "Desactivada";
-            public string ToggleText => Extension.IsEnabled ? "Desactivar" : "Activar";
-            public ImageSource? Icon { get; }
+            _browserExtensionsManagerWindow.Closed += (_, _) => _browserExtensionsManagerWindow = null;
+            _browserExtensionsManagerWindow.Show();
+            return Task.CompletedTask;
         }
 
         public void btnClose_Click(object sender, RoutedEventArgs e)

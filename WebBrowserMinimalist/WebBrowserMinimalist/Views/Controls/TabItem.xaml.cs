@@ -64,10 +64,8 @@ namespace WebBrowserMinimalist.Views.Controls
                 return;
             }
 
-            await mainWindow!.ShowBrowserExtensionsPanelAsync(webview.CoreWebView2.Profile);
+            await mainWindow!.ShowBrowserExtensionsManagerAsync(webview.CoreWebView2.Profile);
         }
-
-        public void SetExtensionsButtonEnabled(bool enabled) => btnExtensions.IsEnabled = enabled;
 
         private async Task InitializeWebViewAsync()
         {
