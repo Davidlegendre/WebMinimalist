@@ -37,12 +37,8 @@ namespace WebBrowserMinimalist.DBA
             await connection.OpenAsync();
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                INSERT INTO History (Url, Title, VisitCount, LastVisitedUtc)
-                VALUES ($url, $title, 1, $visitedAt)
-                ON CONFLICT(Url) DO UPDATE SET
-                    Title = excluded.Title,
-                    VisitCount = History.VisitCount + 1,
-                    LastVisitedUtc = excluded.LastVisitedUtc;
+                INSERT INTO HistoryVisits (Url, Title, VisitCount, LastVisitedUtc)
+                VALUES ($url, $title, 1, $visitedAt);
                 """;
             command.Parameters.AddWithValue("$url", uri.AbsoluteUri);
             command.Parameters.AddWithValue("$title", string.IsNullOrWhiteSpace(title) ? uri.Host : title.Trim());
@@ -57,9 +53,33 @@ namespace WebBrowserMinimalist.DBA
             await connection.OpenAsync();
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                SELECT Id, Url, Title, VisitCount, LastVisitedUtc
-                FROM History
-                ORDER BY LastVisitedUtc DESC
+                SELECT
+                    (SELECT latest.Id
+                     FROM HistoryVisits AS latest
+                     WHERE latest.Url = visits.Url
+                     ORDER BY julianday(latest.LastVisitedUtc) DESC, latest.Id DESC
+                     LIMIT 1),
+                    visits.Url,
+                    (SELECT latest.Title
+                     FROM HistoryVisits AS latest
+                     WHERE latest.Url = visits.Url
+                     ORDER BY julianday(latest.LastVisitedUtc) DESC, latest.Id DESC
+                     LIMIT 1),
+                    SUM(visits.VisitCount),
+                    (SELECT latest.LastVisitedUtc
+                     FROM HistoryVisits AS latest
+                     WHERE latest.Url = visits.Url
+                     ORDER BY julianday(latest.LastVisitedUtc) DESC, latest.Id DESC
+                     LIMIT 1)
+                FROM HistoryVisits AS visits
+                GROUP BY visits.Url
+                ORDER BY julianday(
+                    (SELECT latest.LastVisitedUtc
+                     FROM HistoryVisits AS latest
+                     WHERE latest.Url = visits.Url
+                     ORDER BY julianday(latest.LastVisitedUtc) DESC, latest.Id DESC
+                     LIMIT 1)
+                ) DESC
                 LIMIT $limit;
                 """;
             command.Parameters.AddWithValue("$limit", limit);
@@ -85,9 +105,37 @@ namespace WebBrowserMinimalist.DBA
             await InitializeAsync();
             await using var connection = new SqliteConnection(_connectionString);
             await connection.OpenAsync();
+            await using var transaction = await connection.BeginTransactionAsync();
             await using var command = connection.CreateCommand();
-            command.CommandText = "DELETE FROM History;";
+            command.Transaction = (SqliteTransaction)transaction;
+            command.CommandText = "DELETE FROM HistoryVisits; DELETE FROM History;";
             await command.ExecuteNonQueryAsync();
+            await transaction.CommitAsync();
+        }
+
+        public async Task DeleteBetweenAsync(DateTime startUtc, DateTime endUtc)
+        {
+            if (startUtc >= endUtc)
+                throw new ArgumentException("The start time must be earlier than the end time.", nameof(startUtc));
+
+            await InitializeAsync();
+            await using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+            await using var transaction = await connection.BeginTransactionAsync();
+            await using var command = connection.CreateCommand();
+            command.Transaction = (SqliteTransaction)transaction;
+            command.CommandText = """
+                DELETE FROM HistoryVisits
+                WHERE julianday(LastVisitedUtc) >= julianday($start)
+                  AND julianday(LastVisitedUtc) < julianday($end);
+                DELETE FROM History
+                WHERE julianday(LastVisitedUtc) >= julianday($start)
+                  AND julianday(LastVisitedUtc) < julianday($end);
+                """;
+            command.Parameters.AddWithValue("$start", startUtc.ToUniversalTime().ToString("O"));
+            command.Parameters.AddWithValue("$end", endUtc.ToUniversalTime().ToString("O"));
+            await command.ExecuteNonQueryAsync();
+            await transaction.CommitAsync();
         }
 
         private async Task InitializeAsync()
@@ -105,18 +153,51 @@ namespace WebBrowserMinimalist.DBA
                 await connection.OpenAsync();
                 await using var command = connection.CreateCommand();
                 command.CommandText = """
-    CREATE TABLE IF NOT EXISTS History (
-        Id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Url TEXT NOT NULL UNIQUE,
-        Title TEXT NOT NULL,
-        VisitCount INTEGER NOT NULL DEFAULT 1,
-        LastVisitedUtc TEXT NOT NULL
-    );
+                    CREATE TABLE IF NOT EXISTS History (
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Url TEXT NOT NULL UNIQUE,
+                        Title TEXT NOT NULL,
+                        VisitCount INTEGER NOT NULL DEFAULT 1,
+                        LastVisitedUtc TEXT NOT NULL
+                    );
 
-    CREATE INDEX IF NOT EXISTS IX_History_LastVisitedUtc
-        ON History (LastVisitedUtc DESC);
-    """;
+                    CREATE TABLE IF NOT EXISTS HistoryVisits (
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Url TEXT NOT NULL,
+                        Title TEXT NOT NULL,
+                        VisitCount INTEGER NOT NULL DEFAULT 1,
+                        LastVisitedUtc TEXT NOT NULL
+                    );
+
+                    CREATE TABLE IF NOT EXISTS HistoryMetadata (
+                        Key TEXT PRIMARY KEY,
+                        Value TEXT NOT NULL
+                    );
+
+                    CREATE INDEX IF NOT EXISTS IX_HistoryVisits_LastVisitedUtc
+                        ON HistoryVisits (LastVisitedUtc DESC);
+
+                    CREATE INDEX IF NOT EXISTS IX_HistoryVisits_Url
+                        ON HistoryVisits (Url);
+                    """;
                 await command.ExecuteNonQueryAsync();
+
+                await using var migrationTransaction = await connection.BeginTransactionAsync();
+                await using var migrationCommand = connection.CreateCommand();
+                migrationCommand.Transaction = (SqliteTransaction)migrationTransaction;
+                migrationCommand.CommandText = """
+                    INSERT INTO HistoryVisits (Url, Title, VisitCount, LastVisitedUtc)
+                    SELECT Url, Title, VisitCount, LastVisitedUtc
+                    FROM History
+                    WHERE NOT EXISTS (
+                        SELECT 1 FROM HistoryMetadata WHERE Key = 'LegacyHistoryMigrated'
+                    );
+
+                    INSERT OR IGNORE INTO HistoryMetadata (Key, Value)
+                    VALUES ('LegacyHistoryMigrated', '1');
+                    """;
+                await migrationCommand.ExecuteNonQueryAsync();
+                await migrationTransaction.CommitAsync();
                 _isInitialized = true;
             }
             finally

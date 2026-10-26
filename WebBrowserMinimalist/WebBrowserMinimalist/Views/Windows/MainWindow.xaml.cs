@@ -242,7 +242,21 @@ namespace WebBrowserMinimalist.Views.Windows
 
         private void btnHistorialOpen_Click(object sender, RoutedEventArgs e)
         {
-            var historyWindow = new HistoryWindow { Owner = this };
+            var profile = _viewmodel?.Items?
+                .Select(item => item.Tab?.webview.CoreWebView2?.Profile)
+                .FirstOrDefault(itemProfile => itemProfile is not null);
+            if (profile is null)
+            {
+                System.Windows.MessageBox.Show(
+                    this,
+                    "El navegador todavía se está inicializando. Inténtalo de nuevo en unos segundos.",
+                    "Historial",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
+            }
+
+            var historyWindow = new HistoryWindow(profile) { Owner = this };
             historyWindow.Actualizar();
             historyWindow.ShowDialog();
         }

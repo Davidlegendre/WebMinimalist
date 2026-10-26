@@ -24,39 +24,39 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="Historial"></TextBlock>
-                    <TextBlock Text="Historial de toda la navegacion, puede abrir la pagina de historial de edge o borrar todo directamente."
+                    <TextBlock Text="Elimina el historial de la aplicación y WebView2 por periodo. Puedes incluir cookies y datos de sitios."
                                TextWrapping="Wrap"
-                               FontSize="14"
+                               FontSize="12"
                                Opacity="0.7"
                                ></TextBlock>
-                    <Grid Margin="0,7,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <ui:Button Command="{Binding openHistoryCommand}" Appearance="Primary">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <ui:SymbolIcon Symbol="Open16" Filled="True" Foreground="{Binding Foreground,ElementName=tb}" Margin="0,0,7,0"></ui:SymbolIcon>
-                                <TextBlock Name="tb" Text="Abrir Pagina de Historial" Grid.Column="1"></TextBlock>
-                            </Grid>
+                    <ComboBox x:Name="HistoryRangeComboBox" SelectedIndex="0"
+                              Margin="0,8,0,0" Height="38"
+                              VerticalContentAlignment="Center">
+                        <ComboBoxItem Content="Hoy" />
+                        <ComboBoxItem Content="Última hora" />
+                        <ComboBoxItem Content="Últimas 24 horas" />
+                        <ComboBoxItem Content="Últimos 7 días" />
+                        <ComboBoxItem Content="Últimas 4 semanas" />
+                        <ComboBoxItem Content="Todo el tiempo" />
+                    </ComboBox>
+                    <CheckBox x:Name="ClearSiteDataCheckBox"
+                              Content="Incluir cookies y datos de sitios (puede cerrar sesiones)"
+                              Margin="0,8,0,0" FontSize="12" />
+                    <TextBlock Text="Los registros antiguos de la aplicación solo conservan la fecha de la última visita por sitio."
+                               TextWrapping="Wrap" FontSize="10" Opacity="0.55"
+                               Margin="0,5,0,0" />
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <ui:Button x:Name="btnClearAll" Click="ClearHistory_Click"
+                                   Appearance="Danger" Padding="10,6">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Delete12" Margin="0,0,7,0" />
+                                <TextBlock Text="Borrar historial" />
+                            </StackPanel>
                         </ui:Button>
-                        <ui:Button Grid.Column="1" Name="btnClearAll" Command="{Binding DeleteAllCommand}" IsEnabled="{Binding HasItems,ElementName=listResultSearch}" Appearance="Danger" Margin="4,0,0,0">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <ui:SymbolIcon Symbol="Delete12" Margin="0,0,7,0"></ui:SymbolIcon>
-                                <TextBlock Name="tb2" Text="Borrar Todo" Grid.Column="1"></TextBlock>
-                            </Grid>
-                        </ui:Button>
-                    </Grid>
+                        <TextBlock x:Name="ClearStatusTextBlock" Margin="8,0,0,0"
+                                   VerticalAlignment="Center" TextWrapping="Wrap"
+                                   FontSize="11" Opacity="0.75" />
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </ui:Card>

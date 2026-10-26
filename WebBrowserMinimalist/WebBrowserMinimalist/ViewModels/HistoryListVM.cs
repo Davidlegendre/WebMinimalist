@@ -1,7 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Web.WebView2.Core;
+using System;
 using System.Collections.ObjectModel;
-using System.Windows;
+using System.Threading.Tasks;
 using WebBrowserMinimalist.Models;
 using WebBrowserMinimalist.Services;
 using WebBrowserMinimalist.Views.Windows;
@@ -12,26 +14,57 @@ namespace WebBrowserMinimalist.ViewModels
     {
         private readonly HistoryServices _historyServices;
         private readonly MainWindow? _mainWindow;
-        private readonly MensajeService _msn;
 
         public HistoryListVM()
         {
             _historyServices = App.GetService<HistoryServices>()!;
             _mainWindow = App.Current.MainWindow as MainWindow;
-            _msn = App.GetService<MensajeService>()!;
         }
 
         [ObservableProperty]
         private ObservableCollection<HistoryModel> _listaHistorial = new();
 
-        [RelayCommand]
-        private async void DeleteAll()
+        public async Task ClearHistoryAsync(
+            CoreWebView2Profile profile,
+            DateTime? startUtc,
+            DateTime? endUtc,
+            bool clearSiteData)
         {
-            if (_msn.ShowDialog("Desea eliminar todo el historial guardado por la aplicación?", "Eliminar historial", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
-                return;
+            if (startUtc.HasValue != endUtc.HasValue)
+                throw new ArgumentException("Both range endpoints must be provided together.");
 
-            await _historyServices.ClearAllAsync();
-            ListaHistorial.Clear();
+            var dataKinds = CoreWebView2BrowsingDataKinds.BrowsingHistory;
+            if (clearSiteData)
+                dataKinds |= CoreWebView2BrowsingDataKinds.AllSite;
+
+            try
+            {
+                if (startUtc.HasValue)
+                    await profile.ClearBrowsingDataAsync(dataKinds, startUtc.Value, endUtc!.Value);
+                else
+                    await profile.ClearBrowsingDataAsync(dataKinds);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "No se pudo borrar el historial del navegador WebView2.", exception);
+            }
+
+            try
+            {
+                if (startUtc.HasValue)
+                    await _historyServices.ClearBetweenAsync(startUtc.Value, endUtc!.Value);
+                else
+                    await _historyServices.ClearAllAsync();
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "WebView2 se limpió, pero no se pudo borrar el historial de la aplicación.", exception);
+            }
+
+            var history = await _historyServices.GetAllHistoriesAsync();
+            ListaHistorial = new ObservableCollection<HistoryModel>(history);
         }
 
         [RelayCommand]

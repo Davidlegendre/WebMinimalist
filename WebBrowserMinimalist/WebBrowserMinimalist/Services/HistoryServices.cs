@@ -49,6 +49,12 @@ namespace WebBrowserMinimalist.Services
             _historial.Clear();
         }
 
+        public async Task ClearBetweenAsync(DateTime startUtc, DateTime endUtc)
+        {
+            await _history.DeleteBetweenAsync(startUtc, endUtc);
+            await RefreshCacheAsync();
+        }
+
         private async Task RefreshCacheAsync()
         {
             _historial = (await _history.GetRecentAsync()).ToList();
