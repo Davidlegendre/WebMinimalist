@@ -41,7 +41,7 @@ namespace WebBrowserMinimalist.ViewModels
         string _UrlSource = "about:blank";
 
         [ObservableProperty]
-        bool _IsNotIncognit = true;
+        bool _IsNotIncognit = false;
 
         [ObservableProperty]
         ObservableCollection<HistoryModel>? _ResultItems = new ObservableCollection<HistoryModel>();

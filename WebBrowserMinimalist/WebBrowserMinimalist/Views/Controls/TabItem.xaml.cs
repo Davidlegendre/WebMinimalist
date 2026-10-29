@@ -69,22 +69,21 @@ namespace WebBrowserMinimalist.Views.Controls
 
         private async Task InitializeWebViewAsync()
         {
-            //if (_globalService.IsInPrivateMode)
-            //{
-            //    var options = new CoreWebView2EnvironmentOptions("-inprivate");
-            //    var webView2Environment = await CoreWebView2Environment.CreateAsync(options: options);
-            //    webview.CreationProperties.IsInPrivateModeEnabled = true;
-            //    _msn.ShowDialog("pase");
-            //    await webview.EnsureCoreWebView2Async(webView2Environment);                
-            //}
+            
             //else
             //{
-              
+
             //}
             try
             {
+                //var environment = await _browserEnvironmentService.GetEnvironmentAsync();
+                //await webview.EnsureCoreWebView2Async(environment);
                 var environment = await _browserEnvironmentService.GetEnvironmentAsync();
-                await webview.EnsureCoreWebView2Async(environment);
+
+                var controllerOptions = environment.CreateCoreWebView2ControllerOptions();
+                controllerOptions.IsInPrivateModeEnabled = _globalService.IsInPrivateMode;
+
+                await webview.EnsureCoreWebView2Async(environment, controllerOptions);
             }
             catch (Exception)
             {
@@ -109,8 +108,17 @@ namespace WebBrowserMinimalist.Views.Controls
             webview.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
             webview.CoreWebView2.PermissionRequested += CoreWebView2_PermissionRequested;
             webview.CoreWebView2.Navigate(_tabItemVM!.Url.ToString());
-           
-            
+
+            if (webview.CoreWebView2 is not null)
+            {
+                bool esPrivado =
+                    webview.CoreWebView2.Profile.IsInPrivateModeEnabled;
+
+                if (_tabItemVM != null)
+                    _tabItemVM.IsNotIncognit = esPrivado;
+            }
+
+
             ModelP.IMg = _tabItemVM!.Image;
             ModelP.Source = _tabItemVM.UrlSource;
             ModelP.TitleDoc = _tabItemVM.TitleDocument;

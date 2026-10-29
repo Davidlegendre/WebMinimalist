@@ -33,19 +33,14 @@ namespace WebBrowserMinimalist.Views.Windows
     public partial class MainWindow : UiWindow
     {
         public MainWindowViewModel? _viewmodel { get; }
-        readonly OperacionesService _operaciones;
         readonly MensajeService _maensajeService;
         readonly GlobalService _globalService;
         private BrowserExtensionsManagerWindow? _browserExtensionsManagerWindow;
         public MainWindow()
         {
             InitializeComponent();
-            var windowChrome = WindowChrome.GetWindowChrome(this);
-            if (windowChrome is not null)
-                windowChrome.ResizeBorderThickness = new Thickness(8);
-
-            Watcher.Watch(this);
-            _operaciones = App.GetService<OperacionesService>();
+            Watcher.Watch(this, BackgroundType.Mica, true);
+            
             _maensajeService = App.GetService<MensajeService>();
             _globalService = App.GetService<GlobalService>();
             _viewmodel = this.DataContext as MainWindowViewModel;
@@ -79,21 +74,17 @@ namespace WebBrowserMinimalist.Views.Windows
 
         void CargaArchivosExternos()
         {
-            //if (Environment.CommandLine.Contains("¬[incognit]"))
-            //{
-            //    _globalService.IsInPrivateMode = true;
-            //}
+            if (Environment.CommandLine.Contains("¬[incognit]"))
+            {
+                _globalService.IsInPrivateMode = true;
+                if(_viewmodel != null)
+                    _viewmodel.IsNotIncognit = !_globalService.IsInPrivateMode;
+            }
             var item = new ItemModel();
             //_maensajeService.ShowDialog(Environment.CommandLine);
 
             try
             {
-                //_globalService.IsInPrivateMode = item.Tab.webview.CreationProperties.IsInPrivateModeEnabled.Value;
-       
-                
-                //btnOpenWithIncognit.Visibility = Visibility.Collapsed;
-                btnHistorialOpen.Visibility = item.Tab.webview.CreationProperties.IsInPrivateModeEnabled.Value ? Visibility.Collapsed : Visibility.Visible;
-
                 if (Environment.CommandLine.Split(" ").Length > 2)
                 {
 
@@ -110,7 +101,7 @@ namespace WebBrowserMinimalist.Views.Windows
                     _viewmodel!.Items!.Add(item);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _viewmodel!.Items!.Add(item);
             }
@@ -226,8 +217,8 @@ namespace WebBrowserMinimalist.Views.Windows
             _viewmodel!.Items!.Add(newItem);
             lista.SelectedItem = newItem;
             lista.ScrollIntoView(newItem);
-            //historyList.Visibility = Visibility.Collapsed;
             lista.Visibility = Visibility.Visible;
+            ActualizarFlechas();
 
         }
 
@@ -378,26 +369,52 @@ namespace WebBrowserMinimalist.Views.Windows
 
         private void lista_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var objeto = VisualTreeHelper.GetChild(lista, 0);
-            var _scrollviewer = VisualTreeHelper.GetChild(objeto, 0) as ScrollViewer;
-            var oj = _scrollviewer?.Content as ItemsPresenter;
-            if (oj != null)
-                if (oj.ActualWidth > lista.ActualWidth)
+            ActualizarFlechas();
+        }
+
+        private static T? FindVisualChild<T>(DependencyObject parent)
+            where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+
+                if (child is T result)
+                    return result;
+
+                var descendant = FindVisualChild<T>(child);
+
+                if (descendant != null)
+                    return descendant;
+            }
+
+            return null;
+        }
+
+        private void ActualizarFlechas()
+        {
+            lista.Dispatcher.BeginInvoke(
+                new Action(() =>
                 {
-                    if (btnleft.Visibility != Visibility.Visible)
-                    {
-                        btnleft.Visibility = Visibility.Visible;
-                        btnrigth.Visibility = Visibility.Visible;
-                    }
-                }
-                else
-                {
-                    if (btnleft.Visibility != Visibility.Collapsed)
-                    {
-                        btnleft.Visibility = Visibility.Collapsed;
-                        btnrigth.Visibility = Visibility.Collapsed;
-                    }
-                }
+                    var scrollViewer = FindVisualChild<ScrollViewer>(lista);
+
+                    if (scrollViewer == null)
+                        return;
+
+                    scrollViewer.UpdateLayout();
+
+                    bool hasOverflow =
+                        scrollViewer.ExtentWidth > scrollViewer.ViewportWidth + 1;
+
+                    btnleft.Visibility = hasOverflow
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+
+                    btnrigth.Visibility = hasOverflow
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                }),
+                System.Windows.Threading.DispatcherPriority.Loaded);
         }
 
         private void btnAddCollection_Click(object sender, RoutedEventArgs e)

@@ -31,6 +31,9 @@ namespace WebBrowserMinimalist.ViewModels
         private string _applicationTitle = String.Empty;
 
         [ObservableProperty]
+        bool _IsNotIncognit = true;
+
+        [ObservableProperty]
         string? _TitleDocument = "Blank";
 
         [ObservableProperty]

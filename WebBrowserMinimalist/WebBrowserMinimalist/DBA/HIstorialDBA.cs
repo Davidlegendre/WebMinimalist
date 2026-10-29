@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using WebBrowserMinimalist.Models;
+using WebBrowserMinimalist.Services;
 
 namespace WebBrowserMinimalist.DBA
 {
@@ -12,6 +13,7 @@ namespace WebBrowserMinimalist.DBA
     public sealed class HIstorialDBA
     {
         private readonly string _connectionString;
+        private readonly GlobalService _globalService;
         private readonly SemaphoreSlim _initializationLock = new(1, 1);
         private bool _isInitialized;
 
@@ -24,10 +26,16 @@ namespace WebBrowserMinimalist.DBA
                 DataSource = Path.Combine(folder, "history.db"),
                 Mode = SqliteOpenMode.ReadWriteCreate
             }.ToString();
+
+            _globalService = App.GetService<GlobalService>();
         }
 
         public async Task RecordVisitAsync(string url, string title)
         {
+
+            if(_globalService.IsInPrivateMode)
+                return;
+
             if (!Uri.TryCreate(url, UriKind.Absolute, out var uri)
                 || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
                 return;

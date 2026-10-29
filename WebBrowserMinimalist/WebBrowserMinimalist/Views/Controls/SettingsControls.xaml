@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:WebBrowserMinimalist.Views.Controls"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                xmlns:context="clr-namespace:WebBrowserMinimalist.ViewModels"
-             mc:Ignorable="d" Width="183" >
+             mc:Ignorable="d">
     <UserControl.DataContext>
         <context:SettingsVM></context:SettingsVM>
     </UserControl.DataContext>
