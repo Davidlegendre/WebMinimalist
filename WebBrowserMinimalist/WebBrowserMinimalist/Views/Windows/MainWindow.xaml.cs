@@ -281,22 +281,22 @@ namespace WebBrowserMinimalist.Views.Windows
             }
         }
 
-        private void btnCollectionsOpen_Click(object sender, RoutedEventArgs e)
-        {
-            if (Colecciones.Visibility != Visibility.Visible)
-            {
-                //btnAtras.Visibility = Visibility.Visible;
-                Colecciones.Visibility = Visibility.Visible;
-                menutabs.Visibility = Visibility.Collapsed;
-                //lista.Visibility = Visibility.Collapsed;
-                Wpf.Ui.Animations.Transitions.ApplyTransition(Colecciones, Wpf.Ui.Animations.TransitionType.FadeIn, 300);
-            }
-            else
-            {
-                Colecciones.Visibility = Visibility.Collapsed;
+        //private void btnCollectionsOpen_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (Colecciones.Visibility != Visibility.Visible)
+        //    {
+        //        //btnAtras.Visibility = Visibility.Visible;
+        //        Colecciones.Visibility = Visibility.Visible;
+        //        menutabs.Visibility = Visibility.Collapsed;
+        //        //lista.Visibility = Visibility.Collapsed;
+        //        Wpf.Ui.Animations.Transitions.ApplyTransition(Colecciones, Wpf.Ui.Animations.TransitionType.FadeIn, 300);
+        //    }
+        //    else
+        //    {
+        //        Colecciones.Visibility = Visibility.Collapsed;
                 
-            }
-        }
+        //    }
+        //}
 
         private void ProgressRing_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -307,14 +307,14 @@ namespace WebBrowserMinimalist.Views.Windows
                 progressRing.IsIndeterminate = true;
         }
 
-        private void btnCloseCollections_Click(object sender, RoutedEventArgs e)
-        {
-            if (Colecciones.Visibility == Visibility.Visible)
-            {
-                Colecciones.Visibility = Visibility.Collapsed;
-                menutabs.Visibility = Visibility.Visible;
-            }
-        }
+        //private void btnCloseCollections_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (Colecciones.Visibility == Visibility.Visible)
+        //    {
+        //        Colecciones.Visibility = Visibility.Collapsed;
+        //        menutabs.Visibility = Visibility.Visible;
+        //    }
+        //}
 
         private void btnOpenWithIncognit_Click(object sender, RoutedEventArgs e)
         {
@@ -417,16 +417,16 @@ namespace WebBrowserMinimalist.Views.Windows
                 System.Windows.Threading.DispatcherPriority.Loaded);
         }
 
-        private void btnAddCollection_Click(object sender, RoutedEventArgs e)
-        {
-            var _vmcollection = collections.DataContext as CollectionVM;
-            if (_vmcollection != null)
-            {
-                var agregarModWin = new AgregarColeccionWindow(this, _vmcollection);
-                agregarModWin.ShowDialog();
+        //private void btnAddCollection_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var _vmcollection = collections.DataContext as CollectionVM;
+        //    if (_vmcollection != null)
+        //    {
+        //        var agregarModWin = new AgregarColeccionWindow(this, _vmcollection);
+        //        agregarModWin.ShowDialog();
 
-            }
-        }
+        //    }
+        //}
 
     }
 }

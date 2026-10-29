@@ -86,9 +86,9 @@
                     <ui:Button Name="btnHistorialOpen" Cursor="Hand" Icon="History16" Padding="5" Appearance="Transparent" Visibility="{Binding IsNotIncognit,Converter={StaticResource convertToVisibility}}" BorderThickness="0"  Margin="2" HorizontalAlignment="Stretch" Click="btnHistorialOpen_Click" ToolTip="Historial de navegación" WindowChrome.IsHitTestVisibleInChrome="True" >
 
                     </ui:Button>
-                    <ui:Button Name="btnCollectionsOpen" Cursor="Hand" Icon="Collections24" Padding="5" Visibility="{Binding IsNotIncognit,Converter={StaticResource convertToVisibility}}" Appearance="Transparent" BorderThickness="0"  Margin="2" HorizontalAlignment="Stretch" Click="btnCollectionsOpen_Click" ToolTip="Colecciones" WindowChrome.IsHitTestVisibleInChrome="True" >
+                    <!--<ui:Button Name="btnCollectionsOpen" Cursor="Hand" Icon="Collections24" Padding="5" Visibility="{Binding IsNotIncognit,Converter={StaticResource convertToVisibility}}" Appearance="Transparent" BorderThickness="0"  Margin="2" HorizontalAlignment="Stretch" Click="btnCollectionsOpen_Click" ToolTip="Colecciones" WindowChrome.IsHitTestVisibleInChrome="True" >
 
-                    </ui:Button>
+                    </ui:Button>-->
                 </UniformGrid>
 
                 <Grid Grid.Row="1"
@@ -287,7 +287,7 @@
             </Grid>           
         </Grid>
 
-        <Grid x:Name="Colecciones" Visibility="Collapsed">
+        <!--<Grid x:Name="Colecciones" Visibility="Collapsed">
 
             <StackPanel Margin="9,9,0,5">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">                    
@@ -301,7 +301,7 @@
                 <controls:CollectionsVMVertical x:Name="collections" Grid.Column="1" Margin="0,5,0,0"></controls:CollectionsVMVertical>
 
             </StackPanel>
-        </Grid>
+        </Grid>-->
 
         <Grid Name="content" Grid.Row="1" Grid.Column="0" Margin="0 2 0 0"></Grid>
         
